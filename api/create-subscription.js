@@ -78,7 +78,7 @@ export default async function handler(req, res) {
       reason: "MenteViva - Plan completo",
       external_reference: userId,
       payer_email: email,
-      back_url: `${SITE_URL}/?suscripcion=gracias`,
+      back_url: `${SITE_URL}/app.html?suscripcion=gracias`,
       auto_recurring: {
         frequency: 1,
         frequency_type: "months",

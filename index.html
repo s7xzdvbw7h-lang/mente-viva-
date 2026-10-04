@@ -24782,6 +24782,17 @@ function sw({ onClose: t, onShowThanks: e, onShowLegal: r }) {
     ],
   });
 }
+function MvLoginErrorMessage(error) {
+  if (!error) return null;
+  const msg = (error.message || "").toLowerCase();
+  if (msg.includes("email not confirmed")) {
+    return {
+      text: "Todavía no confirmaste tu email. Revisá tu correo (y la carpeta de spam) y tocá el link que te mandamos para poder entrar.",
+      canResend: true,
+    };
+  }
+  return null;
+}
 function iw() {
   const [t, e] = S.useState("signup"),
     [r, n] = S.useState(""),
@@ -24790,8 +24801,15 @@ function iw() {
     [c, u] = S.useState(!1),
     [h, d] = S.useState(null),
     [f, m] = S.useState(null),
+    [MvNeedsConfirm, MvSetNeedsConfirm] = S.useState(false),
+    [MvResendMsg, MvSetResendMsg] = S.useState(null),
+    MvResend = async () => {
+      MvSetResendMsg(null);
+      const { error: x } = await Er.auth.resend({ type: "signup", email: r.trim() });
+      MvSetResendMsg(x ? "No pudimos reenviarlo, probá de nuevo en un rato." : "Listo, te lo volvimos a mandar.");
+    },
     y = async (w) => {
-      (w.preventDefault(), d(null), m(null), u(!0));
+      (w.preventDefault(), d(null), m(null), MvSetNeedsConfirm(false), u(!0));
       try {
         if (t === "signup") {
           if (!a.trim()) {
@@ -24804,12 +24822,19 @@ function iw() {
           }
           const { error: x } = await b0(r.trim(), s, a.trim());
           if (x) throw x;
-          m("¡Cuenta creada! Ya podés empezar.");
+          (m("¡Cuenta creada! Te mandamos un email para confirmar tu cuenta — revisalo (y la carpeta de spam) antes de entrar."),
+            MvSetNeedsConfirm(true));
         } else {
           const { error: x } = await _0(r.trim(), s);
           if (x) throw x;
         }
       } catch (x) {
+        const mv = MvLoginErrorMessage(x);
+        if (mv) {
+          (d(mv.text), mv.canResend && MvSetNeedsConfirm(true));
+          u(!1);
+          return;
+        }
         const p =
           (x == null ? void 0 : x.message) || "Algo salió mal. Probá de nuevo.";
         p.includes("Invalid login")
@@ -25079,6 +25104,30 @@ function iw() {
                     },
                     children: f,
                   }),
+                MvNeedsConfirm &&
+                  o.jsxs("div", {
+                    style: { textAlign: "center", marginBottom: 14 },
+                    children: [
+                      o.jsx("button", {
+                        type: "button",
+                        onClick: MvResend,
+                        style: {
+                          background: "none",
+                          border: "none",
+                          color: "var(--rosa)",
+                          fontSize: 13,
+                          textDecoration: "underline",
+                          cursor: "pointer",
+                        },
+                        children: "Reenviar email de confirmación",
+                      }),
+                      MvResendMsg &&
+                        o.jsx("div", {
+                          style: { fontSize: 12, color: "var(--text-muted)", marginTop: 4 },
+                          children: MvResendMsg,
+                        }),
+                    ],
+                  }),
                 o.jsx("button", {
                   type: "submit",
                   disabled: c,
@@ -25120,10 +25169,202 @@ function iw() {
     ],
   });
 }
+function MvComputeHasPlan(sub, todayISO) {
+  if (!sub) return false;
+  if (sub.status === "authorized") return true;
+  if (sub.current_period_end && sub.current_period_end >= todayISO) return true;
+  return false;
+}
+const MvMeses = [
+  "enero", "febrero", "marzo", "abril", "mayo", "junio",
+  "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre",
+];
+function MvFormatFechaEs(isoDate) {
+  const [y, m, d] = isoDate.split("-").map(Number);
+  return `${d} de ${MvMeses[m - 1]}`;
+}
+function MvPlanStatusText(sub, todayISO) {
+  const active = MvComputeHasPlan(sub, todayISO);
+  if (!active) return { active: false, label: "Plan gratis", nextLabel: null };
+  if (sub.status === "cancelled") {
+    return {
+      active: true,
+      label: "Plan completo — cancelado, no se renueva",
+      nextLabel: sub.current_period_end
+        ? `Tenés acceso hasta el ${MvFormatFechaEs(sub.current_period_end)}`
+        : null,
+    };
+  }
+  return {
+    active: true,
+    label: "Plan completo",
+    nextLabel: sub.current_period_end
+      ? `Próximo cobro: ${MvFormatFechaEs(sub.current_period_end)}`
+      : null,
+  };
+}
+function MvAccountScreen({ user, subscription, onClose, onSignOut }) {
+  const [busy, setBusy] = S.useState(false),
+    [errMsg, setErrMsg] = S.useState(null),
+    [confirming, setConfirming] = S.useState(null),
+    [deleteText, setDeleteText] = S.useState(""),
+    today = new Date().toISOString().slice(0, 10),
+    status = MvPlanStatusText(subscription, today),
+    nombre = (user && user.user_metadata && user.user_metadata.nombre) || "",
+    email = (user && user.email) || "";
+
+  async function callApi(path) {
+    const {
+      data: { session },
+    } = await Er.auth.getSession();
+    if (!session) return null;
+    const resp = await fetch(path, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${session.access_token}` },
+    });
+    return { ok: resp.ok, data: await resp.json().catch(() => ({})) };
+  }
+
+  async function handleCancel() {
+    setConfirming(null);
+    setBusy(true);
+    setErrMsg(null);
+    const r = await callApi("/api/cancel-subscription");
+    setBusy(false);
+    if (!r || !r.ok) {
+      setErrMsg("No pudimos cancelar la suscripción. Probá de nuevo en un rato.");
+      return;
+    }
+    window.location.reload();
+  }
+
+  async function handleDelete() {
+    setConfirming(null);
+    setBusy(true);
+    setErrMsg(null);
+    const r = await callApi("/api/delete-account");
+    if (!r || !r.ok) {
+      setBusy(false);
+      setErrMsg("No pudimos borrar la cuenta. Probá de nuevo en un rato.");
+      return;
+    }
+    await Er.auth.signOut();
+    window.location.reload();
+  }
+
+  if (confirming === "cancel") {
+    return o.jsx("div", {
+      className: "pricing-overlay",
+      children: o.jsxs("div", {
+        style: { padding: 24 },
+        children: [
+          o.jsx("div", { className: "plan-price", style: { fontSize: 19, marginBottom: 12 }, children: "¿Cancelar tu suscripción?" }),
+          o.jsx("div", { className: "plan-desc", style: { marginBottom: 20 }, children: "Vas a conservar el plan completo hasta el final del período que ya pagaste. Después no se te va a cobrar de nuevo." }),
+          o.jsx("button", { className: "plan-btn secondary", style: { marginBottom: 10 }, onClick: () => setConfirming(null), children: "Volver" }),
+          o.jsx("button", { className: "plan-btn", style: { background: "var(--rosa)", color: "white" }, disabled: busy, onClick: handleCancel, children: "Sí, cancelar suscripción" }),
+        ],
+      }),
+    });
+  }
+
+  if (confirming === "delete") {
+    return o.jsx("div", {
+      className: "pricing-overlay",
+      children: o.jsxs("div", {
+        style: { padding: 24 },
+        children: [
+          o.jsx("div", { className: "plan-price", style: { fontSize: 19, marginBottom: 12 }, children: "¿Borrar tu cuenta?" }),
+          o.jsx("div", { className: "plan-desc", style: { marginBottom: 16 }, children: "Esto borra tu cuenta y todo tu avance para siempre. No se puede deshacer." }),
+          o.jsx("div", { className: "plan-desc", style: { marginBottom: 8 }, children: 'Para confirmar, escribí BORRAR acá abajo:' }),
+          o.jsx("input", {
+            value: deleteText,
+            onChange: (e) => setDeleteText(e.target.value),
+            style: { width: "100%", padding: 12, borderRadius: 10, border: "1.5px solid var(--warm-deep)", marginBottom: 16, boxSizing: "border-box" },
+          }),
+          o.jsx("button", { className: "plan-btn secondary", style: { marginBottom: 10 }, onClick: () => (setConfirming(null), setDeleteText("")), children: "Volver" }),
+          o.jsx("button", {
+            className: "plan-btn",
+            style: { background: deleteText === "BORRAR" ? "var(--rosa)" : "var(--warm-deep)", color: "white" },
+            disabled: busy || deleteText !== "BORRAR",
+            onClick: handleDelete,
+            children: "Borrar mi cuenta para siempre",
+          }),
+        ],
+      }),
+    });
+  }
+
+  return o.jsx("div", {
+    className: "pricing-overlay",
+    children: o.jsxs("div", {
+      children: [
+        o.jsxs("div", {
+          className: "ph",
+          children: [
+            o.jsx("button", {
+              className: "ph-close",
+              onClick: onClose,
+              children: "✕",
+            }),
+            o.jsx("div", { className: "ph-title", children: "Mi cuenta" }),
+          ],
+        }),
+        o.jsxs("div", {
+          style: { padding: 20 },
+          children: [
+            o.jsxs("div", {
+              className: "plan",
+              style: { marginBottom: 16 },
+              children: [
+                nombre && o.jsx("div", { className: "plan-desc", children: nombre }),
+                o.jsx("div", { className: "plan-desc", children: email }),
+                o.jsx("div", { className: "divider" }),
+                o.jsx("div", {
+                  className: "plan-price",
+                  style: { fontSize: 20 },
+                  children: status.label,
+                }),
+                status.nextLabel &&
+                  o.jsx("div", { className: "plan-desc", children: status.nextLabel }),
+              ],
+            }),
+            errMsg && o.jsx("div", { style: { color: "var(--rosa)", fontSize: 14, marginBottom: 12 }, children: errMsg }),
+            status.active &&
+              subscription &&
+              subscription.status === "authorized" &&
+              o.jsx("button", {
+                className: "plan-btn secondary",
+                style: { marginBottom: 10 },
+                disabled: busy,
+                onClick: () => setConfirming("cancel"),
+                children: "Cancelar suscripción",
+              }),
+            o.jsx("button", {
+              className: "plan-btn secondary",
+              style: { marginBottom: 10 },
+              disabled: busy,
+              onClick: onSignOut,
+              children: "Cerrar sesión",
+            }),
+            o.jsx("button", {
+              className: "plan-btn",
+              style: { background: "none", color: "var(--rosa)", border: "1px solid var(--rosa)" },
+              disabled: busy,
+              onClick: () => setConfirming("delete"),
+              children: "Borrar mi cuenta",
+            }),
+          ],
+        }),
+      ],
+    }),
+  });
+}
 function aw() {
   const [t, e] = S.useState(null),
     [r, n] = S.useState(!0),
-    [MvHasPlan, MvSetHasPlan] = S.useState(false);
+    [MvHasPlan, MvSetHasPlan] = S.useState(false),
+    [MvSubscription, MvSetSubscription] = S.useState(null),
+    [MvShowAccount, MvSetShowAccount] = S.useState(false);
   (S.useEffect(() => {
     k0().then((O) => {
       (e((O == null ? void 0 : O.user) || null), n(!1));
@@ -25144,15 +25385,20 @@ function aw() {
   }, []),
     S.useEffect(() => {
       if (!t) {
-        MvSetHasPlan(false);
+        (MvSetHasPlan(false), MvSetSubscription(null));
         return;
       }
-      Er.from("profiles")
-        .select("is_pro")
-        .eq("id", t.id)
-        .single()
-        .then(({ data }) => MvSetHasPlan(!!(data && data.is_pro)))
-        .catch(() => MvSetHasPlan(false));
+      Er.from("subscriptions")
+        .select("*")
+        .eq("user_id", t.id)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle()
+        .then(({ data }) => {
+          const today = new Date().toISOString().slice(0, 10);
+          (MvSetSubscription(data || null), MvSetHasPlan(MvComputeHasPlan(data, today)));
+        })
+        .catch(() => (MvSetHasPlan(false), MvSetSubscription(null)));
     }, [t]),
     S.useEffect(() => {
       t &&
@@ -26205,12 +26451,35 @@ function aw() {
                     g.length > 0 ? `${g.length} hoy` : "¡Empezá hoy!",
                   ],
                 }),
-                o.jsx("div", { className: "pro-badge", children: "PRO" }),
+                MvHasPlan && o.jsx("div", { className: "pro-badge", children: "PRO" }),
+                o.jsx("button", {
+                  onClick: () => MvSetShowAccount(true),
+                  "aria-label": "Mi cuenta",
+                  style: {
+                    background: "none",
+                    border: "none",
+                    fontSize: 20,
+                    cursor: "pointer",
+                    lineHeight: 1,
+                    padding: 4,
+                  },
+                  children: "👤",
+                }),
               ],
             }),
           ],
         }),
       }),
+      MvShowAccount &&
+        o.jsx(MvAccountScreen, {
+          user: t,
+          subscription: MvSubscription,
+          onClose: () => MvSetShowAccount(false),
+          onSignOut: async () => {
+            await S0();
+            (MvSetShowAccount(false), window.location.reload());
+          },
+        }),
       y === "inicio" &&
         o.jsxs("div", {
           className: "page",

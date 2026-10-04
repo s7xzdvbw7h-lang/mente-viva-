@@ -25359,12 +25359,24 @@ function MvAccountScreen({ user, subscription, onClose, onSignOut }) {
     }),
   });
 }
+function MvTodayCompletedIds(sessions, todayISO) {
+  return [...new Set(sessions.filter((s) => s.date === todayISO).map((s) => s.exId))];
+}
+function MvTrialDaysLeft(trialStartISO, todayISO, totalDays) {
+  if (!trialStartISO) return totalDays;
+  const start = new Date(trialStartISO + "T00:00:00Z");
+  const today = new Date(todayISO + "T00:00:00Z");
+  const elapsed = Math.floor((today - start) / (1000 * 60 * 60 * 24));
+  return Math.max(0, totalDays - elapsed);
+}
 function aw() {
   const [t, e] = S.useState(null),
     [r, n] = S.useState(!0),
     [MvHasPlan, MvSetHasPlan] = S.useState(false),
     [MvSubscription, MvSetSubscription] = S.useState(null),
-    [MvShowAccount, MvSetShowAccount] = S.useState(false);
+    [MvShowAccount, MvSetShowAccount] = S.useState(false),
+    [MvProfile, MvSetProfile] = S.useState(null),
+    [MvProfileLoaded, MvSetProfileLoaded] = S.useState(false);
   (S.useEffect(() => {
     k0().then((O) => {
       (e((O == null ? void 0 : O.user) || null), n(!1));
@@ -25399,6 +25411,20 @@ function aw() {
           (MvSetSubscription(data || null), MvSetHasPlan(MvComputeHasPlan(data, today)));
         })
         .catch(() => (MvSetHasPlan(false), MvSetSubscription(null)));
+    }, [t]),
+    S.useEffect(() => {
+      if (!t) {
+        (MvSetProfile(null), MvSetProfileLoaded(false));
+        return;
+      }
+      Er.from("profiles")
+        .select("trial_start_date, onboarding_seen")
+        .eq("id", t.id)
+        .maybeSingle()
+        .then(({ data }) => {
+          (MvSetProfile(data || null), MvSetProfileLoaded(true));
+        })
+        .catch(() => MvSetProfileLoaded(true));
     }, [t]),
     S.useEffect(() => {
       t &&
@@ -25442,14 +25468,7 @@ function aw() {
     [f, m] = S.useState(0),
     [y, w] = S.useState("inicio"),
     [x, p] = S.useState(null),
-    [g, v] = S.useState(() => {
-      try {
-        const _ = localStorage.getItem("mv_completed");
-        return _ ? JSON.parse(_) : [];
-      } catch {
-        return [];
-      }
-    }),
+    [g, v] = S.useState([]),
     [b, k] = S.useState(null),
     [j, E] = S.useState("Todos"),
     [A, I] = S.useState(!1),
@@ -25498,24 +25517,20 @@ function aw() {
       try {
         localStorage.setItem("mv_scores", JSON.stringify(Ot));
       } catch {}
-    }, [Ot]));
+    }, [Ot]),
+    S.useEffect(() => {
+      const todayISO = new Date().toISOString().slice(0, 10);
+      v(MvTodayCompletedIds(mt, todayISO));
+    }, [mt]));
   const [R, L] = S.useState(7),
     [F, K] = S.useState(!0);
   S.useEffect(() => {
-    try {
-      const _ = localStorage.getItem("menteviva_trial_start");
-      let O;
-      _
-        ? (O = new Date(_))
-        : ((O = new Date()),
-          localStorage.setItem("menteviva_trial_start", O.toISOString()));
-      const ie = Math.floor((new Date() - O) / (1e3 * 60 * 60 * 24)),
-        te = Math.max(0, 7 - ie);
-      (L(te), K(te > 0));
-    } catch {
-      (L(7), K(!0));
-    }
-  }, []);
+    if (!MvProfileLoaded) return;
+    const todayISO = new Date().toISOString().slice(0, 10),
+      trialStart = (MvProfile && MvProfile.trial_start_date) || todayISO,
+      te = MvTrialDaysLeft(trialStart, todayISO, 7);
+    (L(te), K(te > 0));
+  }, [MvProfileLoaded, MvProfile]);
   const W = mt.length,
     It = W > 0 ? Math.round(mt.reduce((_, O) => _ + O.score, 0) / W) : 0,
     Oe = (() => {
@@ -25535,13 +25550,6 @@ function aw() {
       return O;
     })(),
     yn = (_, O) => {
-      v((te) => {
-        const re = te.includes(_) ? te : [...te, _];
-        try {
-          localStorage.setItem("mv_completed", JSON.stringify(re));
-        } catch {}
-        return re;
-      });
       const M = Or.find((te) => te.id === _);
       M &&
         Cr((te) => ({
@@ -25597,7 +25605,8 @@ function aw() {
       ],
     });
   if (!t) return o.jsx(iw, {});
-  if (!s) {
+  if (!MvProfileLoaded) return o.jsx("div", { className: "app" });
+  if (!s && !(MvProfile && MvProfile.onboarding_seen)) {
     const _ = [
       {
         render: () =>
@@ -26158,7 +26167,15 @@ function aw() {
                   }),
                   o.jsx("button", {
                     className: "ob-cta",
-                    onClick: () => i(!0),
+                    onClick: () => {
+                      (i(!0),
+                        MvSetProfile((p) => ({ ...(p || {}), onboarding_seen: true })),
+                        t &&
+                          Er.from("profiles")
+                            .update({ onboarding_seen: true })
+                            .eq("id", t.id)
+                            .then(() => {}));
+                    },
                     children: "¡Empezar ahora! 🧠",
                   }),
                   o.jsx("button", {

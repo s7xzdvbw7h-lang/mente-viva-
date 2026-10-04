@@ -24808,6 +24808,17 @@ function iw() {
       const { error: x } = await Er.auth.resend({ type: "signup", email: r.trim() });
       MvSetResendMsg(x ? "No pudimos reenviarlo, probá de nuevo en un rato." : "Listo, te lo volvimos a mandar.");
     },
+    [MvRecoveryOpen, MvSetRecoveryOpen] = S.useState(false),
+    [MvRecoverySent, MvSetRecoverySent] = S.useState(false),
+    [MvRecoveryBusy, MvSetRecoveryBusy] = S.useState(false),
+    MvSendRecovery = async () => {
+      if (!r.trim()) return;
+      MvSetRecoveryBusy(true);
+      await Er.auth.resetPasswordForEmail(r.trim(), {
+        redirectTo: window.location.origin + window.location.pathname,
+      });
+      (MvSetRecoveryBusy(false), MvSetRecoverySent(true));
+    },
     y = async (w) => {
       (w.preventDefault(), d(null), m(null), MvSetNeedsConfirm(false), u(!0));
       try {
@@ -24847,6 +24858,92 @@ function iw() {
       }
       u(!1);
     };
+  if (MvRecoveryOpen)
+    return o.jsxs("div", {
+      className: "app",
+      children: [
+        o.jsx("style", { children: Ln }),
+        o.jsx("div", {
+        style: {
+          minHeight: "100vh",
+          background: "var(--marfil)",
+          padding: "40px 24px",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+        },
+        children: o.jsxs("div", {
+          style: { maxWidth: 400, margin: "0 auto", width: "100%" },
+          children: [
+            o.jsx("div", {
+              style: { fontSize: 56, marginBottom: 12, textAlign: "center" },
+              children: "💗",
+            }),
+            o.jsxs("div", {
+              style: {
+                background: "var(--white)",
+                borderRadius: 20,
+                padding: 24,
+                boxShadow: "var(--shadow)",
+              },
+              children: MvRecoverySent
+                ? [
+                    o.jsx("div", {
+                      style: { fontFamily: "'Fraunces',Georgia,serif", fontSize: 22, color: "var(--forest)", marginBottom: 10 },
+                      children: "Listo, revisá tu correo",
+                    }),
+                    o.jsx("div", {
+                      style: { fontSize: 14, color: "var(--text-soft)", marginBottom: 20 },
+                      children: `Te mandamos un link a ${r.trim()} para que elijas una contraseña nueva. Revisá también la carpeta de spam.`,
+                    }),
+                    o.jsx("button", {
+                      className: "plan-btn secondary",
+                      onClick: () => (MvSetRecoveryOpen(false), MvSetRecoverySent(false)),
+                      children: "Volver a entrar",
+                    }),
+                  ]
+                : [
+                    o.jsx("div", {
+                      style: { fontFamily: "'Fraunces',Georgia,serif", fontSize: 22, color: "var(--forest)", marginBottom: 10 },
+                      children: "Recuperar contraseña",
+                    }),
+                    o.jsx("div", {
+                      style: { fontSize: 14, color: "var(--text-soft)", marginBottom: 16 },
+                      children: "Escribí tu email y te mandamos un link para elegir una contraseña nueva.",
+                    }),
+                    o.jsx("input", {
+                      type: "email",
+                      placeholder: "tu@email.com",
+                      value: r,
+                      onChange: (w) => n(w.target.value),
+                      style: {
+                        width: "100%",
+                        padding: 14,
+                        borderRadius: 12,
+                        border: "1.5px solid var(--warm-deep)",
+                        marginBottom: 14,
+                        boxSizing: "border-box",
+                      },
+                    }),
+                    o.jsx("button", {
+                      className: "plan-btn",
+                      style: { background: "var(--rosa)", color: "white", marginBottom: 10 },
+                      disabled: MvRecoveryBusy || !r.trim(),
+                      onClick: MvSendRecovery,
+                      children: MvRecoveryBusy ? "Enviando…" : "Enviar link",
+                    }),
+                    o.jsx("button", {
+                      className: "plan-btn secondary",
+                      onClick: () => MvSetRecoveryOpen(false),
+                      children: "Volver",
+                    }),
+                  ],
+            }),
+          ],
+        }),
+      }),
+      ],
+    });
   return o.jsxs("div", {
     className: "app",
     children: [
@@ -25103,6 +25200,23 @@ function iw() {
                       marginBottom: 14,
                     },
                     children: f,
+                  }),
+                t === "login" &&
+                  o.jsx("div", {
+                    style: { textAlign: "right", marginBottom: 14, marginTop: -6 },
+                    children: o.jsx("button", {
+                      type: "button",
+                      onClick: () => MvSetRecoveryOpen(true),
+                      style: {
+                        background: "none",
+                        border: "none",
+                        color: "var(--text-muted)",
+                        fontSize: 12,
+                        textDecoration: "underline",
+                        cursor: "pointer",
+                      },
+                      children: "¿Olvidaste tu contraseña?",
+                    }),
                   }),
                 MvNeedsConfirm &&
                   o.jsxs("div", {
@@ -25369,6 +25483,101 @@ function MvTrialDaysLeft(trialStartISO, todayISO, totalDays) {
   const elapsed = Math.floor((today - start) / (1000 * 60 * 60 * 24));
   return Math.max(0, totalDays - elapsed);
 }
+function MvValidateNewPassword(password, confirm) {
+  if (password.length < 6) {
+    return { ok: false, error: "La contraseña necesita 6 caracteres o más." };
+  }
+  if (password !== confirm) {
+    return { ok: false, error: "Las contraseñas no coinciden." };
+  }
+  return { ok: true, error: null };
+}
+function MvNewPasswordScreen() {
+  const [pw1, setPw1] = S.useState(""),
+    [pw2, setPw2] = S.useState(""),
+    [err, setErr] = S.useState(null),
+    [busy, setBusy] = S.useState(false),
+    [done, setDone] = S.useState(false);
+  async function handleSubmit() {
+    const r = MvValidateNewPassword(pw1, pw2);
+    if (!r.ok) {
+      setErr(r.error);
+      return;
+    }
+    setErr(null);
+    setBusy(true);
+    const { error } = await Er.auth.updateUser({ password: pw1 });
+    setBusy(false);
+    if (error) {
+      setErr("No pudimos guardar la contraseña. Probá de nuevo.");
+      return;
+    }
+    setDone(true);
+  }
+  if (done) {
+    setTimeout(() => window.location.reload(), 1800);
+    return o.jsxs("div", {
+      className: "app",
+      children: [
+        o.jsx("style", { children: Ln }),
+        o.jsx("div", {
+          style: { padding: 40, textAlign: "center" },
+          children: "¡Listo! Ya podés usar tu nueva contraseña.",
+        }),
+      ],
+    });
+  }
+  return o.jsxs("div", {
+    className: "app",
+    children: [
+      o.jsx("style", { children: Ln }),
+      o.jsx("div", {
+      style: {
+        minHeight: "100vh",
+        background: "var(--marfil)",
+        padding: "40px 24px",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+      },
+      children: o.jsx("div", {
+        style: { maxWidth: 400, margin: "0 auto", width: "100%" },
+        children: o.jsxs("div", {
+          style: { background: "var(--white)", borderRadius: 20, padding: 24, boxShadow: "var(--shadow)" },
+          children: [
+            o.jsx("div", {
+              style: { fontFamily: "'Fraunces',Georgia,serif", fontSize: 22, color: "var(--forest)", marginBottom: 16 },
+              children: "Elegí tu nueva contraseña",
+            }),
+            o.jsx("input", {
+              type: "password",
+              placeholder: "Nueva contraseña",
+              value: pw1,
+              onChange: (e) => setPw1(e.target.value),
+              style: { width: "100%", padding: 14, borderRadius: 12, border: "1.5px solid var(--warm-deep)", marginBottom: 12, boxSizing: "border-box" },
+            }),
+            o.jsx("input", {
+              type: "password",
+              placeholder: "Repetila",
+              value: pw2,
+              onChange: (e) => setPw2(e.target.value),
+              style: { width: "100%", padding: 14, borderRadius: 12, border: "1.5px solid var(--warm-deep)", marginBottom: 14, boxSizing: "border-box" },
+            }),
+            err && o.jsx("div", { style: { color: "var(--rosa)", fontSize: 13, marginBottom: 12 }, children: err }),
+            o.jsx("button", {
+              className: "plan-btn",
+              style: { background: "var(--rosa)", color: "white" },
+              disabled: busy,
+              onClick: handleSubmit,
+              children: busy ? "Guardando…" : "Guardar nueva contraseña",
+            }),
+          ],
+        }),
+      }),
+      }),
+    ],
+  });
+}
 function aw() {
   const [t, e] = S.useState(null),
     [r, n] = S.useState(!0),
@@ -25376,7 +25585,8 @@ function aw() {
     [MvSubscription, MvSetSubscription] = S.useState(null),
     [MvShowAccount, MvSetShowAccount] = S.useState(false),
     [MvProfile, MvSetProfile] = S.useState(null),
-    [MvProfileLoaded, MvSetProfileLoaded] = S.useState(false);
+    [MvProfileLoaded, MvSetProfileLoaded] = S.useState(false),
+    [MvPasswordRecovery, MvSetPasswordRecovery] = S.useState(false);
   (S.useEffect(() => {
     k0().then((O) => {
       (e((O == null ? void 0 : O.user) || null), n(!1));
@@ -25384,7 +25594,8 @@ function aw() {
     const {
       data: { subscription: _ },
     } = Er.auth.onAuthStateChange((O, M) => {
-      e((M == null ? void 0 : M.user) || null);
+      (O === "PASSWORD_RECOVERY" && MvSetPasswordRecovery(true),
+        e((M == null ? void 0 : M.user) || null));
     });
     if (
       typeof window !== "undefined" &&
@@ -25604,6 +25815,7 @@ function aw() {
         }),
       ],
     });
+  if (MvPasswordRecovery) return o.jsx(MvNewPasswordScreen, {});
   if (!t) return o.jsx(iw, {});
   if (!MvProfileLoaded) return o.jsx("div", { className: "app" });
   if (!s && !(MvProfile && MvProfile.onboarding_seen)) {

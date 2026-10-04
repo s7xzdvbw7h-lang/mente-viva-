@@ -25317,6 +25317,20 @@ function MvPlanStatusText(sub, todayISO) {
       : null,
   };
 }
+function MvCanSeeAdminPanel(profile) {
+  return !!(profile && profile.is_admin);
+}
+function MvAdminUserRow(profile, subscription, todayISO) {
+  const status = MvPlanStatusText(subscription, todayISO);
+  return {
+    id: profile.id,
+    nombre: profile.nombre || profile.email,
+    email: profile.email,
+    tienePlan: MvComputeHasPlan(subscription, todayISO),
+    estado: status.label,
+    proximoCobro: status.nextLabel,
+  };
+}
 function MvAccountScreen({ user, subscription, onClose, onSignOut }) {
   const [busy, setBusy] = S.useState(false),
     [errMsg, setErrMsg] = S.useState(null),
@@ -25473,6 +25487,155 @@ function MvAccountScreen({ user, subscription, onClose, onSignOut }) {
     }),
   });
 }
+function MvAdminScreen({ onClose }) {
+  const [rows, setRows] = S.useState(null),
+    [err, setErr] = S.useState(null),
+    [busyId, setBusyId] = S.useState(null);
+
+  async function load() {
+    setErr(null);
+    const {
+      data: { session },
+    } = await Er.auth.getSession();
+    if (!session) {
+      setErr("No se pudo verificar la sesión.");
+      return;
+    }
+    const resp = await fetch("/api/admin-list-users", {
+      headers: { Authorization: `Bearer ${session.access_token}` },
+    });
+    if (!resp.ok) {
+      setErr("No pudimos cargar la lista de usuarias.");
+      return;
+    }
+    const { users } = await resp.json();
+    const today = new Date().toISOString().slice(0, 10);
+    setRows(
+      (users || []).map((u) => MvAdminUserRow(u.profile, u.subscription, today))
+    );
+  }
+
+  S.useEffect(() => {
+    load();
+  }, []);
+
+  async function togglePlan(userId, currentlyActive) {
+    setBusyId(userId);
+    setErr(null);
+    const {
+      data: { session },
+    } = await Er.auth.getSession();
+    if (!session) {
+      setErr("No se pudo verificar la sesión.");
+      setBusyId(null);
+      return;
+    }
+    const resp = await fetch("/api/admin-set-plan", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${session.access_token}`,
+      },
+      body: JSON.stringify({
+        targetUserId: userId,
+        action: currentlyActive ? "deactivate" : "activate",
+      }),
+    });
+    setBusyId(null);
+    if (!resp.ok) {
+      setErr("No pudimos actualizar el plan. Probá de nuevo.");
+      return;
+    }
+    load();
+  }
+
+  return o.jsxs("div", {
+    className: "app",
+    children: [
+      o.jsx("style", { children: Ln }),
+      o.jsx("div", {
+        style: {
+          minHeight: "100vh",
+          background: "var(--marfil)",
+          padding: "24px 16px",
+        },
+        children: o.jsxs("div", {
+          style: { maxWidth: 640, margin: "0 auto" },
+          children: [
+            o.jsxs("div", {
+              style: {
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginBottom: 16,
+              },
+              children: [
+                o.jsx("div", {
+                  style: { fontFamily: "'Fraunces',Georgia,serif", fontSize: 22, color: "var(--forest)" },
+                  children: "Panel de administradora",
+                }),
+                o.jsx("button", {
+                  onClick: onClose,
+                  "aria-label": "Cerrar",
+                  style: { background: "none", border: "none", fontSize: 20, cursor: "pointer" },
+                  children: "✕",
+                }),
+              ],
+            }),
+            err && o.jsx("div", { style: { color: "var(--rosa)", fontSize: 14, marginBottom: 12 }, children: err }),
+            rows === null && !err && o.jsx("div", { style: { color: "var(--text-soft)" }, children: "Cargando…" }),
+            rows &&
+              o.jsx("div", {
+                style: { display: "flex", flexDirection: "column", gap: 10 },
+                children: rows.map((row) =>
+                  o.jsxs(
+                    "div",
+                    {
+                      style: {
+                        background: "var(--white)",
+                        borderRadius: 14,
+                        padding: 16,
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        gap: 12,
+                        boxShadow: "var(--shadow)",
+                      },
+                      children: [
+                        o.jsxs("div", {
+                          children: [
+                            o.jsx("div", { style: { fontWeight: 700 }, children: row.nombre }),
+                            o.jsx("div", { style: { fontSize: 13, color: "var(--text-soft)" }, children: row.email }),
+                            o.jsx("div", {
+                              style: { fontSize: 13, color: "var(--text-soft)", marginTop: 4 },
+                              children: row.proximoCobro ? `${row.estado} · ${row.proximoCobro}` : row.estado,
+                            }),
+                          ],
+                        }),
+                        o.jsx("button", {
+                          className: "plan-btn secondary",
+                          style: { width: "auto", padding: "10px 16px" },
+                          disabled: busyId === row.id,
+                          onClick: () => togglePlan(row.id, row.tienePlan),
+                          children:
+                            busyId === row.id
+                              ? "…"
+                              : row.tienePlan
+                              ? "Desactivar"
+                              : "Activar",
+                        }),
+                      ],
+                    },
+                    row.id
+                  )
+                ),
+              }),
+          ],
+        }),
+      }),
+    ],
+  });
+}
 function MvTodayCompletedIds(sessions, todayISO) {
   return [...new Set(sessions.filter((s) => s.date === todayISO).map((s) => s.exId))];
 }
@@ -25586,7 +25749,8 @@ function aw() {
     [MvShowAccount, MvSetShowAccount] = S.useState(false),
     [MvProfile, MvSetProfile] = S.useState(null),
     [MvProfileLoaded, MvSetProfileLoaded] = S.useState(false),
-    [MvPasswordRecovery, MvSetPasswordRecovery] = S.useState(false);
+    [MvPasswordRecovery, MvSetPasswordRecovery] = S.useState(false),
+    [MvShowAdmin, MvSetShowAdmin] = S.useState(false);
   (S.useEffect(() => {
     k0().then((O) => {
       (e((O == null ? void 0 : O.user) || null), n(!1));
@@ -25629,7 +25793,7 @@ function aw() {
         return;
       }
       Er.from("profiles")
-        .select("trial_start_date, onboarding_seen")
+        .select("trial_start_date, onboarding_seen, is_admin")
         .eq("id", t.id)
         .maybeSingle()
         .then(({ data }) => {
@@ -26681,6 +26845,20 @@ function aw() {
                   ],
                 }),
                 MvHasPlan && o.jsx("div", { className: "pro-badge", children: "PRO" }),
+                MvCanSeeAdminPanel(MvProfile) &&
+                  o.jsx("button", {
+                    onClick: () => MvSetShowAdmin(true),
+                    "aria-label": "Panel de administradora",
+                    style: {
+                      background: "none",
+                      border: "none",
+                      fontSize: 20,
+                      cursor: "pointer",
+                      lineHeight: 1,
+                      padding: 4,
+                    },
+                    children: "🛠️",
+                  }),
                 o.jsx("button", {
                   onClick: () => MvSetShowAccount(true),
                   "aria-label": "Mi cuenta",
@@ -26709,6 +26887,7 @@ function aw() {
             (MvSetShowAccount(false), window.location.reload());
           },
         }),
+      MvShowAdmin && o.jsx(MvAdminScreen, { onClose: () => MvSetShowAdmin(false) }),
       y === "inicio" &&
         o.jsxs("div", {
           className: "page",

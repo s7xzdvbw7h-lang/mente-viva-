@@ -63,8 +63,8 @@ export default async function handler(req, res) {
   });
 
   if (!delResp.ok) {
-    const detail = await delResp.text();
-    res.status(502).json({ error: "auth_delete_failed", detail });
+    console.error("delete-account auth_delete_failed:", await delResp.text());
+    res.status(502).json({ error: "auth_delete_failed" });
     return;
   }
 

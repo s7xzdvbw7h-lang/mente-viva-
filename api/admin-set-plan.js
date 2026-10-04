@@ -79,8 +79,10 @@ export default async function handler(req, res) {
   });
 
   if (!insertResp.ok) {
-    const detail = await insertResp.text();
-    res.status(502).json({ error: "db_error", detail });
+    // El detalle técnico (puede traer nombres de tablas/columnas) queda
+    // solo en el registro privado del servidor, nunca viaja al navegador.
+    console.error("admin-set-plan db_error:", await insertResp.text());
+    res.status(502).json({ error: "db_error" });
     return;
   }
 

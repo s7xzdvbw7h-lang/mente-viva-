@@ -90,8 +90,8 @@ export default async function handler(req, res) {
   });
 
   if (!mpResp.ok) {
-    const errBody = await mpResp.text();
-    res.status(502).json({ error: "mercadopago_error", detail: errBody });
+    console.error("create-subscription mercadopago_error:", await mpResp.text());
+    res.status(502).json({ error: "mercadopago_error" });
     return;
   }
 

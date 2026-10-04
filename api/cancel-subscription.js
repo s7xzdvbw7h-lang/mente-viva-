@@ -2,9 +2,13 @@
 // El plan sigue activo hasta el final del período ya pagado (eso lo calcula
 // lib/plan.js del lado del frontend a partir de current_period_end).
 
+import { mvApplyCors } from "../lib/cors.js";
+
 const SUPABASE_URL = "https://nfnxoqqyyfydmqxohjrm.supabase.co";
 
 export default async function handler(req, res) {
+  if (mvApplyCors(req, res)) return;
+
   if (req.method !== "POST") {
     res.status(405).json({ error: "method_not_allowed" });
     return;

@@ -3,12 +3,15 @@
 // confirme el pago (eso lo hace mercadopago-webhook.js).
 
 import { mvCanCreateSubscription } from "../lib/subscriptionGuard.js";
+import { mvApplyCors } from "../lib/cors.js";
 
 const SUPABASE_URL = "https://nfnxoqqyyfydmqxohjrm.supabase.co";
 const PLAN_PRICE_ARS = 13500;
 const SITE_URL = "https://menteviva.daninavarro.com.ar";
 
 export default async function handler(req, res) {
+  if (mvApplyCors(req, res)) return;
+
   if (req.method !== "POST") {
     res.status(405).json({ error: "method_not_allowed" });
     return;

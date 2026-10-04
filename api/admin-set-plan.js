@@ -4,6 +4,8 @@
 // profiles.is_pro directamente, porque la app calcula el acceso a partir de
 // la suscripción más reciente, no de esa columna vieja.
 
+import { mvApplyCors } from "../lib/cors.js";
+
 const SUPABASE_URL = "https://nfnxoqqyyfydmqxohjrm.supabase.co";
 
 function addYears(isoDate, years) {
@@ -13,6 +15,8 @@ function addYears(isoDate, years) {
 }
 
 export default async function handler(req, res) {
+  if (mvApplyCors(req, res)) return;
+
   if (req.method !== "POST") {
     res.status(405).json({ error: "method_not_allowed" });
     return;

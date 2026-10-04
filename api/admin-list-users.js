@@ -3,9 +3,13 @@
 // poder leer todas las filas, no solo la propia (eso es lo que hace que el
 // panel sea posible sin abrirle un agujero de RLS a cualquier usuaria).
 
+import { mvApplyCors } from "../lib/cors.js";
+
 const SUPABASE_URL = "https://nfnxoqqyyfydmqxohjrm.supabase.co";
 
 export default async function handler(req, res) {
+  if (mvApplyCors(req, res, { methods: "GET, OPTIONS" })) return;
+
   if (req.method !== "GET") {
     res.status(405).json({ error: "method_not_allowed" });
     return;

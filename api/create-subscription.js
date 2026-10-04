@@ -2,6 +2,8 @@
 // y la deja registrada en Supabase con estado "pending" hasta que MercadoPago
 // confirme el pago (eso lo hace mercadopago-webhook.js).
 
+import { mvCanCreateSubscription } from "../lib/subscriptionGuard.js";
+
 const SUPABASE_URL = "https://nfnxoqqyyfydmqxohjrm.supabase.co";
 const PLAN_PRICE_ARS = 13500;
 const SITE_URL = "https://menteviva.daninavarro.com.ar";
@@ -44,6 +46,21 @@ export default async function handler(req, res) {
 
   if (!userId || !email) {
     res.status(400).json({ error: "missing_user_data" });
+    return;
+  }
+
+  // Freno contra abuso: no dejar pedir otra suscripción si ya tiene una
+  // activa, o si pidió una hace muy poquito (evita juntar pedidos
+  // "pendientes" repetidos y saturar la cuenta de MercadoPago).
+  const latestSubResp = await fetch(
+    `${SUPABASE_URL}/rest/v1/subscriptions?user_id=eq.${userId}&order=created_at.desc&limit=1`,
+    { headers: { apikey: serviceRoleKey, Authorization: `Bearer ${serviceRoleKey}` } }
+  );
+  const latestSubs = await latestSubResp.json();
+  const latestSub = Array.isArray(latestSubs) ? latestSubs[0] : null;
+  const guard = mvCanCreateSubscription(latestSub, new Date().toISOString());
+  if (!guard.allowed) {
+    res.status(429).json({ error: "subscription_cooldown", detail: guard.reason });
     return;
   }
 

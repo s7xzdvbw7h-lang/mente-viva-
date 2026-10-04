@@ -20906,9 +20906,20 @@ async function k0() {
   } = await Er.auth.getSession();
   return t;
 }
-async function j0(t, e, r) {
+function MvBuildSessionRecord({ userId, exId, score, nivel, duracionSeg, mensaje }) {
+  const duracion = Number.isFinite(duracionSeg) && duracionSeg > 0 ? duracionSeg : 0;
+  return {
+    user_id: userId,
+    ex_id: exId,
+    score,
+    nivel: nivel || null,
+    duracion_seg: duracion,
+    mensaje: mensaje || null,
+  };
+}
+async function j0(t, e, r, nivel, duracionSeg, mensaje) {
   const { data: n, error: s } = await Er.from("sessions")
-    .insert({ user_id: t, ex_id: e, score: r })
+    .insert(MvBuildSessionRecord({ userId: t, exId: e, score: r, nivel, duracionSeg, mensaje }))
     .select()
     .single();
   return { data: n, error: s };
@@ -23828,7 +23839,7 @@ function Z0({
               ex: t,
               score: f,
               racha: n,
-              onContinue: () => r(t.id, f),
+              onContinue: () => r(t.id, f, c, h),
             }),
           }),
         ],
@@ -25924,19 +25935,20 @@ function aw() {
       }
       return O;
     })(),
-    yn = (_, O) => {
+    yn = (_, O, nivel, duracionSeg) => {
       const M = Or.find((te) => te.id === _);
       M &&
         Cr((te) => ({
           ...te,
           [M.domainKey]: Math.min(100, Math.round((te[M.domainKey] + O) / 2)),
         }));
-      const ie = new Date().toISOString().slice(0, 10);
+      const ie = new Date().toISOString().slice(0, 10),
+        mensaje = M ? R0({ type: M.type, score: O }) : null;
       (Ss((te) => [
         ...te,
         { date: ie, exId: _, score: O, timestamp: Date.now() },
       ]),
-        t && j0(t.id, _, O).catch(() => {}),
+        t && j0(t.id, _, O, nivel, duracionSeg, mensaje).catch(() => {}),
         p(null));
     },
     at = g.filter((_) => qa.map((O) => O.id).includes(_)).length,

@@ -24822,12 +24822,31 @@ function iw() {
     [MvRecoveryOpen, MvSetRecoveryOpen] = S.useState(false),
     [MvRecoverySent, MvSetRecoverySent] = S.useState(false),
     [MvRecoveryBusy, MvSetRecoveryBusy] = S.useState(false),
+    [MvRecoveryError, MvSetRecoveryError] = S.useState(null),
     MvSendRecovery = async () => {
       if (!r.trim()) return;
       MvSetRecoveryBusy(true);
-      await Er.auth.resetPasswordForEmail(r.trim(), {
-        redirectTo: window.location.origin + window.location.pathname,
-      });
+      MvSetRecoveryError(null);
+      try {
+        const resp = await fetch("/api/request-password-reset", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: r.trim(),
+            redirectTo: window.location.origin + window.location.pathname,
+          }),
+        });
+        if (!resp.ok) {
+          const body = await resp.json().catch(() => ({}));
+          MvSetRecoveryError(body.detail || "No pudimos mandar el correo. Probá de nuevo en un rato.");
+          MvSetRecoveryBusy(false);
+          return;
+        }
+      } catch {
+        MvSetRecoveryError("No pudimos mandar el correo. Probá de nuevo en un rato.");
+        MvSetRecoveryBusy(false);
+        return;
+      }
       (MvSetRecoveryBusy(false), MvSetRecoverySent(true));
     },
     y = async (w) => {
@@ -24936,6 +24955,11 @@ function iw() {
                         boxSizing: "border-box",
                       },
                     }),
+                    MvRecoveryError &&
+                      o.jsx("div", {
+                        style: { fontSize: 13, color: "var(--rosa)", marginBottom: 12 },
+                        children: MvRecoveryError,
+                      }),
                     o.jsx("button", {
                       className: "plan-btn",
                       style: { background: "var(--rosa)", color: "white", marginBottom: 10 },

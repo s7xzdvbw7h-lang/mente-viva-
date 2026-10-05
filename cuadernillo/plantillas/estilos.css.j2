@@ -60,6 +60,8 @@ p { margin: 0; }
   font-weight: 800; font-size: 16pt; letter-spacing: 0.08em; text-transform: uppercase;
   line-height: 1.37; margin-bottom: 0; display: flex; align-items: center; /* >= alto real de Manrope */
 }
+.etiqueta.con-icono::before { display: none; }
+.etiqueta.con-icono svg { margin-right: 2.5mm; flex: none; }
 .etiqueta::before {
   content: ""; display: inline-block; width: 5mm; height: 5mm; border-radius: 50%;
   background: var(--rosa); margin-right: 3mm;
@@ -174,6 +176,13 @@ p { margin: 0; }
   border: 1.2pt solid var(--rosa); border-radius: 4mm; background: var(--marfil);
   align-items: center; text-align: center; padding: 10mm 14mm 8mm;
 }
+.portada { position: relative; }
+.portada .esq { position: absolute; width: 14mm; height: 14mm; }
+.portada .esq svg { display: block; }
+.portada .e1 { top: 3mm; left: 3mm; }
+.portada .e2 { top: 3mm; right: 3mm; transform: rotate(90deg); }
+.portada .e3 { bottom: 3mm; right: 3mm; transform: rotate(180deg); }
+.portada .e4 { bottom: 3mm; left: 3mm; transform: rotate(270deg); }
 .portada .marca { font-weight: 800; font-size: 16pt; letter-spacing: 0.14em; text-transform: uppercase; color: var(--cacao-suave); }
 .portada .mandala-portada { margin: 8mm 0 7mm; }
 .portada h1 { font-family: "Fraunces"; font-weight: 600; font-size: 40pt; line-height: 1.1; margin: 0; max-width: 125mm; }
@@ -216,6 +225,8 @@ p { margin: 0; }
 .soluciones h2 svg { margin-left: 2mm; }
 .soluciones .sol { margin-bottom: 3mm; font-size: 16pt; line-height: 1.35; }
 .soluciones .sol .etiqueta { font-size: 16pt; }
-.soluciones .sol .etiqueta::before { width: 3.5mm; height: 3.5mm; margin-right: 2mm; }
+.soluciones .sol .etiqueta.con-icono::before { display: none; }
+.etiqueta.con-icono svg { margin-right: 2.5mm; flex: none; }
+.etiqueta::before { width: 3.5mm; height: 3.5mm; margin-right: 2mm; }
 .soluciones ol { margin: 0; padding-left: 7mm; }
 .soluciones .fig { text-align: center; margin-top: 1mm; }

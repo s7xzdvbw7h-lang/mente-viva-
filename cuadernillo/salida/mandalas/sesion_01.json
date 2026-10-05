@@ -1,43 +1,35 @@
 {
   "nivel": "semilla",
-  "semilla": 6,
+  "semilla": 20,
   "regiones": 19,
   "centro": {
-    "base": 15.654466413827326,
-    "estilo": "feston",
+    "base": 13.497246652716619,
+    "estilo": "ojival",
     "k": 6,
     "fase": 0.0,
-    "amplitud": 4.336115382404039
+    "amplitud": 4.691871662680852
   },
   "anillos": [
     {
-      "division": "radial",
+      "division": "petalos",
       "k": 6,
       "fase": 0.0,
+      "forma_petalo": "gota",
+      "petalo_interior": 0.0,
       "borde_exterior": {
-        "base": 38.82855099461921,
+        "base": 44.28477954509938,
         "estilo": "feston",
         "k": 6,
         "fase": 0.0,
-        "amplitud": 7.233526517144383
-      }
-    },
-    {
-      "division": "radial",
-      "k": 6,
-      "fase": 0.5236,
-      "borde_exterior": {
-        "base": 61.16597183715502,
-        "estilo": "onda",
-        "k": 6,
-        "fase": 0.5235987755982988,
-        "amplitud": 7.65500894412302
+        "amplitud": 12.016146537417814
       }
     },
     {
       "division": "radial",
       "k": 6,
       "fase": 0.0,
+      "forma_petalo": "lente",
+      "petalo_interior": 0.0,
       "borde_exterior": {
         "base": 85.0,
         "estilo": "circulo",

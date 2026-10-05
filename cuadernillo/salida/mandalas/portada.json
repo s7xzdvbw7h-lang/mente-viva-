@@ -1,61 +1,69 @@
 {
   "nivel": "flor",
   "semilla": 6,
-  "regiones": 57,
+  "regiones": 49,
   "centro": {
-    "base": 11.945560771447877,
-    "estilo": "feston",
+    "base": 13.825353889501594,
+    "estilo": "circulo",
     "k": 8,
     "fase": 0.0,
-    "amplitud": 2.6273623967708044
+    "amplitud": 3.036748317438902
   },
   "anillos": [
     {
       "division": "radial",
       "k": 8,
       "fase": 0.0,
+      "forma_petalo": "gota",
+      "petalo_interior": 0.0,
       "borde_exterior": {
-        "base": 31.51876493415613,
-        "estilo": "feston",
+        "base": 27.62309588279956,
+        "estilo": "onda",
         "k": 8,
         "fase": 0.0,
-        "amplitud": 8.703509636808928
+        "amplitud": 4.926670057738178
+      }
+    },
+    {
+      "division": "radial",
+      "k": 16,
+      "fase": 0.1963,
+      "forma_petalo": "lente",
+      "petalo_interior": 0.0,
+      "borde_exterior": {
+        "base": 46.305651265445746,
+        "estilo": "ojival",
+        "k": 16,
+        "fase": 0.19634954084936207,
+        "amplitud": 4.5337361284064395
       }
     },
     {
       "division": "radial",
       "k": 8,
       "fase": 0.0,
+      "forma_petalo": "lente",
+      "petalo_interior": 0.0,
       "borde_exterior": {
-        "base": 50.10247024362788,
-        "estilo": "onda",
+        "base": 64.24893287023602,
+        "estilo": "feston",
         "k": 8,
         "fase": 0.0,
-        "amplitud": 4.399171696909996
+        "amplitud": 6.415948333761364
       }
     },
     {
       "division": "radial",
-      "k": 8,
-      "fase": 0.3927,
-      "borde_exterior": {
-        "base": 65.87533353652313,
-        "estilo": "ojival",
-        "k": 8,
-        "fase": 0.39269908169872414,
-        "amplitud": 4.082145212544759
-      }
-    },
-    {
-      "division": "petalos",
       "k": 16,
-      "fase": 0.1963,
+      "fase": 0.0,
+      "forma_petalo": "lente",
+      "petalo_interior": 0.0,
       "borde_exterior": {
-        "base": 85.0,
-        "estilo": "circulo",
+        "base": 78.80344099124245,
+        "estilo": "feston",
         "k": 16,
-        "fase": 0.19634954084936207,
-        "amplitud": 0
+        "fase": 0.0,
+        "amplitud": 6.196559008757546
       }
     }
   ]

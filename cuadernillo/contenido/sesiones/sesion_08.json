@@ -43,7 +43,7 @@
   "pagina_b": {
     "titulo": "Completá el espejo",
     "consigna": "Dibujá el lado derecho igual al izquierdo, como en un espejo. Después pintalo como quieras.",
-    "mandala": {"modo": "simetria", "nivel": "brote", "semilla": 13},
+    "mandala": {"modo": "simetria", "nivel": "brote", "semilla": 8},
     "cierre": {
       "pregunta": "¿Te acordás de la lista de compras?",
       "ayuda": "Pensá en los grupos.",

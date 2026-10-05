@@ -1,4 +1,5 @@
 <section class="pagina portada">
+  {% for e in ["e1", "e2", "e3", "e4"] %}<span class="esq {{ e }}">{{ pg.esquinero }}</span>{% endfor %}
   <div class="marca">Línea {{ producto.linea }}</div>
   <div class="mandala-portada">{{ pg.mandala.svg }}</div>
   <h1>{{ producto.titulo }}</h1>

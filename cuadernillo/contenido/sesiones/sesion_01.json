@@ -44,7 +44,7 @@
   "pagina_b": {
     "titulo": "Coloreá por números",
     "consigna": "Pintá cada zona con el color de su número.",
-    "mandala": {"modo": "numerado", "nivel": "semilla", "semilla": 6},
+    "mandala": {"modo": "numerado", "nivel": "semilla", "semilla": 20},
     "cierre": {
       "pregunta": "¿Te acordás de las palabras del día?",
       "ayuda": "Escribilas sin mirar.",

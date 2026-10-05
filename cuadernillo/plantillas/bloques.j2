@@ -25,20 +25,20 @@
 {% if x.tipo == "tachar" %}
   {{ x.svg_grilla }}
   <div class="texto">
-    <div class="etiqueta">{{ x.etiqueta }}</div>
+    <div class="etiqueta con-icono">{{ x.icono }}<span>{{ x.etiqueta }}</span></div>
     <p class="consigna">{{ x.consigna }}</p>
     <div class="asi">Así:{{ x.svg_ejemplo }}</div>
     <p class="ayuda" style="margin-top:3mm">Andá fila por fila, sin apuro.</p>
   </div>
 
 {% elif x.tipo == "palabras" %}
-  <div class="etiqueta">{{ x.etiqueta }}</div>
+  <div class="etiqueta con-icono">{{ x.icono }}<span>{{ x.etiqueta }}</span></div>
   <p class="consigna">{{ x.consigna }}</p>
   <div class="tarjetas">{% for w in x.palabras %}<div class="tarjeta">{{ w }}</div>{% endfor %}</div>
   {% if x.get("ayuda") %}<p class="ayuda">{{ x.ayuda }}</p>{% endif %}
 
 {% elif x.tipo == "series" %}
-  <div class="etiqueta">{{ x.etiqueta }}</div>
+  <div class="etiqueta con-icono">{{ x.icono }}<span>{{ x.etiqueta }}</span></div>
   <p class="consigna">{{ x.consigna }}</p>
   <div class="fila">
     <span class="rot">Ejemplo</span>
@@ -55,13 +55,13 @@
   {% endfor %}
 
 {% elif x.tipo == "conversar" %}
-  <div class="etiqueta">{{ x.etiqueta }}</div>
+  <div class="etiqueta con-icono">{{ x.icono }}<span>{{ x.etiqueta }}</span></div>
   <p class="pregunta">{{ x.pregunta }}</p>
   {% if x.get("nota") %}<p class="ayuda">{{ x.nota }}</p>{% endif %}
   {% if x.lineas %}{{ renglones(x.lineas) }}{% endif %}
 
 {% elif x.tipo == "fluidez" %}
-  <div class="etiqueta">{{ x.etiqueta }}</div>
+  <div class="etiqueta con-icono">{{ x.icono }}<span>{{ x.etiqueta }}</span></div>
   <p class="consigna">{{ x.consigna }}</p>
   {% set por_col = (x.lineas / x.columnas)|round(0, "ceil")|int %}
   <div class="renglones">
@@ -71,7 +71,7 @@
   </div>
 
 {% elif x.tipo == "agrupar" %}
-  <div class="etiqueta">{{ x.etiqueta }}</div>
+  <div class="etiqueta con-icono">{{ x.icono }}<span>{{ x.etiqueta }}</span></div>
   <p class="consigna">{{ x.consigna }}</p>
   <div class="lista">{% for w in x.palabras %}<span class="chip{% if x.ejemplo and w == x.ejemplo.palabra %} usada{% endif %}">{{ w }}</span>{% endfor %}</div>
   <div class="grupos">
@@ -81,7 +81,7 @@
   </div>
 
 {% elif x.tipo == "ordenar" %}
-  <div class="etiqueta">{{ x.etiqueta }}</div>
+  <div class="etiqueta con-icono">{{ x.icono }}<span>{{ x.etiqueta }}</span></div>
   <p class="consigna">{{ x.consigna }}</p>
   {% for f in x.filas %}
   <div class="paso"><span class="caja">{% if f.ejemplo %}<span class="escrito">{{ f.n }}</span>{% endif %}</span><span class="t">{{ f.texto }}</span>{% if f.ejemplo %}<span class="ej">ejemplo</span>{% endif %}</div>

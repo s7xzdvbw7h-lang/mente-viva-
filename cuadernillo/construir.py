@@ -56,6 +56,20 @@ def preparar_mandala(spec: dict, cfg: dict, diametro_mm: float | None = None) ->
     return datos
 
 
+def color_portada(r, p: dict) -> str:
+    """Relleno por anillos para la portada: rosa ceniza y dorado alternados."""
+    pares = [(p["rosa_ceniza"], p["rosa_palido"]), (p["dorado"], p["dorado_palido"]),
+             (p["rosa_palido"], p["papel"]), (p["dorado"], p["rosa_ceniza"])]
+    if r.tipo == "centro":
+        return p["dorado"]
+    fuerte, suave = pares[(r.anillo - 1) % len(pares)]
+    if r.tipo == "petalo_interior":
+        return suave
+    if r.tipo == "hueco":
+        return suave
+    return fuerte if r.j % 2 == 0 or r.tipo == "petalo" else suave
+
+
 def guardar_svgs(nombre: str, m, cfg: dict):
     """Exporta las tres versiones del mandala como archivos SVG sueltos."""
     dest = RAIZ / "salida" / "mandalas"
@@ -76,6 +90,7 @@ def guardar_svgs(nombre: str, m, cfg: dict):
 def preparar_bloque(b: dict, cfg: dict) -> dict:
     p = cfg["paleta"]
     b = dict(b)
+    b["icono"] = g.icono_ejercicio(b["tipo"], p["rosa_ceniza"], 8)
     if b["tipo"] == "tachar":
         grilla = g.grilla_tachar(b)
         b["svg_grilla"] = g.svg_grilla(grilla, 10, p["cacao"])
@@ -130,12 +145,12 @@ def armar_html(cfg: dict) -> tuple[str, list[dict]]:
         if pl == "portada":
             md = preparar_mandala({**item["mandala"], "modo": "libre"}, cfg, diametro_mm=100)
             m = md["obj"]
-            paleta_portada = {1: p["rosa_ceniza"], 2: p["dorado_palido"], 3: p["rosa_palido"], 4: p["dorado"]}
             md["svg"] = m.svg("color", diametro_mm=100, trazo_pt=1.2, color_trazo=p["cacao"],
-                              rellenos=paleta_portada)
+                              rellenos=lambda r: color_portada(r, p))
             guardar_svgs("portada", m, cfg)
             paginas.append({"plantilla": "portada", "mandala": md,
-                            "adorno": g.adorno(p["rosa_ceniza"], 46)})
+                            "adorno": g.adorno(p["rosa_ceniza"], 46),
+                            "esquinero": g.esquinero(p["rosa_ceniza"], 14)})
         elif pl == "como_usar":
             datos = cargar(CONTENIDO / item["contenido"])
             for n in datos["niveles"]:

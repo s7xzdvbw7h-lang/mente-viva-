@@ -99,6 +99,8 @@ class Anillo:
     punta_petalo: float = 0.18   # ancho del pétalo en sus extremos (fracción)
     giro: float = 0.5            # solo remolino: fracción de sector que gira
     alterna: int = 1             # 2 = sectores alternados en dos grupos de color
+    forma_petalo: str = "lente"  # lente | gota (punta afuera) | hoja (dos puntas)
+    petalo_interior: float = 0.0 # >0: dibuja un pétalo más chico dentro de cada pétalo
 
     def punto(self, phi: float, t: float) -> tuple[float, float]:
         ri, re = self.interior.r(phi), self.exterior.r(phi)
@@ -106,9 +108,29 @@ class Anillo:
         return (r * math.sin(phi), -r * math.cos(phi))
 
     def _w(self, t: float) -> float:
+        """Medio ancho angular del pétalo a la altura t."""
         medio = math.pi / self.k
-        s = math.sin(math.pi * t) ** 0.85
-        return medio * (self.punta_petalo + (self.ancho_petalo - self.punta_petalo) * s)
+        if self.forma_petalo == "gota":     # base redonda, punta hacia afuera
+            s, p = math.sin(math.pi * t ** 0.62), 0.06
+        elif self.forma_petalo == "hoja":   # esbelta, en punta a los dos lados
+            s, p = math.sin(math.pi * t) ** 1.3, 0.06
+        else:                               # lente
+            s, p = math.sin(math.pi * t) ** 0.85, self.punta_petalo
+        return medio * (p + (self.ancho_petalo - p) * s)
+
+    def lente_interior(self, c: float, t0=0.2, t1=0.84):
+        """Contorno de un pétalo más chico, centrado en el ángulo c."""
+        f = self.petalo_interior
+        if self.forma_petalo == "gota":
+            t0, t1 = 0.1, 0.72
+
+        def w_in(t):
+            u = (t - t0) / (t1 - t0)
+            return f * self._w(t) * math.sin(math.pi * u) ** 0.75
+        ts = _muestras(t0, t1, 1 / 80)
+        pts = [self.punto(c + w_in(t), t) for t in ts]
+        pts += [self.punto(c - w_in(t), t) for t in reversed(ts[1:-1])]
+        return pts
 
     def particiones(self):
         """Devuelve (tipo, j, izquierda(t), derecha(t)) para cada región."""
@@ -146,6 +168,7 @@ class Region:
     poligono: Polygon = field(repr=False)
     orbita: tuple = ()
     codigo: int = 0          # color para pintar por número (1..4)
+    huecos: list = field(default_factory=list)  # contornos interiores (pétalo dentro de pétalo)
 
     @property
     def area_mm2(self) -> float:
@@ -165,11 +188,11 @@ class Region:
         región; si no (formas cóncavas), el polo de inaccesibilidad.
         Devuelve (x, y, radio libre)."""
         c = self.poligono.centroid
-        libre_c = self.poligono.exterior.distance(c) if self.poligono.contains(c) else 0
+        libre_c = self.poligono.boundary.distance(c) if self.poligono.contains(c) else 0
         if libre_c >= radio_necesario:
             return (c.x, c.y, libre_c)
         p = polylabel(self.poligono, tolerance=0.05)
-        return (p.x, p.y, self.poligono.exterior.distance(p))
+        return (p.x, p.y, self.poligono.boundary.distance(p))
 
 
 def _muestras(a: float, b: float, paso: float) -> list[float]:
@@ -177,15 +200,22 @@ def _muestras(a: float, b: float, paso: float) -> list[float]:
     return [a + (b - a) * i / (n - 1) for i in range(n)]
 
 
-def _poligono_region(an: Anillo, izq, der, res_ang=TAU / 900, res_t=1 / 60):
+def _muestras_t(n: int = 140) -> list[float]:
+    """t de 0 a 1, más denso cerca de los extremos (donde las puntas de los
+    pétalos cambian rápido de ancho)."""
+    return [(1 - math.cos(math.pi * i / n)) / 2 for i in range(n + 1)]
+
+
+def _poligono_region(an: Anillo, izq, der, res_ang=TAU / 900):
+    ts = _muestras_t()
     pts = []
     for phi in _muestras(izq(0), der(0), res_ang):          # borde interior
         pts.append(an.punto(phi, 0))
-    for t in _muestras(0, 1, res_t)[1:]:                    # lado derecho
+    for t in ts[1:]:                                        # lado derecho
         pts.append(an.punto(der(t), t))
     for phi in _muestras(der(1), izq(1), res_ang)[1:]:      # borde exterior
         pts.append(an.punto(phi, 1))
-    for t in _muestras(1, 0, res_t)[1:-1]:                  # lado izquierdo
+    for t in reversed(ts[1:-1]):                            # lado izquierdo
         pts.append(an.punto(izq(t), t))
     limpio = [pts[0]]
     for p in pts[1:]:
@@ -226,9 +256,20 @@ class Mandala:
         for i, an in enumerate(self.anillos, start=1):
             for tipo, j, izq, der in an.particiones():
                 pts = _poligono_region(an, izq, der)
+                if not Polygon(pts).is_valid:
+                    raise RuntimeError("región con bordes cruzados")
                 grupo = j % an.alterna if tipo == "sector" else 0
-                regs.append(Region(len(regs), i, tipo, j, pts, Polygon(pts),
-                                   orbita=(i, tipo, grupo)))
+                huecos = []
+                if tipo == "petalo" and an.petalo_interior > 0:
+                    huecos = [an.lente_interior(an.fase + j * TAU / an.k)]
+                    lente = Polygon(huecos[0])
+                    if not (lente.is_valid and Polygon(pts).buffer(-1.0).contains(lente)):
+                        raise RuntimeError("el pétalo interior toca el borde del pétalo")
+                regs.append(Region(len(regs), i, tipo, j, pts, Polygon(pts, huecos),
+                                   orbita=(i, tipo, grupo), huecos=huecos))
+                for h in huecos:
+                    regs.append(Region(len(regs), i, "petalo_interior", j, h, Polygon(h),
+                                       orbita=(i, "petalo_interior", 0)))
         self.regiones = regs
         self._asignar_codigos()
 
@@ -244,7 +285,7 @@ class Mandala:
                     continue
                 if a.poligono.distance(b.poligono) > 0.05:
                     continue
-                comun = a.poligono.exterior.buffer(0.05).intersection(b.poligono.exterior)
+                comun = a.poligono.boundary.buffer(0.05).intersection(b.poligono.boundary)
                 if comun.length > 1.0:
                     v[a.id].add(b.id)
                     v[b.id].add(a.id)
@@ -290,7 +331,8 @@ class Mandala:
         union = unary_union([r.poligono for r in self.regiones])
         suma = sum(r.area_mm2 for r in self.regiones)
         cerradas = all(r.poligono.is_valid and r.poligono.area > 0 and
-                       LinearRing(r.puntos).is_ring for r in self.regiones)
+                       all(LinearRing(c).is_ring for c in [r.puntos] + r.huecos)
+                       for r in self.regiones)
         libres = [r.punto_numero(radio_numero_mm)[2] for r in self.regiones]
         res = {
             "regiones": len(self.regiones),
@@ -354,21 +396,22 @@ class Mandala:
                 relleno = "none"
                 if modo == "color" and rellenos:
                     relleno = rellenos[r.codigo] if isinstance(rellenos, dict) else rellenos(r)
-                partes.append(f'<path d="{d_poli(r.puntos)}" fill="{relleno}" '
+                d = " ".join(d_poli(c) for c in [r.puntos] + r.huecos)
+                partes.append(f'<path d="{d}" fill="{relleno}" fill-rule="evenodd" '
                               f'stroke="{color_trazo}" stroke-width="{tr:.4f}" '
                               f'stroke-linejoin="round"/>')
         elif modo == "simetria":
             medio = box(-m - 1, -m - 1, 0, m + 1)
             trazos = []
             for r in self.regiones:
-                corte = LineString(r.puntos + [r.puntos[0]]).intersection(medio)
-                geoms = getattr(corte, "geoms", [corte])
-                for g in geoms:
-                    if g.geom_type == "LineString" and g.length > 0.01:
-                        # descarta tramos que corren sobre el propio eje
-                        if all(abs(x) < 1e-6 for x, _ in g.coords):
-                            continue
-                        trazos.append(list(g.coords))
+                for anillo_pts in [r.puntos] + r.huecos:
+                    corte = LineString(anillo_pts + [anillo_pts[0]]).intersection(medio)
+                    for g in getattr(corte, "geoms", [corte]):
+                        if g.geom_type == "LineString" and g.length > 0.01:
+                            # descarta tramos que corren sobre el propio eje
+                            if all(abs(x) < 1e-6 for x, _ in g.coords):
+                                continue
+                            trazos.append(list(g.coords))
             partes.append(f'<g {estilo}>')
             for t in trazos:
                 partes.append(f'<path d="{d_poli(t, cerrar=False)}"/>')
@@ -394,6 +437,7 @@ class Mandala:
             "nivel": self.nivel, "semilla": self.semilla, "regiones": len(self.regiones),
             "centro": vars(self.centro),
             "anillos": [{"division": a.division, "k": a.k, "fase": round(a.fase, 4),
+                         "forma_petalo": a.forma_petalo, "petalo_interior": a.petalo_interior,
                          "borde_exterior": vars(a.exterior)} for a in self.anillos],
         }
 
@@ -448,17 +492,32 @@ def _disenio(rng: random.Random, nivel: str, radio: float, petalos: int | None,
             base = bases[i] - amp * 0.5
         exterior = Borde(base, estilo, k=ki, fase=fase, amplitud=amp)
         alterna = 2 if (division == "radial" and ki % 2 == 0 and rng.random() < 0.5) else 1
+        forma = rng.choice(["lente", "gota", "gota", "hoja"])
+        interior_p = rng.uniform(0.45, 0.58) if (division == "petalos" and rng.random() < 0.55) else 0.0
         anillos_l.append(Anillo(interior, exterior, division, ki, fase,
-                                ancho_petalo=rng.uniform(0.7, 0.85),
+                                ancho_petalo=rng.uniform(0.74, 0.9),
                                 punta_petalo=rng.uniform(0.12, 0.22),
-                                giro=rng.uniform(0.3, 0.6), alterna=alterna))
+                                giro=rng.uniform(0.3, 0.6), alterna=alterna,
+                                forma_petalo=forma, petalo_interior=interior_p))
         interior = exterior
-    return Mandala(centro, anillos_l, nivel, simetrico=simetria)
+    return centro, anillos_l
 
 
-def _grosor_minimo(m: Mandala) -> float:
+def _cantidad_regiones(anillos: list[Anillo]) -> int:
+    n = 1
+    for an in anillos:
+        if an.division == "petalos":
+            n += an.k * (3 if an.petalo_interior > 0 else 2)
+        elif an.division == "entero":
+            n += 1
+        else:
+            n += an.k
+    return n
+
+
+def _grosor_minimo(anillos: list[Anillo]) -> float:
     g = float("inf")
-    for an in m.anillos:
+    for an in anillos:
         for f in _muestras(0, TAU, TAU / 720):
             g = min(g, an.exterior.r(f) - an.interior.r(f))
     return g
@@ -472,19 +531,26 @@ def generar(nivel: str = "semilla", semilla: int = 1, petalos: int | None = None
     nv = NIVELES[nivel]
     rng = random.Random(f"{nivel}-{semilla}")
     for _ in range(intentos):
-        m = _disenio(rng, nivel, radio_mm, petalos, anillos, simetria)
-        m.semilla = semilla
-        if _grosor_minimo(m) < nv["grosor_min_mm"]:
+        centro, anillos_l = _disenio(rng, nivel, radio_mm, petalos, anillos, simetria)
+        # filtros baratos antes de construir la geometría
+        if not (nv["regiones"][0] <= _cantidad_regiones(anillos_l) <= nv["regiones"][1]):
             continue
-        cuenta = len(m.regiones)
-        if not (nv["regiones"][0] <= cuenta <= nv["regiones"][1]):
+        if _grosor_minimo(anillos_l) < nv["grosor_min_mm"]:
             continue
         try:
-            m._asignar_codigos()
-        except RuntimeError:
+            m = Mandala(centro, anillos_l, nivel, semilla=semilla, simetrico=simetria)
+        except (RuntimeError, ValueError):
             continue
-        if m.verificar()["ok"]:
-            return m
+        except Exception as e:  # geometría degenerada (GEOS): se descarta el intento
+            if "Topology" not in type(e).__name__ + str(e):
+                raise
+            continue
+        try:
+            if m.verificar()["ok"]:
+                return m
+        except Exception as e:
+            if "Topology" not in type(e).__name__ + str(e):
+                raise
     raise RuntimeError(f"no se encontró un mandala válido para {nivel}/{semilla}")
 
 

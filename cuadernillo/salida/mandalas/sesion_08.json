@@ -1,49 +1,55 @@
 {
   "nivel": "brote",
-  "semilla": 13,
+  "semilla": 8,
   "regiones": 31,
   "centro": {
-    "base": 12.282678730465804,
-    "estilo": "feston",
+    "base": 12.30251164948047,
+    "estilo": "ojival",
     "k": 10,
     "fase": 0.0,
-    "amplitud": 2.270365120599087
+    "amplitud": 3.937825126338429
   },
   "anillos": [
     {
       "division": "radial",
       "k": 10,
       "fase": 0.0,
+      "forma_petalo": "gota",
+      "petalo_interior": 0.0,
       "borde_exterior": {
-        "base": 33.18575637794333,
+        "base": 38.10963142194549,
         "estilo": "ojival",
         "k": 10,
         "fase": 0.0,
-        "amplitud": 7.638164430465949
-      }
-    },
-    {
-      "division": "radial",
-      "k": 10,
-      "fase": 0.3142,
-      "borde_exterior": {
-        "base": 57.14978826242893,
-        "estilo": "feston",
-        "k": 10,
-        "fase": 0.3141592653589793,
-        "amplitud": 8.094798872291305
+        "amplitud": 6.681944086594833
       }
     },
     {
       "division": "radial",
       "k": 10,
       "fase": 0.0,
+      "forma_petalo": "gota",
+      "petalo_interior": 0.0,
       "borde_exterior": {
-        "base": 77.92455643430125,
+        "base": 59.80389504971455,
         "estilo": "feston",
         "k": 10,
         "fase": 0.0,
-        "amplitud": 7.075443565698746
+        "amplitud": 6.233821007997347
+      }
+    },
+    {
+      "division": "radial",
+      "k": 10,
+      "fase": 0.3142,
+      "forma_petalo": "gota",
+      "petalo_interior": 0.0,
+      "borde_exterior": {
+        "base": 79.11661678396872,
+        "estilo": "feston",
+        "k": 10,
+        "fase": 0.3141592653589793,
+        "amplitud": 5.8833832160312785
       }
     }
   ]

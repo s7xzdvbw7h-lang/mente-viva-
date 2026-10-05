@@ -1,0 +1,11 @@
+<section class="pagina portada">
+  <div class="marca">Línea {{ producto.linea }}</div>
+  <div class="mandala-portada">{{ pg.mandala.svg }}</div>
+  <h1>{{ producto.titulo }}</h1>
+  <div class="cuaderno">{{ producto.cuaderno }}</div>
+  {{ pg.adorno }}
+  <p class="sub">{{ producto.subtitulo }}</p>
+  <div class="duenia">Este cuaderno es de<span></span></div>
+  <div class="firma">{{ producto.firma }}</div>
+  <div class="firma-sub">{{ producto.marca.split("·")[1].strip() }}</div>
+</section>

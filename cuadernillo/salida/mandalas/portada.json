@@ -1,0 +1,62 @@
+{
+  "nivel": "flor",
+  "semilla": 6,
+  "regiones": 57,
+  "centro": {
+    "base": 11.945560771447877,
+    "estilo": "feston",
+    "k": 8,
+    "fase": 0.0,
+    "amplitud": 2.6273623967708044
+  },
+  "anillos": [
+    {
+      "division": "radial",
+      "k": 8,
+      "fase": 0.0,
+      "borde_exterior": {
+        "base": 31.51876493415613,
+        "estilo": "feston",
+        "k": 8,
+        "fase": 0.0,
+        "amplitud": 8.703509636808928
+      }
+    },
+    {
+      "division": "radial",
+      "k": 8,
+      "fase": 0.0,
+      "borde_exterior": {
+        "base": 50.10247024362788,
+        "estilo": "onda",
+        "k": 8,
+        "fase": 0.0,
+        "amplitud": 4.399171696909996
+      }
+    },
+    {
+      "division": "radial",
+      "k": 8,
+      "fase": 0.3927,
+      "borde_exterior": {
+        "base": 65.87533353652313,
+        "estilo": "ojival",
+        "k": 8,
+        "fase": 0.39269908169872414,
+        "amplitud": 4.082145212544759
+      }
+    },
+    {
+      "division": "petalos",
+      "k": 16,
+      "fase": 0.1963,
+      "borde_exterior": {
+        "base": 85.0,
+        "estilo": "circulo",
+        "k": 16,
+        "fase": 0.19634954084936207,
+        "amplitud": 0
+      }
+    }
+  ]
+}

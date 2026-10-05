@@ -1,0 +1,7 @@
+{% set s = pg.sesion %}
+<section class="pagina sesion-a">
+  {{ b.cabecera("Sesión " ~ s.numero, s, pg.numero, fecha=True) }}
+  <div class="bloques">
+  {% for x in s.bloques %}{{ b.bloque(x) }}{% endfor %}
+  </div>
+</section>

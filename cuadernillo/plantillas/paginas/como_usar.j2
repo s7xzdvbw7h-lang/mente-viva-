@@ -1,0 +1,18 @@
+{% set d = pg.datos %}
+<section class="pagina como">
+  {{ b.cabecera(d.titulo, None, pg.numero) }}
+  <ol class="pasos">
+  {% for paso in d.pasos %}<li><span class="bola">{{ loop.index }}</span><span>{{ paso }}</span></li>{% endfor %}
+  </ol>
+  <div class="caja">
+    <h2>{{ d.compania.titulo }}</h2>
+    <p>{{ d.compania.texto }}</p>
+  </div>
+  <div class="caja">
+    <h2>{{ d.niveles_titulo }}</h2>
+    <div class="niveles">
+    {% for n in d.niveles %}<div class="niv">{{ n.icono }}<span><b>{{ n.nombre }}</b>{{ n.texto }}</span></div>{% endfor %}
+    </div>
+  </div>
+  <div class="aviso"><div class="tit">Importante</div>{{ d.aviso }}</div>
+</section>

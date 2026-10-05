@@ -1,0 +1,14 @@
+<section class="pagina soluciones">
+  {{ b.cabecera("Soluciones", None, pg.numero) }}
+  <p class="intro">Otra respuesta con sentido también vale.</p>
+  <div class="cols">
+  {% for s in pg.sesiones %}
+    <div class="ses">
+      <h2>Sesión {{ s.numero }}{{ s.icono_chico }}</h2>
+      {% for x in s.bloques %}{{ b.solucion(x) }}{% endfor %}
+      <div class="sol"><div class="etiqueta">Mandala</div>
+        <div class="fig">{{ s.pagina_b.mandala_datos.svg_solucion }}</div></div>
+    </div>
+  {% endfor %}
+  </div>
+</section>

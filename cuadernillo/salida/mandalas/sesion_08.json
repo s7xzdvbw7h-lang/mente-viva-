@@ -1,0 +1,50 @@
+{
+  "nivel": "brote",
+  "semilla": 13,
+  "regiones": 31,
+  "centro": {
+    "base": 12.282678730465804,
+    "estilo": "feston",
+    "k": 10,
+    "fase": 0.0,
+    "amplitud": 2.270365120599087
+  },
+  "anillos": [
+    {
+      "division": "radial",
+      "k": 10,
+      "fase": 0.0,
+      "borde_exterior": {
+        "base": 33.18575637794333,
+        "estilo": "ojival",
+        "k": 10,
+        "fase": 0.0,
+        "amplitud": 7.638164430465949
+      }
+    },
+    {
+      "division": "radial",
+      "k": 10,
+      "fase": 0.3142,
+      "borde_exterior": {
+        "base": 57.14978826242893,
+        "estilo": "feston",
+        "k": 10,
+        "fase": 0.3141592653589793,
+        "amplitud": 8.094798872291305
+      }
+    },
+    {
+      "division": "radial",
+      "k": 10,
+      "fase": 0.0,
+      "borde_exterior": {
+        "base": 77.92455643430125,
+        "estilo": "feston",
+        "k": 10,
+        "fase": 0.0,
+        "amplitud": 7.075443565698746
+      }
+    }
+  ]
+}

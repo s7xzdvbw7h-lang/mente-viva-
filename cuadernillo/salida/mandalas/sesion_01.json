@@ -1,0 +1,10 @@
+{
+  "tipo": "loto",
+  "nivel": "semilla",
+  "k": 6,
+  "regiones": 14,
+  "capas": [
+    "externo",
+    "medio"
+  ]
+}

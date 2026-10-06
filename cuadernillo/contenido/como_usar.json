@@ -1,0 +1,35 @@
+{
+  "titulo": "Cómo usar este cuaderno",
+  "pasos": [
+    "Tené a mano los anteojos y lápices de colores.",
+    "Cada sesión ocupa dos páginas: desafíos y loto.",
+    "Empezá leyendo en voz alta la frase del día.",
+    "Sin apuro: la idea es mantener la mente activa.",
+    "Las soluciones están al final del libro."
+  ],
+  "compania": {
+    "titulo": "Mejor en compañía",
+    "texto": "Hacelo acompañada al menos 2 veces por semana: la pregunta para conversar es una linda excusa. Y al terminar, salí a caminar un rato."
+  },
+  "niveles_titulo": "Cada sesión indica su nivel",
+  "niveles": [
+    {
+      "id": "semilla",
+      "nombre": "Semilla",
+      "texto": "para empezar suave"
+    },
+    {
+      "id": "brote",
+      "nombre": "Brote",
+      "texto": "un poco más de desafío"
+    },
+    {
+      "id": "flor",
+      "nombre": "Flor",
+      "texto": "para cuando ya agarraste ritmo"
+    }
+  ],
+  "aviso": "Este cuaderno no reemplaza la evaluación ni el tratamiento médico. Ante cambios en la memoria, consultá a un profesional.",
+  "capitulos_titulo": "Siete capítulos, siete colores",
+  "capitulos_nota": "El desafío crece de a poco: Semilla, Brote y Flor."
+}

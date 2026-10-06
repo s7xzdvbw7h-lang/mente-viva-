@@ -1,0 +1,261 @@
+/* Mente Viva · cuadernillo. Reglas de accesibilidad:
+   - nada menor a {{ cfg.tipografia.tamanio_minimo_pt }} pt
+   - consignas Manrope negrita 18-22 pt, interlineado 140 %
+   - títulos Fraunces 26-30 pt
+   - renglones de escritura de 12 mm */
+
+@font-face { font-family: "Manrope"; font-weight: 500; src: url("{{ fuentes }}/Manrope-Medium.ttf"); }
+@font-face { font-family: "Manrope"; font-weight: 700; src: url("{{ fuentes }}/Manrope-Bold.ttf"); }
+@font-face { font-family: "Manrope"; font-weight: 800; src: url("{{ fuentes }}/Manrope-ExtraBold.ttf"); }
+@font-face { font-family: "Fraunces"; font-weight: 400; src: url("{{ fuentes }}/Fraunces-Regular.ttf"); }
+@font-face { font-family: "Fraunces"; font-weight: 600; src: url("{{ fuentes }}/Fraunces-SemiBold.ttf"); }
+@font-face { font-family: "Fraunces"; font-weight: 400; font-style: italic; src: url("{{ fuentes }}/Fraunces-Italic.ttf"); }
+
+:root {
+  --rosa: {{ p.rosa_ceniza }};
+  --rosa-palido: {{ p.rosa_palido }};
+  --marfil: {{ p.marfil }};
+  --papel: {{ p.papel }};
+  --cacao: {{ p.cacao }};
+  --cacao-suave: {{ p.cacao_suave }};
+  --dorado: {{ p.dorado }};
+  --dorado-palido: {{ p.dorado_palido }};
+  --renglon: 12mm;
+}
+
+/* Con sangrado (KDP) la hoja mide ancho + 1 sangrado (solo borde exterior)
+   y alto + 2 sangrados; el margen interior (lomo) puede ser distinto. */
+{% set sg = formato.sangrado_mm %}
+{% set mi = formato.get("margen_interior_mm", formato.margen_mm) %}
+@page {
+  size: {{ formato.ancho_mm + sg }}mm {{ formato.alto_mm + 2 * sg }}mm;
+  margin: {{ formato.margen_mm + sg }}mm;
+}
+/* espiral: margen ancho del lado de la encuadernación (izquierda en las
+   páginas impares). Si el interior arranca en página par, se invierte. */
+{% set lado_a, lado_b = (":left", ":right") if invertir_lados else (":right", ":left") %}
+@page {{ lado_a }} { margin-left: {{ mi }}mm; margin-right: {{ formato.margen_mm + sg }}mm; }
+@page {{ lado_b }} { margin-left: {{ formato.margen_mm + sg }}mm; margin-right: {{ mi }}mm; }
+
+* { box-sizing: border-box; }
+html { font-family: "Manrope"; font-weight: 500; font-size: 17pt; line-height: 1.4; color: var(--cacao); }
+body { margin: 0; background: #fff; }
+p { margin: 0; }
+
+.pagina {
+  height: {{ formato.alto_mm - 2 * formato.margen_mm }}mm;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  page-break-after: always;
+  background: #fff;
+}
+.pagina:last-child { page-break-after: auto; }
+.pagina > *, .bloques > * { flex-shrink: 0; }
+
+/* ---------- tipografía ---------- */
+.titulo { font-family: "Fraunces"; font-weight: 600; font-size: 28pt; line-height: 1.24; margin: 0; }
+.consigna { font-weight: 700; font-size: {{ cfg.tipografia.consigna_pt }}pt; line-height: {{ cfg.tipografia.interlineado }}; }
+.ayuda { font-size: 16pt; color: var(--cacao-suave); line-height: 1.35; }
+.escrito { font-family: "Fraunces"; font-style: italic; font-weight: 400; color: var(--rosa); font-size: 22pt; }
+
+.etiqueta {
+  font-weight: 800; font-size: 16pt; letter-spacing: 0.08em; text-transform: uppercase;
+  line-height: 1.37; margin-bottom: 0; display: flex; align-items: center; /* >= alto real de Manrope */
+}
+.etiqueta.con-icono::before { display: none; }
+.etiqueta.con-icono svg { margin-right: 2.5mm; flex: none; }
+.etiqueta::before {
+  content: ""; display: inline-block; width: 5mm; height: 5mm; border-radius: 50%;
+  background: var(--rosa); margin-right: 3mm;
+}
+
+/* ---------- cabecera de página ---------- */
+.cabecera {
+  display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 1.5pt solid var(--rosa); padding-bottom: 1.5mm; margin-bottom: 2.5mm;
+}
+.cabecera .izq { display: flex; align-items: center; }
+.cabecera .titulo { margin-right: 5mm; }
+.nivel {
+  display: inline-flex; align-items: center; font-weight: 700; font-size: 16pt;
+  background: var(--rosa-palido); border-radius: 6mm; padding: 0.6mm 4mm 0.6mm 1.5mm;
+}
+.nivel svg { margin-right: 1.5mm; }
+.cabecera .der { display: flex; align-items: center; font-size: 16pt; }
+.fecha { margin-right: 6mm; }
+.fecha span { display: inline-block; width: 38mm; border-bottom: 1.2pt solid var(--cacao-suave); margin-left: 2mm; }
+.folio {
+  display: inline-block; width: 10mm; height: 10mm; border-radius: 50%; background: var(--rosa-palido);
+  text-align: center; line-height: 10mm; font-weight: 700; font-size: 16pt;
+}
+
+/* ---------- renglones ---------- */
+.renglon { height: var(--renglon); border-bottom: 1.5pt solid var(--cacao-suave); display: flex; align-items: flex-end; padding-bottom: 0.5mm; }
+.renglon .n { font-size: 16pt; font-weight: 700; color: var(--cacao-suave); width: 8mm; }
+.renglon .rotulo { font-size: 16pt; font-weight: 700; width: 36mm; }
+
+/* ---------- bloques ---------- */
+.bloques { flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
+.bloque { }
+
+.tachar { display: flex; align-items: flex-start; }
+.tachar .texto { flex: 1; padding-left: 7mm; }
+.tachar .asi { display: flex; align-items: center; margin-top: 3mm; font-size: 17pt; }
+.tachar .asi svg { margin-left: 3mm; }
+
+.palabras .tarjetas { display: flex; margin-top: 2.5mm; }
+.palabras .tarjeta {
+  flex: 1; text-align: center; font-family: "Fraunces"; font-weight: 600; font-size: 26pt;
+  line-height: 1.2; background: var(--marfil); border-top: 1.5mm solid var(--rosa);
+  padding: 1.2mm 0 1.6mm; margin-right: 4mm; border-radius: 1mm;
+}
+.palabras .tarjeta:last-child { margin-right: 0; }
+.palabras .ayuda { margin-top: 2mm; }
+
+.series .fila { display: flex; align-items: center; height: 11.5mm; margin-top: 1.2mm; }
+.series .item {
+  min-width: 15mm; height: 11mm; line-height: 11mm; text-align: center; font-weight: 700; font-size: 19pt;
+  border: 1.2pt solid var(--rosa); border-radius: 2mm; margin-right: 3mm; padding: 0 2.5mm;
+}
+.series .flecha { font-size: 19pt; font-weight: 800; color: var(--rosa); margin: 0 3mm 0 1mm; }
+.series .hueco { min-width: 30mm; height: 11mm; border: 1.6pt solid var(--cacao); border-radius: 2mm; text-align: center; }
+.series .hueco.ej { line-height: 11mm; }
+.series .pista { font-size: 16pt; color: var(--cacao-suave); margin-left: 4mm; white-space: nowrap; }
+.series .rot { flex: none; font-size: 16pt; font-weight: 800; width: 27mm; color: var(--cacao-suave); }
+.series .item, .series .hueco, .series .flecha { flex: none; }
+
+.conversar { background: var(--marfil); border-radius: 3mm; padding: 4mm 6mm 3mm; }
+.conversar .pregunta { font-family: "Fraunces"; font-weight: 600; font-size: 22pt; line-height: 1.3; margin-top: 1mm; }
+.conversar .ayuda { margin-top: 1.5mm; }
+
+.fluidez .renglones { display: flex; margin-top: 1mm; }
+.fluidez .col { flex: 1; margin-right: 6mm; }
+.fluidez .col:last-child { margin-right: 0; }
+
+.agrupar .lista {
+  display: flex; flex-wrap: wrap; border: 1.4pt dashed var(--rosa); border-radius: 3mm;
+  padding: 1.5mm 3mm 0; margin: 1.5mm 0 2mm;
+}
+.agrupar .chip { font-weight: 700; font-size: 18pt; line-height: 1.25; background: var(--marfil); border-radius: 5mm; padding: 0.5mm 4mm; margin: 0 2.5mm 2mm 0; }
+.agrupar .chip.usada { text-decoration: line-through; color: var(--cacao-suave); }
+.agrupar .grupos { display: flex; }
+.agrupar .grupo { flex: 1; margin-right: 6mm; }
+.agrupar .grupo:last-child { margin-right: 0; }
+.agrupar .cat { font-family: "Fraunces"; font-weight: 600; font-size: 20pt; border-bottom: 1.5mm solid var(--rosa-palido); line-height: 1.3; }
+
+.ordenar .paso { display: flex; align-items: center; height: 12mm; }
+.ordenar .caja {
+  width: 11mm; height: 11mm; border: 1.6pt solid var(--cacao); border-radius: 2mm; margin-right: 5mm;
+  text-align: center; line-height: 11mm;
+}
+.ordenar .paso .t { font-size: 18pt; }
+.ej { font-size: 16pt; font-weight: 700; color: var(--rosa); margin-left: 3mm; }
+.renglon .ej { margin-left: 2mm; }
+
+/* ---------- página B: mandala ---------- */
+.pagina.blanca { background: #fff; }
+.leyenda { display: flex; justify-content: space-between; margin-top: 2.5mm; }
+.leyenda .color { display: flex; align-items: center; font-weight: 700; font-size: 18pt; }
+.leyenda .muestra { width: 10mm; height: 10mm; border-radius: 50%; border: 1.2pt solid #000; margin: 0 2.5mm 0 1.5mm; }
+.leyenda .num { font-weight: 800; font-size: 20pt; }
+.mandala-caja { flex: 1; display: flex; align-items: center; justify-content: center; }
+.mandala { position: relative; }
+.mandala svg { display: block; }
+.mandala .nro {
+  position: absolute; width: 12mm; height: 8mm; margin-left: -6mm; margin-top: -4.2mm;
+  text-align: center; font-weight: 800; font-size: {{ cfg.mandalas.numero_pt }}pt; line-height: 8mm; color: #000;
+}
+.cierre .consigna span { font-weight: 500; font-size: 16pt; color: var(--cacao-suave); margin-left: 2mm; }
+.cierre .filas { display: flex; align-items: flex-end; }
+.cierre .recordar { flex: 1; margin-right: 8mm; }
+.cierre .animo { width: 74mm; border: 1.2pt solid var(--rosa); border-radius: 3mm; padding: 2mm 2mm 1.5mm; text-align: center; }
+.cierre .animo .q { font-weight: 700; font-size: 16pt; }
+.cierre .caras { display: flex; justify-content: space-around; margin-top: 1mm; }
+.cierre .cara { text-align: center; font-size: 16pt; line-height: 1.2; }
+
+/* ---------- portada ---------- */
+.portada {
+  border: 1.2pt solid var(--rosa); border-radius: 4mm; background: var(--marfil);
+  align-items: center; text-align: center; padding: 10mm 14mm 8mm;
+}
+.portada { position: relative; }
+.portada .esq { position: absolute; width: 14mm; height: 14mm; }
+.portada .esq svg { display: block; }
+.portada .e1 { top: 3mm; left: 3mm; }
+.portada .e2 { top: 3mm; right: 3mm; transform: rotate(90deg); }
+.portada .e3 { bottom: 3mm; right: 3mm; transform: rotate(180deg); }
+.portada .e4 { bottom: 3mm; left: 3mm; transform: rotate(270deg); }
+.portada .marca { font-weight: 800; font-size: 16pt; letter-spacing: 0.14em; text-transform: uppercase; color: var(--cacao-suave); }
+.portada .mandala-portada { margin: 8mm 0 7mm; }
+.portada h1 { font-family: "Fraunces"; font-weight: 600; font-size: 40pt; line-height: 1.1; margin: 0; max-width: 125mm; }
+.portada .cuaderno { font-family: "Fraunces"; font-style: italic; font-size: 28pt; margin: 1mm 0 3mm; }
+.portada .sub { font-size: 20pt; line-height: 1.4; margin-top: 3mm; }
+.portada .duenia { font-size: 17pt; margin-top: 7mm; display: flex; align-items: flex-end; width: 130mm; }
+.portada .duenia span { flex: 1; border-bottom: 1.2pt solid var(--cacao-suave); margin-left: 3mm; height: 9mm; }
+.portada .firma { font-family: "Fraunces"; font-style: italic; font-size: 26pt; margin-top: 9mm; line-height: 1.1; }
+.portada .firma-sub { font-size: 16pt; color: var(--cacao-suave); }
+
+/* ---------- cómo usar ---------- */
+.como .intro { font-size: 18pt; margin-bottom: 4mm; }
+.como .pasos { margin: 0; padding: 0; list-style: none; }
+.como .pasos li { display: flex; align-items: flex-start; margin-bottom: 3mm; font-size: 18pt; line-height: 1.4; }
+.como .pasos .bola {
+  flex: none; width: 10mm; height: 10mm; border-radius: 50%; background: var(--rosa); color: #fff;
+  font-weight: 800; font-size: 17pt; text-align: center; line-height: 10mm; margin-right: 4mm; margin-top: 0.3mm;
+}
+.como .caja { background: var(--marfil); border-radius: 3mm; padding: 3.5mm 6mm; margin-top: 4mm; }
+.como .caja h2 { font-family: "Fraunces"; font-weight: 600; font-size: 22pt; margin: 0 0 1mm; }
+.como .niveles { display: flex; margin-top: 2mm; }
+.como .niv { flex: 1; display: flex; align-items: center; font-size: 16pt; line-height: 1.3; }
+.como .niv svg { flex: none; margin-right: 2.5mm; }
+.como .niv b { display: block; font-weight: 800; font-size: 17pt; }
+.como .aviso { border: 1.5pt solid var(--cacao); border-radius: 3mm; padding: 3.5mm 6mm; margin-top: 4mm; font-weight: 700; font-size: 17pt; }
+.como .aviso .tit { font-weight: 800; font-size: 16pt; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 1mm; }
+
+/* ---------- soluciones ---------- */
+.soluciones .intro { font-size: 17pt; margin-bottom: 4mm; }
+.pagina.soluciones { height: auto; min-height: {{ formato.alto_mm - 2 * formato.margen_mm }}mm; display: block; }
+.soluciones .cols { columns: 2; column-gap: 9mm; column-fill: balance; }
+.soluciones .ses h2 { break-after: avoid; }
+.soluciones .ses + .ses { break-before: column; }
+.soluciones .sol { break-inside: avoid; }
+.soluciones .lado { display: flex; align-items: center; }
+.soluciones .lado span { margin-left: 4mm; }
+.soluciones h2 {
+  font-family: "Fraunces"; font-weight: 600; font-size: 22pt; margin: 0 0 2mm; display: flex; align-items: center;
+  border-bottom: 1.2pt solid var(--rosa); padding-bottom: 1mm;
+}
+.soluciones h2 svg { margin-left: 2mm; }
+.soluciones .sol { margin-bottom: 3mm; font-size: 16pt; line-height: 1.35; }
+.soluciones .sol .etiqueta { font-size: 16pt; }
+.soluciones .sol .etiqueta.con-icono::before { display: none; }
+.etiqueta.con-icono svg { margin-right: 2.5mm; flex: none; }
+.etiqueta::before { width: 3.5mm; height: 3.5mm; margin-right: 2mm; }
+.soluciones ol { margin: 0; padding-left: 7mm; }
+.soluciones .fig { text-align: center; margin-top: 1mm; }
+
+/* ---------- frase del día ---------- */
+.frase-dia { font-family: "Fraunces"; font-style: italic; font-size: 19pt; line-height: 1.3;
+  color: var(--cacao); margin: -1mm 0 1.5mm; display: flex; align-items: center; }
+.frase-dia svg { margin-right: 2.5mm; flex: none; }
+
+/* ---------- apertura de capítulo ---------- */
+.capitulo { background: var(--rosa-palido); border-radius: 4mm; align-items: center; text-align: center;
+  padding: 12mm 12mm 9mm; position: relative; }
+.capitulo .num { font-weight: 800; font-size: 16pt; letter-spacing: 0.16em; text-transform: uppercase; }
+.capitulo h1 { font-family: "Fraunces"; font-weight: 600; font-size: 52pt; line-height: 1.1; margin: 1mm 0 2mm; color: var(--rosa); }
+.capitulo .datos { display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 17pt; }
+.capitulo .datos svg { margin: 0 2mm 0 5mm; }
+.capitulo .flor { margin: 9mm 0 8mm; }
+.capitulo .leer { font-weight: 800; font-size: 16pt; letter-spacing: 0.08em; text-transform: uppercase; color: var(--cacao-suave); }
+.capitulo .frase { font-family: "Fraunces"; font-style: italic; font-size: 28pt; line-height: 1.3; margin: 2mm 6mm 0; }
+.capitulo .tema { font-size: 18pt; margin-top: auto; padding-top: 6mm; border-top: 1.5pt solid var(--rosa); width: 100%; }
+.capitulo .folio-cap { position: absolute; right: 6mm; top: 6mm; background: #fff; }
+
+/* ---------- capítulos en "cómo usar" ---------- */
+.como .caps { display: flex; flex-wrap: wrap; margin-top: 1mm; }
+.como .cap { width: 33.3%; display: flex; align-items: center; font-size: 16pt; line-height: 1.2; font-weight: 700; margin-bottom: 1.5mm; }
+.como .cap svg { flex: none; margin-right: 2mm; }
+.como .cap .n { color: var(--cacao-suave); margin-right: 1.5mm; }
+.como .caps-nota { font-size: 16pt; margin-top: 2mm; }

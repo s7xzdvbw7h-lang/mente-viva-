@@ -1,0 +1,11 @@
+{% set c = pg.cap %}
+<section class="pagina capitulo" style="--rosa: {{ pg.acento }}; --rosa-palido: {{ pg.acento_palido }};">
+  <span class="folio folio-cap">{{ pg.numero }}</span>
+  <div class="num">Capítulo {{ c.numero }}</div>
+  <h1>{{ c.chakra }}</h1>
+  <div class="datos">Sesiones {{ c.sesiones[:-1]|join(", ") }} y {{ c.sesiones[-1] }}{{ pg.icono_nivel }}Nivel {{ pg.nombre_nivel }}</div>
+  <div class="flor">{{ pg.loto }}</div>
+  <div class="leer">Para leer en voz alta</div>
+  <p class="frase">«{{ c.frase }}»</p>
+  <p class="tema"><b>En este capítulo:</b> {{ c.tema }}</p>
+</section>

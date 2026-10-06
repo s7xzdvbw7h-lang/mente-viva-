@@ -1,0 +1,113 @@
+{
+  "numero": 8,
+  "nivel": "brote",
+  "pagina_a": {
+    "bloques": [
+      {
+        "tipo": "fluidez",
+        "etiqueta": "Palabras",
+        "consigna": "Escribí todas las frutas que recuerdes.",
+        "ejemplo": "manzana",
+        "lineas": 12,
+        "columnas": 3,
+        "ideas": [
+          "manzana",
+          "pera",
+          "banana",
+          "naranja",
+          "mandarina",
+          "durazno",
+          "ciruela",
+          "uva",
+          "frutilla",
+          "kiwi",
+          "limón",
+          "sandía",
+          "melón",
+          "ananá",
+          "damasco",
+          "higo",
+          "membrillo",
+          "pomelo"
+        ]
+      },
+      {
+        "tipo": "agrupar",
+        "etiqueta": "Memoria",
+        "consigna": "Anotá cada compra en su grupo.",
+        "palabras": [
+          "leche",
+          "tomate",
+          "yerba",
+          "queso",
+          "fideos",
+          "lechuga",
+          "azúcar",
+          "yogur",
+          "zanahoria"
+        ],
+        "categorias": {
+          "Lácteos": [
+            "leche",
+            "queso",
+            "yogur"
+          ],
+          "Verdulería": [
+            "tomate",
+            "lechuga",
+            "zanahoria"
+          ],
+          "Almacén": [
+            "yerba",
+            "fideos",
+            "azúcar"
+          ]
+        },
+        "ejemplo": {
+          "palabra": "leche",
+          "categoria": "Lácteos"
+        }
+      },
+      {
+        "tipo": "ordenar",
+        "etiqueta": "Planificar",
+        "consigna": "Numerá del 1 al 5 los pasos del mate cocido.",
+        "pasos": [
+          "Poner a calentar el agua.",
+          "Colocar el saquito en la taza.",
+          "Verter el agua caliente en la taza.",
+          "Esperar 3 minutos y sacar el saquito.",
+          "Endulzar a gusto y disfrutarlo."
+        ],
+        "orden_mostrado": [
+          2,
+          4,
+          0,
+          3,
+          1
+        ],
+        "ejemplo": 0
+      }
+    ]
+  },
+  "pagina_b": {
+    "titulo": "Completá el espejo",
+    "consigna": "Dibujá el lado derecho igual al izquierdo, como en un espejo. Después pintalo como quieras.",
+    "mandala": {
+      "tipo": "loto",
+      "modo": "simetria",
+      "nivel": "brote"
+    },
+    "cierre": {
+      "pregunta": "¿Te acordás de la lista de compras?",
+      "ayuda": "Pensá en los grupos.",
+      "lineas": 3,
+      "etiquetas": [
+        "Lácteos",
+        "Verdulería",
+        "Almacén"
+      ]
+    }
+  },
+  "frase": "Cada día aprendo algo nuevo."
+}

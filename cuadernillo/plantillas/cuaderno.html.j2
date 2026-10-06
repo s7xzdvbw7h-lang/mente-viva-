@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="es-AR">
+<head>
+<meta charset="utf-8">
+<title>{{ producto.titulo }} · {{ producto.cuaderno }}</title>
+<meta name="author" content="{{ producto.firma }}">
+<style>
+{% include "estilos.css.j2" %}
+</style>
+</head>
+<body>
+{% import "bloques.j2" as b with context %}
+{% for pg in paginas %}
+{% include "paginas/" ~ pg.plantilla ~ ".j2" %}
+{% endfor %}
+</body>
+</html>

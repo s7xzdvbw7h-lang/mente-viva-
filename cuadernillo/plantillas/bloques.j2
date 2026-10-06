@@ -1,0 +1,110 @@
+{# Macros de cada tipo de bloque. Para un ejercicio nuevo: agregar un tipo acá
+   (página) y en solucion() (página de soluciones). #}
+
+{% macro cabecera(titulo, sesion, numero, fecha=False) %}
+<header class="cabecera">
+  <div class="izq">
+    <h1 class="titulo">{{ titulo }}</h1>
+    {% if sesion %}<span class="nivel">{{ sesion.icono }}Nivel {{ sesion.nombre_nivel }}</span>{% endif %}
+  </div>
+  <div class="der">
+    {% if fecha %}<span class="fecha">Fecha<span></span></span>{% endif %}
+    <span class="folio">{{ numero }}</span>
+  </div>
+</header>
+{% endmacro %}
+
+{% macro renglones(n, numerar=False, rotulos=None, inicio=1, ejemplo=None) %}
+{% for i in range(n) %}
+<div class="renglon">{% if rotulos %}<span class="rotulo">{{ rotulos[i] }}</span>{% elif numerar %}<span class="n">{{ inicio + i }}</span>{% endif %}{% if ejemplo and i == 0 %}<span class="escrito">{{ ejemplo }}</span><span class="ej">ejemplo</span>{% endif %}</div>
+{% endfor %}
+{% endmacro %}
+
+{% macro bloque(x) %}
+<section class="bloque {{ x.tipo }}">
+{% if x.tipo == "tachar" %}
+  {{ x.svg_grilla }}
+  <div class="texto">
+    <div class="etiqueta con-icono">{{ x.icono }}<span>{{ x.etiqueta }}</span></div>
+    <p class="consigna">{{ x.consigna }}</p>
+    <div class="asi">Así:{{ x.svg_ejemplo }}</div>
+    <p class="ayuda" style="margin-top:3mm">Andá fila por fila, sin apuro.</p>
+  </div>
+
+{% elif x.tipo == "palabras" %}
+  <div class="etiqueta con-icono">{{ x.icono }}<span>{{ x.etiqueta }}</span></div>
+  <p class="consigna">{{ x.consigna }}</p>
+  <div class="tarjetas">{% for w in x.palabras %}<div class="tarjeta">{{ w }}</div>{% endfor %}</div>
+  {% if x.get("ayuda") %}<p class="ayuda">{{ x.ayuda }}</p>{% endif %}
+
+{% elif x.tipo == "series" %}
+  <div class="etiqueta con-icono">{{ x.icono }}<span>{{ x.etiqueta }}</span></div>
+  <p class="consigna">{{ x.consigna }}</p>
+  <div class="fila">
+    <span class="rot">Ejemplo</span>
+    {% for it in x.ejemplo["items"] %}<span class="item">{{ it }}</span>{% endfor %}
+    <span class="flecha">→</span><span class="hueco ej"><span class="escrito">{{ x.ejemplo.respuesta }}</span></span>
+    <span class="pista">({{ x.ejemplo.pista }})</span>
+  </div>
+  {% for s in x.series %}
+  <div class="fila">
+    <span class="rot">{{ "ABCDEFG"[loop.index0] }}</span>
+    {% for it in s["items"] %}<span class="item">{{ it }}</span>{% endfor %}
+    <span class="flecha">→</span><span class="hueco"></span>
+  </div>
+  {% endfor %}
+
+{% elif x.tipo == "conversar" %}
+  <div class="etiqueta con-icono">{{ x.icono }}<span>{{ x.etiqueta }}</span></div>
+  <p class="pregunta">{{ x.pregunta }}</p>
+  {% if x.get("nota") %}<p class="ayuda">{{ x.nota }}</p>{% endif %}
+  {% if x.lineas %}{{ renglones(x.lineas) }}{% endif %}
+
+{% elif x.tipo == "fluidez" %}
+  <div class="etiqueta con-icono">{{ x.icono }}<span>{{ x.etiqueta }}</span></div>
+  <p class="consigna">{{ x.consigna }}</p>
+  {% set por_col = (x.lineas / x.columnas)|round(0, "ceil")|int %}
+  <div class="renglones">
+  {% for c in range(x.columnas) %}
+    <div class="col">{{ renglones(por_col, numerar=True, inicio=c * por_col + 1, ejemplo=x.ejemplo if c == 0 else None) }}</div>
+  {% endfor %}
+  </div>
+
+{% elif x.tipo == "agrupar" %}
+  <div class="etiqueta con-icono">{{ x.icono }}<span>{{ x.etiqueta }}</span></div>
+  <p class="consigna">{{ x.consigna }}</p>
+  <div class="lista">{% for w in x.palabras %}<span class="chip{% if x.ejemplo and w == x.ejemplo.palabra %} usada{% endif %}">{{ w }}</span>{% endfor %}</div>
+  <div class="grupos">
+  {% for c in x.columnas_cat %}
+    <div class="grupo"><div class="cat">{{ c.nombre }}</div>{{ renglones(3, ejemplo=c.ejemplo) }}</div>
+  {% endfor %}
+  </div>
+
+{% elif x.tipo == "ordenar" %}
+  <div class="etiqueta con-icono">{{ x.icono }}<span>{{ x.etiqueta }}</span></div>
+  <p class="consigna">{{ x.consigna }}</p>
+  {% for f in x.filas %}
+  <div class="paso"><span class="caja">{% if f.ejemplo %}<span class="escrito">{{ f.n }}</span>{% endif %}</span><span class="t">{{ f.texto }}</span>{% if f.ejemplo %}<span class="ej">ejemplo</span>{% endif %}</div>
+  {% endfor %}
+{% endif %}
+</section>
+{% endmacro %}
+
+{% macro solucion(x) %}
+{% if x.tipo == "tachar" %}
+<div class="sol"><div class="etiqueta">{{ x.etiqueta }}</div><div class="lado">{{ x.svg_solucion }}<span>Había {{ x.cuenta }} estrellas.</span></div></div>
+{% elif x.tipo == "palabras" %}
+<div class="sol"><div class="etiqueta">{{ x.etiqueta }}</div>{{ x.palabras|join(" · ") }}</div>
+{% elif x.tipo == "series" %}
+<div class="sol"><div class="etiqueta">{{ x.etiqueta }}</div>
+  {% for s in x.series %}{{ "ABCDEFG"[loop.index0] }}: <b>{{ s.respuesta }}</b> ({{ s.pista }}){% if not loop.last %}<br>{% endif %}{% endfor %}</div>
+{% elif x.tipo == "fluidez" %}
+<div class="sol"><div class="etiqueta">{{ x.etiqueta }}</div>Toda fruta vale. Algunas: {{ x.ideas[1:9]|join(", ") }}…</div>
+{% elif x.tipo == "agrupar" %}
+<div class="sol"><div class="etiqueta">{{ x.etiqueta }}</div>
+  {% for cat, ws in x.categorias.items() %}<b>{{ cat }}:</b> {{ ws|join(", ") }}{% if not loop.last %}<br>{% endif %}{% endfor %}</div>
+{% elif x.tipo == "ordenar" %}
+<div class="sol"><div class="etiqueta">{{ x.etiqueta }}</div>
+  <ol>{% for p in x.pasos %}<li>{{ p }}</li>{% endfor %}</ol></div>
+{% endif %}
+{% endmacro %}

@@ -1,0 +1,28 @@
+{% set d = pg.datos %}
+<section class="pagina como">
+  {{ b.cabecera(d.titulo, None, pg.numero) }}
+  <ol class="pasos">
+  {% for paso in d.pasos %}<li><span class="bola">{{ loop.index }}</span><span>{{ paso }}</span></li>{% endfor %}
+  </ol>
+  <div class="caja">
+    <h2>{{ d.compania.titulo }}</h2>
+    <p>{{ d.compania.texto }}</p>
+  </div>
+  {% if pg.capitulos %}
+  <div class="caja">
+    <h2>{{ d.capitulos_titulo }}</h2>
+    <div class="caps">
+    {% for c in pg.capitulos %}<div class="cap">{{ c.loto }}<span class="n">{{ c.numero }}</span>{{ c.chakra }}</div>{% endfor %}
+    </div>
+    <p class="caps-nota">{{ d.capitulos_nota }}</p>
+  </div>
+  {% else %}
+  <div class="caja">
+    <h2>{{ d.niveles_titulo }}</h2>
+    <div class="niveles">
+    {% for n in d.niveles %}<div class="niv">{{ n.icono }}<span><b>{{ n.nombre }}</b>{{ n.texto }}</span></div>{% endfor %}
+    </div>
+  </div>
+  {% endif %}
+  <div class="aviso"><div class="tit">Importante</div>{{ d.aviso }}</div>
+</section>

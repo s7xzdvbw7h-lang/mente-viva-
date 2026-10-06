@@ -1,0 +1,11 @@
+{
+  "tipo": "loto",
+  "nivel": "brote",
+  "k": 8,
+  "regiones": 26,
+  "capas": [
+    "externo",
+    "medio",
+    "interno"
+  ]
+}

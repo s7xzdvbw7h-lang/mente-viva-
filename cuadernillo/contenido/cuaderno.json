@@ -1,9 +1,21 @@
 {
   "_nota": "Orden de las páginas. Las sesiones se toman solas de contenido/sesiones/sesion_*.json (o se listan acá). Cada sesión ocupa dos páginas (A y B).",
   "paginas": [
-    {"plantilla": "portada", "mandala": {"nivel": "flor", "semilla": 6}},
-    {"plantilla": "como_usar", "contenido": "como_usar.json"},
-    {"plantilla": "sesiones", "sesiones": "todas"},
-    {"plantilla": "soluciones"}
+    {
+      "plantilla": "portada_chakras",
+      "variante": "regalo"
+    },
+    {
+      "plantilla": "como_usar",
+      "contenido": "como_usar.json"
+    },
+    {
+      "plantilla": "sesiones",
+      "sesiones": "todas",
+      "aperturas": true
+    },
+    {
+      "plantilla": "soluciones"
+    }
   ]
 }

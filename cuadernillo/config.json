@@ -2,12 +2,12 @@
   "producto": {
     "marca": "Daniela Navarro · Longevidad Emocional",
     "linea": "Mente Viva",
-    "titulo": "Mandalas con Mente Viva",
+    "titulo": "Mandalas de los Chakras",
     "cuaderno": "Cuaderno 1",
-    "subtitulo": "Un rato de calma, desafío y conversación cada día",
-    "firma": "Daniela Navarro"
+    "subtitulo": "Mandalas, ejercicios para la mente y frases positivas",
+    "firma": "Daniela Navarro",
+    "_nota_firma": "La app y la landing hoy dicen 'Dany Navarro' y 'MenteViva'. Si se cambia acá, se cambia en todo el cuaderno y en las portadas."
   },
-
   "_paleta_nota": "No hay archivo de marca en la carpeta. Rosa ceniza viene del pedido; marfil, cacao y dorado se toman de la paleta de la app Mente Viva (app.html) para que todo se vea de la misma familia.",
   "paleta": {
     "rosa_ceniza": "#AD8079",
@@ -21,14 +21,24 @@
     "blanco": "#FFFFFF",
     "negro": "#000000"
   },
-
   "colores_para_pintar": {
-    "1": {"nombre": "rosa", "hex": "#EF9AA8"},
-    "2": {"nombre": "amarillo", "hex": "#F6CF4E"},
-    "3": {"nombre": "celeste", "hex": "#86C3EA"},
-    "4": {"nombre": "verde", "hex": "#8DC57F"}
+    "1": {
+      "nombre": "rosa",
+      "hex": "#EF9AA8"
+    },
+    "2": {
+      "nombre": "amarillo",
+      "hex": "#F6CF4E"
+    },
+    "3": {
+      "nombre": "celeste",
+      "hex": "#86C3EA"
+    },
+    "4": {
+      "nombre": "verde",
+      "hex": "#8DC57F"
+    }
   },
-
   "tipografia": {
     "titulos": "Fraunces",
     "texto": "Manrope",
@@ -37,15 +47,15 @@
     "titulo_pt": 28,
     "interlineado": 1.4
   },
-
   "formato_activo": "a4",
   "formatos": {
     "a4": {
-      "_nota": "Imprenta local: A4 vertical, sin sangrado.",
+      "_nota": "Imprenta local: A4 vertical, sin sangrado. Encuadernación espiralada: margen del lado del espiral de 20 mm.",
       "ancho_mm": 210,
       "alto_mm": 297,
       "margen_mm": 15,
-      "sangrado_mm": 0
+      "sangrado_mm": 0,
+      "margen_interior_mm": 20
     },
     "kdp_carta": {
       "_nota": "Preparado para Amazon KDP (8,5 x 11 in con sangrado de 0,125 in). Todavía no se usa: al ser 17,6 mm más bajo que A4, revisar que las páginas de mandala entren antes de activarlo.",
@@ -56,27 +66,157 @@
       "sangrado_mm": 3.175
     }
   },
-
   "mandalas": {
     "diametro_mm": 170,
     "trazo_pt": 2.0,
     "trazo_minimo_pt": 1.5,
     "numero_pt": 16,
     "niveles": {
-      "semilla": {"regiones_min": 12, "regiones_max": 24, "area_min_cm2": 1.0, "radio_libre_numero_mm": 5.0},
-      "brote":   {"regiones_min": 25, "regiones_max": 40, "area_min_cm2": 0.8, "radio_libre_numero_mm": 4.5},
-      "flor":    {"regiones_min": 40, "regiones_max": 60, "area_min_cm2": 0.5, "radio_libre_numero_mm": 4.0}
+      "semilla": {
+        "regiones_min": 12,
+        "regiones_max": 24,
+        "area_min_cm2": 1.0,
+        "radio_libre_numero_mm": 5.0
+      },
+      "brote": {
+        "regiones_min": 25,
+        "regiones_max": 40,
+        "area_min_cm2": 0.8,
+        "radio_libre_numero_mm": 4.5
+      },
+      "flor": {
+        "regiones_min": 40,
+        "regiones_max": 60,
+        "area_min_cm2": 0.5,
+        "radio_libre_numero_mm": 4.0
+      }
     }
   },
-
   "palabras_prohibidas": [
-    "previene", "prevenir", "cura", "curar", "frena el deterioro", "alzheimer",
-    "demencia", "clínicamente probado", "mejora la memoria"
+    "previene",
+    "prevenir",
+    "cura",
+    "curar",
+    "frena el deterioro",
+    "alzheimer",
+    "demencia",
+    "clínicamente probado",
+    "mejora la memoria"
   ],
-
   "salida": {
     "pdf": "salida/muestra.pdf",
     "png_dir": "salida/png",
     "png_dpi": 110
-  }
+  },
+  "capitulos": [
+    {
+      "numero": 1,
+      "chakra": "Raíz",
+      "color": "#B3362C",
+      "nivel": "semilla",
+      "sesiones": [
+        1,
+        2,
+        3
+      ],
+      "frase": "Tengo raíces firmes y un lugar en el mundo.",
+      "tema": "Recuerdos de la infancia y de la casa familiar.",
+      "colores_para_pintar": {
+        "1": {
+          "nombre": "rojo",
+          "hex": "#E35D5B"
+        },
+        "2": {
+          "nombre": "naranja",
+          "hex": "#F3A64B"
+        },
+        "3": {
+          "nombre": "amarillo",
+          "hex": "#F6CF4E"
+        },
+        "4": {
+          "nombre": "verde",
+          "hex": "#8DC57F"
+        }
+      }
+    },
+    {
+      "numero": 2,
+      "chakra": "Sacro",
+      "color": "#C8651B",
+      "nivel": "semilla",
+      "sesiones": [
+        4,
+        5,
+        6
+      ],
+      "frase": "Me doy permiso para disfrutar las cosas simples.",
+      "tema": "Sabores, aromas y placeres de todos los días."
+    },
+    {
+      "numero": 3,
+      "chakra": "Plexo solar",
+      "color": "#A67C08",
+      "nivel": "brote",
+      "sesiones": [
+        7,
+        8,
+        9
+      ],
+      "frase": "Confío en todo lo que sé hacer.",
+      "tema": "Oficios, recetas y cosas que aprendí a hacer."
+    },
+    {
+      "numero": 4,
+      "chakra": "Corazón",
+      "color": "#3D8A45",
+      "nivel": "brote",
+      "sesiones": [
+        10,
+        11,
+        12
+      ],
+      "frase": "Doy y recibo cariño con alegría.",
+      "tema": "Las personas que quiero."
+    },
+    {
+      "numero": 5,
+      "chakra": "Garganta",
+      "color": "#2F72B5",
+      "nivel": "brote",
+      "sesiones": [
+        13,
+        14,
+        15
+      ],
+      "frase": "Mi historia vale la pena contarse.",
+      "tema": "Canciones, refranes y cuentos."
+    },
+    {
+      "numero": 6,
+      "chakra": "Tercer ojo",
+      "color": "#43449B",
+      "nivel": "flor",
+      "sesiones": [
+        16,
+        17,
+        18
+      ],
+      "frase": "Miro con calma y descubro detalles nuevos.",
+      "tema": "Paisajes, viajes y lugares."
+    },
+    {
+      "numero": 7,
+      "chakra": "Corona",
+      "color": "#7A4A9E",
+      "nivel": "flor",
+      "sesiones": [
+        19,
+        20,
+        21
+      ],
+      "frase": "Agradezco este día y lo que todavía me espera.",
+      "tema": "Gratitud y deseos."
+    }
+  ]
 }

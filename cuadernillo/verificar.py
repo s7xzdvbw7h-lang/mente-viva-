@@ -81,6 +81,8 @@ def main():
     for i, page in enumerate(doc, 1):
         W, H = page.rect.width, page.rect.height
         izq, der = (mi, m) if i % 2 else (m, mi)   # impares = páginas derechas
+        if i <= len(paginas) and paginas[i - 1]["plantilla"].startswith("portada"):
+            izq = der = m                            # la tapa no lleva margen de espiral
         caja = fitz.Rect(izq - tol, m - tol, W - der + tol, H - m + tol)
         fuera = []
         for d in page.get_drawings():
@@ -148,7 +150,10 @@ def main():
         ok(abs(medido - diam) < 1.5, f"mandala medido en el PDF: {medido:.1f} mm")
         ok(min(d["width"] for d in negros) >= cfg["mandalas"]["trazo_minimo_pt"] - 0.01,
            f"trazo negro: {max(d['width'] for d in negros):.2f} pt (mínimo {min(d['width'] for d in negros):.2f} pt)")
-        ok(len(gruesos) >= len(negros) * 0.9, "contornos de regiones a 2 pt")
+        continuos = [d for d in negros if not (d.get("dashes") or "").strip("[] 0")]
+        ok(all(d["width"] >= cfg["mandalas"]["trazo_pt"] - 0.01 for d in continuos),
+           f"contornos de regiones a {cfg['mandalas']['trazo_pt']:.0f} pt "
+           f"({len(continuos)} trazos continuos; las guías punteadas pueden ser más finas)")
         grises = []
         for d in page.get_drawings():
             if not bbox.intersects(d["rect"]) or d in negros:

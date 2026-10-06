@@ -8,7 +8,11 @@
         "etiqueta": "Para empezar",
         "consigna": "Tachá con una cruz todas las estrellas que encuentres.",
         "objetivo": "estrella",
-        "distractores": ["circulo", "cuadrado", "triangulo"],
+        "distractores": [
+          "circulo",
+          "cuadrado",
+          "triangulo"
+        ],
         "filas": 6,
         "columnas": 8,
         "cantidad": 10,
@@ -18,18 +22,57 @@
         "tipo": "palabras",
         "etiqueta": "Palabras del día",
         "consigna": "Leé en voz alta estas 3 palabras. Te las vamos a preguntar al final y mañana.",
-        "palabras": ["ventana", "naranja", "guitarra"],
+        "palabras": [
+          "ventana",
+          "naranja",
+          "guitarra"
+        ],
         "ayuda": "Truco: imaginá una guitarra y una naranja en la ventana."
       },
       {
         "tipo": "series",
         "etiqueta": "Pensar",
         "consigna": "Mirá cómo cambia cada serie y escribí lo que sigue.",
-        "ejemplo": {"items": ["2", "4", "6", "8"], "respuesta": "10", "pista": "suma 2"},
+        "ejemplo": {
+          "items": [
+            "2",
+            "4",
+            "6",
+            "8"
+          ],
+          "respuesta": "10",
+          "pista": "suma 2"
+        },
         "series": [
-          {"items": ["5", "10", "15", "20"], "respuesta": "25", "pista": "suma 5"},
-          {"items": ["30", "25", "20", "15"], "respuesta": "10", "pista": "resta 5"},
-          {"items": ["lunes", "martes", "miércoles"], "respuesta": "jueves", "pista": "días de la semana"}
+          {
+            "items": [
+              "5",
+              "10",
+              "15",
+              "20"
+            ],
+            "respuesta": "25",
+            "pista": "suma 5"
+          },
+          {
+            "items": [
+              "30",
+              "25",
+              "20",
+              "15"
+            ],
+            "respuesta": "10",
+            "pista": "resta 5"
+          },
+          {
+            "items": [
+              "lunes",
+              "martes",
+              "miércoles"
+            ],
+            "respuesta": "jueves",
+            "pista": "días de la semana"
+          }
         ]
       },
       {
@@ -42,13 +85,18 @@
     ]
   },
   "pagina_b": {
-    "titulo": "Coloreá por números",
+    "titulo": "Loto para colorear",
     "consigna": "Pintá cada zona con el color de su número.",
-    "mandala": {"modo": "numerado", "nivel": "semilla", "semilla": 20},
+    "mandala": {
+      "tipo": "loto",
+      "modo": "numerado",
+      "nivel": "semilla"
+    },
     "cierre": {
       "pregunta": "¿Te acordás de las palabras del día?",
       "ayuda": "Escribilas sin mirar.",
       "lineas": 3
     }
-  }
+  },
+  "frase": "Hoy me regalo un rato para mí."
 }

@@ -1,11 +1,11 @@
 {
   "titulo": "Cómo usar este cuaderno",
   "pasos": [
-    "Elegí un momento tranquilo, con buena luz, los anteojos y lápices de colores a mano.",
-    "Cada sesión tiene dos páginas: primero los desafíos, después el mandala.",
-    "Leé cada consigna y mirá el ejemplo resuelto antes de empezar.",
-    "No hay apuro ni respuestas perfectas: la idea es mantener la mente activa y desafiada.",
-    "Las soluciones están al final, para mirarlas solo cuando quieras."
+    "Tené a mano los anteojos y lápices de colores.",
+    "Cada sesión ocupa dos páginas: desafíos y loto.",
+    "Empezá leyendo en voz alta la frase del día.",
+    "Sin apuro: la idea es mantener la mente activa.",
+    "Las soluciones están al final del libro."
   ],
   "compania": {
     "titulo": "Mejor en compañía",
@@ -13,9 +13,23 @@
   },
   "niveles_titulo": "Cada sesión indica su nivel",
   "niveles": [
-    {"id": "semilla", "nombre": "Semilla", "texto": "para empezar suave"},
-    {"id": "brote", "nombre": "Brote", "texto": "un poco más de desafío"},
-    {"id": "flor", "nombre": "Flor", "texto": "para cuando ya agarraste ritmo"}
+    {
+      "id": "semilla",
+      "nombre": "Semilla",
+      "texto": "para empezar suave"
+    },
+    {
+      "id": "brote",
+      "nombre": "Brote",
+      "texto": "un poco más de desafío"
+    },
+    {
+      "id": "flor",
+      "nombre": "Flor",
+      "texto": "para cuando ya agarraste ritmo"
+    }
   ],
-  "aviso": "Este cuaderno no reemplaza la evaluación ni el tratamiento médico. Ante cambios en la memoria, consultá a un profesional."
+  "aviso": "Este cuaderno no reemplaza la evaluación ni el tratamiento médico. Ante cambios en la memoria, consultá a un profesional.",
+  "capitulos_titulo": "Siete capítulos, siete colores",
+  "capitulos_nota": "El desafío crece de a poco: Semilla, Brote y Flor."
 }

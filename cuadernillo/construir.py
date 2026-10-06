@@ -17,6 +17,7 @@ from weasyprint import HTML
 
 import graficos as g
 from mandalas.generador import MM_POR_PT, generar
+from mandalas.loto import generar_loto
 
 RAIZ = Path(__file__).parent
 CONTENIDO = RAIZ / "contenido"
@@ -32,13 +33,25 @@ def cargar(ruta: Path):
 # Mandalas
 # --------------------------------------------------------------------------
 
-def preparar_mandala(spec: dict, cfg: dict, diametro_mm: float | None = None) -> dict:
+def capitulo_de(numero_sesion: int, cfg: dict) -> dict | None:
+    return next((c for c in cfg.get("capitulos", []) if numero_sesion in c["sesiones"]), None)
+
+
+def colores_pintar(cfg: dict, cap: dict | None = None) -> dict:
+    return (cap or {}).get("colores_para_pintar") or cfg["colores_para_pintar"]
+
+
+def preparar_mandala(spec: dict, cfg: dict, diametro_mm: float | None = None,
+                     cap: dict | None = None) -> dict:
     mc = cfg["mandalas"]
     d = diametro_mm or mc["diametro_mm"]
     simetrico = spec.get("modo") == "simetria" or spec.get("simetria", True)
-    m = generar(spec["nivel"], spec["semilla"], petalos=spec.get("petalos"),
-                anillos=spec.get("anillos"), simetria=simetrico)
-    rellenos = {int(k): v["hex"] for k, v in cfg["colores_para_pintar"].items()}
+    if spec.get("tipo") == "loto":
+        m = generar_loto(spec["nivel"], k=spec.get("petalos"))
+    else:
+        m = generar(spec["nivel"], spec["semilla"], petalos=spec.get("petalos"),
+                    anillos=spec.get("anillos"), simetria=simetrico)
+    rellenos = {int(k): v["hex"] for k, v in colores_pintar(cfg, cap).items()}
     datos = {"obj": m, "diametro": d, "verificacion": m.verificar(), "numeros": []}
     modo = spec.get("modo", "libre")
     datos["svg"] = m.svg("simetria" if modo == "simetria" else "libre", diametro_mm=d,
@@ -70,12 +83,12 @@ def color_portada(r, p: dict) -> str:
     return fuerte if r.j % 2 == 0 or r.tipo == "petalo" else suave
 
 
-def guardar_svgs(nombre: str, m, cfg: dict):
+def guardar_svgs(nombre: str, m, cfg: dict, cap: dict | None = None):
     """Exporta las tres versiones del mandala como archivos SVG sueltos."""
     dest = RAIZ / "salida" / "mandalas"
     dest.mkdir(parents=True, exist_ok=True)
     mc = cfg["mandalas"]
-    rellenos = {int(k): v["hex"] for k, v in cfg["colores_para_pintar"].items()}
+    rellenos = {int(k): v["hex"] for k, v in colores_pintar(cfg, cap).items()}
     (dest / f"{nombre}_libre.svg").write_text(m.svg("libre", trazo_pt=mc["trazo_pt"]))
     (dest / f"{nombre}_color.svg").write_text(m.svg("color", trazo_pt=mc["trazo_pt"], rellenos=rellenos))
     if m.simetrico:
@@ -87,8 +100,10 @@ def guardar_svgs(nombre: str, m, cfg: dict):
 # Bloques de ejercicios: datos calculados + solución
 # --------------------------------------------------------------------------
 
-def preparar_bloque(b: dict, cfg: dict) -> dict:
-    p = cfg["paleta"]
+def preparar_bloque(b: dict, cfg: dict, acento: str | None = None) -> dict:
+    p = dict(cfg["paleta"])
+    if acento:
+        p["rosa_ceniza"] = acento
     b = dict(b)
     b["icono"] = g.icono_ejercicio(b["tipo"], p["rosa_ceniza"], 8)
     if b["tipo"] == "tachar":
@@ -108,15 +123,25 @@ def preparar_bloque(b: dict, cfg: dict) -> dict:
     return b
 
 
+def acento_de(cap: dict | None, cfg: dict) -> tuple[str, str]:
+    """Color del capítulo (o rosa ceniza si no hay capítulos) y su versión pálida."""
+    color = cap["color"] if cap else cfg["paleta"]["rosa_ceniza"]
+    return color, g._mezcla(color, 0.86)
+
+
 def preparar_sesion(ses: dict, cfg: dict) -> dict:
     ses = dict(ses)
+    cap = capitulo_de(ses["numero"], cfg)
+    ses["capitulo"] = cap
+    ses["acento"], ses["acento_palido"] = acento_de(cap, cfg)
+    ses["colores"] = colores_pintar(cfg, cap)
     ses["nombre_nivel"] = NOMBRES_NIVEL[ses["nivel"]]
-    ses["icono"] = g.icono_nivel(ses["nivel"], cfg["paleta"]["rosa_ceniza"], cfg["paleta"]["rosa_palido"], 9)
-    ses["icono_chico"] = g.icono_nivel(ses["nivel"], cfg["paleta"]["rosa_ceniza"], cfg["paleta"]["rosa_palido"], 7)
-    ses["bloques"] = [preparar_bloque(b, cfg) for b in ses["pagina_a"]["bloques"]]
+    ses["icono"] = g.icono_nivel(ses["nivel"], ses["acento"], "#FFFFFF", 9)
+    ses["icono_chico"] = g.icono_nivel(ses["nivel"], ses["acento"], ses["acento_palido"], 7)
+    ses["bloques"] = [preparar_bloque(b, cfg, ses["acento"]) for b in ses["pagina_a"]["bloques"]]
     pb = dict(ses["pagina_b"])
-    pb["mandala_datos"] = preparar_mandala(pb["mandala"], cfg)
-    guardar_svgs(f"sesion_{ses['numero']:02d}", pb["mandala_datos"]["obj"], cfg)
+    pb["mandala_datos"] = preparar_mandala(pb["mandala"], cfg, cap=cap)
+    guardar_svgs(f"sesion_{ses['numero']:02d}", pb["mandala_datos"]["obj"], cfg, cap)
     ses["pagina_b"] = pb
     return ses
 
@@ -142,7 +167,11 @@ def armar_html(cfg: dict) -> tuple[str, list[dict]]:
     paginas, sesiones = [], []
     for item in cuaderno["paginas"]:
         pl = item["plantilla"]
-        if pl == "portada":
+        if pl == "portada_chakras":
+            # se genera aparte (portada_chakras.py) y se antepone al PDF
+            paginas.append({"plantilla": "portada_chakras", "variante": item.get("variante", "regalo"),
+                            "externa": True})
+        elif pl == "portada":
             md = preparar_mandala({**item["mandala"], "modo": "libre"}, cfg, diametro_mm=100)
             m = md["obj"]
             md["svg"] = m.svg("color", diametro_mm=100, trazo_pt=1.2, color_trazo=p["cacao"],
@@ -155,11 +184,21 @@ def armar_html(cfg: dict) -> tuple[str, list[dict]]:
             datos = cargar(CONTENIDO / item["contenido"])
             for n in datos["niveles"]:
                 n["icono"] = g.icono_nivel(n["id"], p["rosa_ceniza"], p["rosa_palido"], 11)
-            paginas.append({"plantilla": "como_usar", "datos": datos})
+            caps = [{**c, "loto": g.loto(c["color"], 10, k=8)} for c in cfg.get("capitulos", [])]
+            paginas.append({"plantilla": "como_usar", "datos": datos, "capitulos": caps})
         elif pl == "sesiones":
+            vistos = set()
             for s in cargar_sesiones(item["sesiones"]):
                 s = preparar_sesion(s, cfg)
                 sesiones.append(s)
+                cap = s["capitulo"]
+                if cap and cap["numero"] not in vistos and item.get("aperturas", True):
+                    vistos.add(cap["numero"])
+                    paginas.append({"plantilla": "capitulo", "cap": cap,
+                                    "acento": s["acento"], "acento_palido": s["acento_palido"],
+                                    "loto": g.loto(cap["color"], 120, k=12),
+                                    "icono_nivel": g.icono_nivel(cap["nivel"], cap["color"], "#FFFFFF", 9),
+                                    "nombre_nivel": NOMBRES_NIVEL[cap["nivel"]]})
                 paginas.append({"plantilla": "sesion_a", "sesion": s})
                 paginas.append({"plantilla": "sesion_b", "sesion": s})
         elif pl == "soluciones":
@@ -173,8 +212,12 @@ def armar_html(cfg: dict) -> tuple[str, list[dict]]:
     env = Environment(loader=FileSystemLoader(RAIZ / "plantillas"), undefined=StrictUndefined,
                       autoescape=False, trim_blocks=True, lstrip_blocks=True)
     caritas = {t: g.carita(t, p["cacao"], 15) for t in ("bien", "regular", "costo")}
+    # si hay páginas externas antes (la portada), el interior arranca en una
+    # página par: se invierten los lados del margen del espiral
+    externas = sum(1 for pg in paginas if pg.get("externa"))
     html = env.get_template("cuaderno.html.j2").render(
-        cfg=cfg, p=p, formato=formato, paginas=paginas, caritas=caritas,
+        cfg=cfg, p=p, formato=formato, paginas=[pg for pg in paginas if not pg.get("externa")],
+        invertir_lados=externas % 2 == 1, caritas=caritas,
         fuentes=(RAIZ / "fuentes").as_uri(), producto=cfg["producto"],
         colores=cfg["colores_para_pintar"])
     return html, paginas
@@ -198,6 +241,16 @@ def main():
     salida.parent.mkdir(parents=True, exist_ok=True)
     (RAIZ / "salida" / "cuaderno.html").write_text(html, encoding="utf-8")
     HTML(string=html, base_url=str(RAIZ)).write_pdf(salida)
+    externas = [pg for pg in paginas if pg.get("externa")]
+    if externas:
+        import pymupdf
+        import portada_chakras
+        final = pymupdf.open()
+        for pg in externas:
+            final.insert_pdf(pymupdf.open(portada_chakras.generar(pg["variante"], png=False)))
+        final.insert_pdf(pymupdf.open(salida))
+        final.save(salida.with_suffix(".tmp.pdf"), garbage=3, deflate=True)
+        salida.with_suffix(".tmp.pdf").replace(salida)
     print(f"PDF: {salida.relative_to(RAIZ)} ({len(paginas)} páginas esperadas)")
     for pg in paginas:
         s = pg.get("sesion")

@@ -327,7 +327,7 @@ class Mandala:
     def verificar(self, radio_numero_mm: float | None = None) -> dict:
         nv = NIVELES[self.nivel]
         radio_numero_mm = radio_numero_mm or nv["radio_libre_mm"]
-        contorno = Polygon(_poligono_borde(self.anillos[-1].exterior))
+        contorno = self._contorno()
         union = unary_union([r.poligono for r in self.regiones])
         suma = sum(r.area_mm2 for r in self.regiones)
         cerradas = all(r.poligono.is_valid and r.poligono.area > 0 and
@@ -355,6 +355,15 @@ class Mandala:
             res["simetria_espejo"] = self._es_simetrico()
         res["ok"] = all(v for k, v in res.items() if isinstance(v, bool))
         return res
+
+    def _contorno(self) -> Polygon:
+        return Polygon(_poligono_borde(self.anillos[-1].exterior))
+
+    def _guia_derecha(self) -> list:
+        """Contorno de la mitad derecha (para la guía punteada de simetría)."""
+        ext = self.anillos[-1].exterior
+        return [(ext.r(f) * math.sin(f), -ext.r(f) * math.cos(f))
+                for f in _muestras(0, math.pi, TAU / 900)]
 
     def _es_simetrico(self, tol=0.01) -> bool:
         from shapely.affinity import scale
@@ -421,9 +430,7 @@ class Mandala:
                           f'stroke="{color_trazo}" stroke-width="{eje:.4f}" '
                           f'stroke-dasharray="{6*eje:.3f} {4*eje:.3f}"/>')
             if guia_punteada:
-                ext = self.anillos[-1].exterior
-                pts = [(ext.r(f) * math.sin(f), -ext.r(f) * math.cos(f))
-                       for f in _muestras(0, math.pi, TAU / 900)]
+                pts = self._guia_derecha()
                 partes.append(f'<path d="{d_poli(pts, cerrar=False)}" fill="none" '
                               f'stroke="{color_trazo}" stroke-width="{eje:.4f}" '
                               f'stroke-linecap="round" stroke-dasharray="0 {4*eje:.3f}"/>')

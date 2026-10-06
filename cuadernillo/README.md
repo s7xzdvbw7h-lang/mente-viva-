@@ -98,3 +98,16 @@ Licencias en `fuentes/OFL-*.txt`.
   cantidad de páginas del interior.
 
 Los textos de cada versión están en `VARIANTES`, dentro del script.
+
+## Libro "Mandalas de los Chakras" (7 capítulos × 3 sesiones)
+
+- `config.json → capitulos`: chakra, color, nivel, sesiones, frase y tema de cada
+  capítulo. Cada sesión toma el color de su capítulo (acentos, íconos, leyenda de
+  colores para pintar) y antes de la primera sesión de cada capítulo se agrega su
+  página de apertura.
+- Lotos para colorear: `"mandala": {"tipo": "loto", "modo": "numerado" | "simetria" | "libre", "nivel": ...}`
+  (`mandalas/loto.py`). Pasan las mismas verificaciones que los mandalas.
+- Cada sesión puede llevar `"frase"` (frase del día, arriba de la página A).
+- Encuadernación espiralada: margen de 20 mm del lado del espiral
+  (`formatos.a4.margen_interior_mm`), alternando izquierda/derecha.
+- La portada de regalo se antepone sola al PDF (`{"plantilla": "portada_chakras"}` en `cuaderno.json`).

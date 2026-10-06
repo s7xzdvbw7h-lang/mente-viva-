@@ -6,7 +6,7 @@
     <div class="ses">
       <h2>Sesión {{ s.numero }}{{ s.icono_chico }}</h2>
       {% for x in s.bloques %}{{ b.solucion(x) }}{% endfor %}
-      <div class="sol"><div class="etiqueta">Mandala</div>
+      <div class="sol"><div class="etiqueta">{{ "Loto" if s.pagina_b.mandala.get("tipo") == "loto" else "Mandala" }}</div>
         <div class="fig">{{ s.pagina_b.mandala_datos.svg_solucion }}</div></div>
     </div>
   {% endfor %}

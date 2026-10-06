@@ -10,19 +10,63 @@
         "ejemplo": "manzana",
         "lineas": 12,
         "columnas": 3,
-        "ideas": ["manzana", "pera", "banana", "naranja", "mandarina", "durazno", "ciruela", "uva", "frutilla", "kiwi", "limón", "sandía", "melón", "ananá", "damasco", "higo", "membrillo", "pomelo"]
+        "ideas": [
+          "manzana",
+          "pera",
+          "banana",
+          "naranja",
+          "mandarina",
+          "durazno",
+          "ciruela",
+          "uva",
+          "frutilla",
+          "kiwi",
+          "limón",
+          "sandía",
+          "melón",
+          "ananá",
+          "damasco",
+          "higo",
+          "membrillo",
+          "pomelo"
+        ]
       },
       {
         "tipo": "agrupar",
         "etiqueta": "Memoria",
         "consigna": "Anotá cada compra en su grupo.",
-        "palabras": ["leche", "tomate", "yerba", "queso", "fideos", "lechuga", "azúcar", "yogur", "zanahoria"],
+        "palabras": [
+          "leche",
+          "tomate",
+          "yerba",
+          "queso",
+          "fideos",
+          "lechuga",
+          "azúcar",
+          "yogur",
+          "zanahoria"
+        ],
         "categorias": {
-          "Lácteos": ["leche", "queso", "yogur"],
-          "Verdulería": ["tomate", "lechuga", "zanahoria"],
-          "Almacén": ["yerba", "fideos", "azúcar"]
+          "Lácteos": [
+            "leche",
+            "queso",
+            "yogur"
+          ],
+          "Verdulería": [
+            "tomate",
+            "lechuga",
+            "zanahoria"
+          ],
+          "Almacén": [
+            "yerba",
+            "fideos",
+            "azúcar"
+          ]
         },
-        "ejemplo": {"palabra": "leche", "categoria": "Lácteos"}
+        "ejemplo": {
+          "palabra": "leche",
+          "categoria": "Lácteos"
+        }
       },
       {
         "tipo": "ordenar",
@@ -35,7 +79,13 @@
           "Esperar 3 minutos y sacar el saquito.",
           "Endulzar a gusto y disfrutarlo."
         ],
-        "orden_mostrado": [2, 4, 0, 3, 1],
+        "orden_mostrado": [
+          2,
+          4,
+          0,
+          3,
+          1
+        ],
         "ejemplo": 0
       }
     ]
@@ -43,12 +93,21 @@
   "pagina_b": {
     "titulo": "Completá el espejo",
     "consigna": "Dibujá el lado derecho igual al izquierdo, como en un espejo. Después pintalo como quieras.",
-    "mandala": {"modo": "simetria", "nivel": "brote", "semilla": 8},
+    "mandala": {
+      "tipo": "loto",
+      "modo": "simetria",
+      "nivel": "brote"
+    },
     "cierre": {
       "pregunta": "¿Te acordás de la lista de compras?",
       "ayuda": "Pensá en los grupos.",
       "lineas": 3,
-      "etiquetas": ["Lácteos", "Verdulería", "Almacén"]
+      "etiquetas": [
+        "Lácteos",
+        "Verdulería",
+        "Almacén"
+      ]
     }
-  }
+  },
+  "frase": "Cada día aprendo algo nuevo."
 }

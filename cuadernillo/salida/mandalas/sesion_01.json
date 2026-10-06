@@ -1,42 +1,10 @@
 {
+  "tipo": "loto",
   "nivel": "semilla",
-  "semilla": 20,
-  "regiones": 19,
-  "centro": {
-    "base": 13.497246652716619,
-    "estilo": "ojival",
-    "k": 6,
-    "fase": 0.0,
-    "amplitud": 4.691871662680852
-  },
-  "anillos": [
-    {
-      "division": "petalos",
-      "k": 6,
-      "fase": 0.0,
-      "forma_petalo": "gota",
-      "petalo_interior": 0.0,
-      "borde_exterior": {
-        "base": 44.28477954509938,
-        "estilo": "feston",
-        "k": 6,
-        "fase": 0.0,
-        "amplitud": 12.016146537417814
-      }
-    },
-    {
-      "division": "radial",
-      "k": 6,
-      "fase": 0.0,
-      "forma_petalo": "lente",
-      "petalo_interior": 0.0,
-      "borde_exterior": {
-        "base": 85.0,
-        "estilo": "circulo",
-        "k": 6,
-        "fase": 0.0,
-        "amplitud": 0
-      }
-    }
+  "k": 6,
+  "regiones": 14,
+  "capas": [
+    "externo",
+    "medio"
   ]
 }

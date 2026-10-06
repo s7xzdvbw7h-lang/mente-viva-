@@ -1,12 +1,12 @@
 {% set s = pg.sesion %}
 {% set pb = s.pagina_b %}
 {% set md = pb.mandala_datos %}
-<section class="pagina blanca sesion-b">
+<section class="pagina blanca sesion-b" style="--rosa: {{ s.acento }}; --rosa-palido: {{ s.acento_palido }};">
   {{ b.cabecera(pb.titulo, s, pg.numero) }}
   <p class="consigna">{{ pb.consigna }}</p>
   {% if pb.mandala.modo == "numerado" %}
   <div class="leyenda">
-  {% for k, c in colores.items() %}<span class="color"><span class="num">{{ k }}</span><span class="muestra" style="background: {{ c.hex }}"></span>{{ c.nombre }}</span>{% endfor %}
+  {% for k, c in s.colores.items() %}<span class="color"><span class="num">{{ k }}</span><span class="muestra" style="background: {{ c.hex }}"></span>{{ c.nombre }}</span>{% endfor %}
   </div>
   {% endif %}
   <div class="mandala-caja">

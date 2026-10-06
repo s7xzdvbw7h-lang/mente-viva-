@@ -1,6 +1,7 @@
 {% set s = pg.sesion %}
-<section class="pagina sesion-a">
+<section class="pagina sesion-a" style="--rosa: {{ s.acento }}; --rosa-palido: {{ s.acento_palido }};">
   {{ b.cabecera("Sesión " ~ s.numero, s, pg.numero, fecha=True) }}
+  {% if s.get("frase") %}<p class="frase-dia">{{ s.icono_chico }}{{ s.frase }}</p>{% endif %}
   <div class="bloques">
   {% for x in s.bloques %}{{ b.bloque(x) }}{% endfor %}
   </div>

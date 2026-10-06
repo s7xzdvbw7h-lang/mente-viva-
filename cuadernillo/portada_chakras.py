@@ -6,6 +6,7 @@ con geometría dorada. Genera salida/portada_regalo.pdf y salida/portada_amazon.
 """
 import math
 import subprocess
+from pathlib import Path
 
 from jinja2 import Template
 from weasyprint import HTML
@@ -13,20 +14,12 @@ from weasyprint import HTML
 import graficos as g
 from construir import RAIZ, cargar
 
-# Del chakra raíz a la corona. Tonos oscuros para que el texto y el trazo
-# tengan contraste sobre marfil.
-CHAKRAS = [
-    ("Raíz", "#B3362C"), ("Sacro", "#C8651B"), ("Plexo solar", "#B8890A"),
-    ("Corazón", "#3D8A45"), ("Garganta", "#2F72B5"), ("Tercer ojo", "#43449B"),
-    ("Corona", "#7A4A9E"),
-]
 AZUL_NOCHE = "#1F3466"
 PETROLEO = "#1F5F78"
 
 TEXTOS = {
     "titulo": "Mandalas",
     "subtitulo": "de los Chakras",
-    "autora": "Creado por Dani Navarro",
     "banda_1": "Libro para colorear",
 }
 
@@ -70,40 +63,48 @@ def geometria(dorado: str, lado: float, r_anillo: float) -> str:
             f'<polygon points="{hexa}"/><polygon points="{estrella}"/><polygon points="{estrella2}"/>{radios}</g></svg>')
 
 
-def main():
+def generar(nombre: str, png: bool = True) -> Path:
+    """Genera la portada de la variante `nombre` (regalo | amazon) y devuelve el PDF."""
     cfg = cargar(RAIZ / "config.json")
     p = cfg["paleta"]
     fuentes = (RAIZ / "fuentes").as_uri()
     lado, r_anillo, d_centro, d_flor = 150.0, 52.0, 60.0, 40.0
+    # los colores salen de los capítulos del config (raíz ... corona)
+    chakras = [(c["chakra"], c["color"]) for c in cfg["capitulos"]]
     flores = []
     # corona al centro; los otros seis alrededor, empezando arriba
-    for i, (nombre, color) in enumerate(CHAKRAS[:6]):
+    for i, (_, color) in enumerate(chakras[:6]):
         ang = i * math.pi / 3
         x = lado / 2 + r_anillo * math.sin(ang) - d_flor / 2
         y = lado / 2 - r_anillo * math.cos(ang) - d_flor / 2
         flores.append({"x": x, "y": y, "svg": g.loto(color, d_flor, k=8)})
     centro = {"x": (lado - d_centro) / 2, "y": (lado - d_centro) / 2,
-              "svg": g.loto(CHAKRAS[6][1], d_centro, k=12)}
-    letras = [(ch, CHAKRAS[i % 7][1]) for i, ch in enumerate(TEXTOS["subtitulo"].replace(" ", " "))]
-    # los espacios no consumen color: se recalcula saltándolos
+              "svg": g.loto(chakras[6][1], d_centro, k=12)}
+    # una letra de cada color; los espacios no consumen color
     letras, n = [], 0
     for ch in TEXTOS["subtitulo"]:
         if ch == " ":
-            letras.append((" ", AZUL_NOCHE))
+            letras.append(("\u00a0", AZUL_NOCHE))
         else:
-            letras.append((ch, CHAKRAS[n % 7][1])); n += 1
+            letras.append((ch, chakras[n % 7][1])); n += 1
 
-    for nombre, v in VARIANTES.items():
-        fmt = FORMATOS[v["formato"]]
-        t = {**TEXTOS, **v}
-        html = Template(PLANTILLA).render(
-            f=fuentes, p=p, t=t, fmt=fmt, lado=lado, flores=flores, centro=centro, letras=letras,
-            geo=geometria(p["dorado"], lado, r_anillo), azul=AZUL_NOCHE, petroleo=PETROLEO)
-        pdf = RAIZ / "salida" / f"portada_{nombre}.pdf"
-        HTML(string=html, base_url=str(RAIZ)).write_pdf(pdf)
+    v = VARIANTES[nombre]
+    fmt = FORMATOS[v["formato"]]
+    t = {**TEXTOS, "autora": cfg["producto"]["marca"], **v}
+    html = Template(PLANTILLA).render(
+        f=fuentes, p=p, t=t, fmt=fmt, lado=lado, flores=flores, centro=centro, letras=letras,
+        geo=geometria(p["dorado"], lado, r_anillo), azul=AZUL_NOCHE, petroleo=PETROLEO)
+    pdf = RAIZ / "salida" / f"portada_{nombre}.pdf"
+    HTML(string=html, base_url=str(RAIZ)).write_pdf(pdf)
+    if png:
         subprocess.run(["pdftoppm", "-r", "110", "-png", "-singlefile", str(pdf),
                         str(RAIZ / "salida" / "png" / f"portada_{nombre}")], check=True)
-        print("ok:", pdf.relative_to(RAIZ))
+    return pdf
+
+
+def main():
+    for nombre in VARIANTES:
+        print("ok:", generar(nombre).relative_to(RAIZ))
 
 
 PLANTILLA = """<!doctype html><html lang="es-AR"><head><meta charset="utf-8">

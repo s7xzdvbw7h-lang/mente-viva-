@@ -43,6 +43,7 @@ Dani"""
 TITULO_LIBRO = ("MANDALAS", "DE LOS CHAKRAS")
 SUBTITULO = "Un color a la vez"
 BANDA = "LIBRO PARA COLOREAR"
+BANDA_SUB = "Diseñado con mandalas simples y frases positivas"
 CREADO_POR = "Creado por Dani Navarro"
 PARA_MAMA = "Para mamá, con todo mi amor."
 
@@ -107,6 +108,11 @@ CHAKRAS = [
          pregunta="¿Qué te da paz en este momento de tu vida?"),
 ]
 
+# Colores de texto de la portada (tomados de portada.png)
+COLOR_TITULO = "#1F3466"   # MANDALAS
+COLOR_TEXTO = "#4A3B33"    # subtítulo y "Creado por"
+COLOR_MAMA = "#253A6A"     # "Para mamá, con todo mi amor."
+
 # ================================================================== MEDIDAS (mm)
 MARGEN = 15
 ANCHO, ALTO = 210, 297
@@ -119,17 +125,25 @@ TINTA = "#1b1b1b"
 
 # ======================================================================= FUENTES
 def preparar_fuentes():
-    """Crea las instancias estáticas de Fraunces y Manrope (si faltan)."""
+    """Crea las instancias estáticas de Fraunces y Manrope (si faltan o si cambiaron los parámetros)."""
+    import json
     destino = AQUI / "fuentes" / "estaticas"
+    fr = "Fraunces[SOFT,WONK,opsz,wght].ttf"
+    fri = "Fraunces-Italic[SOFT,WONK,opsz,wght].ttf"
     trabajos = [
-        ("Fraunces[SOFT,WONK,opsz,wght].ttf", "Fraunces-Titulo.ttf", {"wght": 700, "opsz": 36, "SOFT": 100, "WONK": 0}),
-        ("Fraunces[SOFT,WONK,opsz,wght].ttf", "Fraunces-Portada.ttf", {"wght": 600, "opsz": 72, "SOFT": 30, "WONK": 0}),
-        ("Fraunces-Italic[SOFT,WONK,opsz,wght].ttf", "Fraunces-Italica.ttf", {"wght": 400, "opsz": 72, "SOFT": 30, "WONK": 0}),
+        (fr, "Fraunces-Titulo.ttf", {"wght": 700, "opsz": 36, "SOFT": 100, "WONK": 0}),
+        # portada (diseño de Dani): título, subtítulo, "Creado por" y "Para mamá"
+        (fr, "Fraunces-Portada.ttf", {"wght": 600, "opsz": 36, "SOFT": 0, "WONK": 0}),
+        (fri, "Fraunces-Italica.ttf", {"wght": 400, "opsz": 72, "SOFT": 30, "WONK": 0}),
+        (fr, "Fraunces-Creado.ttf", {"wght": 600, "opsz": 72, "SOFT": 50, "WONK": 0}),
+        (fri, "Fraunces-Mama.ttf", {"wght": 500, "opsz": 48, "SOFT": 50, "WONK": 0}),
         ("Manrope[wght].ttf", "Manrope-Medium.ttf", {"wght": 500}),
         ("Manrope[wght].ttf", "Manrope-Bold.ttf", {"wght": 700}),
         ("Manrope[wght].ttf", "Manrope-ExtraBold.ttf", {"wght": 800}),
     ]
-    if all((destino / dst).exists() for _, dst, _ in trabajos):
+    marca = destino / ".trabajos.json"
+    firma = json.dumps(trabajos, sort_keys=True)
+    if marca.exists() and marca.read_text() == firma and all((destino / dst).exists() for _, dst, _ in trabajos):
         return
     from fontTools.ttLib import TTFont
     from fontTools.varLib import instancer
@@ -137,6 +151,7 @@ def preparar_fuentes():
     for src, dst, ejes in trabajos:
         fuente = TTFont(AQUI / "fuentes" / src)
         instancer.instantiateVariableFont(fuente, ejes).save(destino / dst)
+    marca.write_text(firma)
 
 
 _PIL = {}
@@ -175,7 +190,9 @@ def css():
     return f"""
 @font-face {{ font-family: 'Fraunces'; font-weight: 700; src: url('{f}/Fraunces-Titulo.ttf'); }}
 @font-face {{ font-family: 'FrauncesPortada'; font-weight: 600; font-style: normal; src: url('{f}/Fraunces-Portada.ttf'); }}
-@font-face {{ font-family: 'FrauncesPortada'; font-weight: 400; font-style: italic; src: url('{f}/Fraunces-Italica.ttf'); }}
+@font-face {{ font-family: 'FrauncesItalica'; font-weight: 400; font-style: italic; src: url('{f}/Fraunces-Italica.ttf'); }}
+@font-face {{ font-family: 'FrauncesCreado'; font-weight: 600; font-style: normal; src: url('{f}/Fraunces-Creado.ttf'); }}
+@font-face {{ font-family: 'FrauncesMama'; font-weight: 500; font-style: italic; src: url('{f}/Fraunces-Mama.ttf'); }}
 @font-face {{ font-family: 'Manrope'; font-weight: 500; src: url('{f}/Manrope-Medium.ttf'); }}
 @font-face {{ font-family: 'Manrope'; font-weight: 700; src: url('{f}/Manrope-Bold.ttf'); }}
 @font-face {{ font-family: 'Manrope'; font-weight: 800; src: url('{f}/Manrope-ExtraBold.ttf'); }}
@@ -196,18 +213,9 @@ p {{ margin: 0; }}
 b {{ font-weight: 800; }}
 img {{ display: block; }}
 
-/* portada (marca "Luz plena": marfil + cacao + rosa de las cenizas) */
-.portada {{ background: {M.MARFIL}; color: {M.CACAO}; }}
-.etiqueta {{ position: absolute; left: 45mm; width: 120mm; top: 17mm; height: 13mm; border-radius: 6.5mm;
-             background: {M.CACAO}; color: {M.MARFIL}; text-align: center; font-weight: 800; font-size: 18pt;
-             letter-spacing: 0.16em; line-height: 13mm; }}
-.titulo-portada {{ text-align: center; font-family: 'FrauncesPortada', serif; font-weight: 600; font-size: 48pt;
-                   line-height: 1.06; color: {M.CACAO}; }}
-.subtitulo {{ text-align: center; font-family: 'FrauncesPortada', serif; font-style: italic; font-weight: 400;
-              font-size: 36pt; line-height: 1.1; color: {M.ROSA_CENIZAS}; }}
-.creado {{ text-align: center; font-weight: 800; font-size: 20pt; color: {M.CACAO}; }}
-.paramama {{ text-align: center; font-family: 'FrauncesPortada', serif; font-style: italic; font-weight: 400;
-             font-size: 26pt; color: {M.ROSA_CENIZAS}; }}
+/* portada: el diseño de Dani. El arte (tarjeta, banda, flores) es un SVG; los textos se ubican por línea base */
+.arte {{ position: absolute; left: 0; top: 0; width: {ANCHO}mm; height: {ALTO}mm; }}
+.tb {{ position: absolute; left: {MARGEN}mm; width: {ANCHO_UTIL}mm; text-align: center; line-height: 1; white-space: nowrap; }}
 
 /* dedicatoria */
 .dedic {{ text-align: center; font-size: 20pt; line-height: 1.7; }}
@@ -260,19 +268,47 @@ def _svg_img(ruta_svg, ancho_mm):
     return f'<img src="{(AQUI / ruta_svg).as_uri()}" style="width:{ancho_mm}mm">'
 
 
+_METRICAS = {}
+
+
+def _metricas(ttf):
+    """(ascenso, descenso) de la tipografía, en em (tabla hhea), para ubicar textos por su línea base."""
+    if ttf not in _METRICAS:
+        from fontTools.ttLib import TTFont
+        f = TTFont(AQUI / "fuentes" / "estaticas" / ttf)
+        _METRICAS[ttf] = (f["hhea"].ascent / f["head"].unitsPerEm, -f["hhea"].descent / f["head"].unitsPerEm)
+    return _METRICAS[ttf]
+
+
+def texto_base(contenido, ttf, familia, pt, base_mm, color, peso=400, estilo="normal", tracking=0.0):
+    """Texto centrado cuya línea base cae exactamente en `base_mm` (mm desde arriba)."""
+    asc, desc = _metricas(ttf)
+    cuerpo = pt * 25.4 / 72
+    top = base_mm - cuerpo * (1 + asc - desc) / 2          # con line-height:1 la base queda a (1+asc-desc)/2 del tope
+    return (f'<div class="tb" style="top:{top:.3f}mm; font-family:\'{familia}\'; font-weight:{peso}; font-style:{estilo}; '
+            f'font-size:{pt}pt; letter-spacing:{tracking}em; color:{color}">{contenido}</div>')
+
+
 def pagina_portada():
-    mandala = M.portada_mandala()
-    ancho = 2 * (M.RADIO_PORTADA + 2)
-    cy = 172
-    top = cy - ancho / 2
+    """La portada de Dani, a todo color. Solo cambia el subtítulo ("Un color a la vez")."""
+    colores = [M.COLORES_FLOR[c]["linea"] for c in ("rojo", "naranja", "amarillo", "verde", "azul", "indigo", "centro")]
+    letras, i = "", 0
+    for ch in TITULO_LIBRO[1]:
+        if ch == " ":
+            letras += " "
+        else:
+            letras += f'<span style="color:{colores[i % 7]}">{ch}</span>'
+            i += 1
     return f"""
-<section class="pagina portada">
-  <div class="etiqueta">{esc(BANDA)}</div>
-  <div class="caja titulo-portada" style="top:38mm">{esc(TITULO_LIBRO[0])}<br>{esc(TITULO_LIBRO[1])}</div>
-  <div class="caja subtitulo" style="top:82mm">{esc(SUBTITULO)}</div>
-  <div style="position:absolute; left:{(ANCHO - ancho) / 2}mm; top:{top}mm; width:{ancho}mm">{mandala}</div>
-  <div class="caja creado" style="top:252mm">{esc(CREADO_POR)}</div>
-  <div class="caja paramama" style="top:263mm">{esc(PARA_MAMA)}</div>
+<section class="pagina">
+  <div class="arte">{M.portada_arte()}</div>
+  {texto_base(esc(TITULO_LIBRO[0]), "Fraunces-Portada.ttf", "FrauncesPortada", 64.9, 44.8, COLOR_TITULO, 600)}
+  {texto_base(letras, "Manrope-ExtraBold.ttf", "Manrope", 33.7, 60.0, COLOR_TITULO, 800, tracking=0.02)}
+  {texto_base(esc(SUBTITULO), "Fraunces-Italica.ttf", "FrauncesItalica", 32, 73.2, COLOR_TEXTO, 400, "italic")}
+  {texto_base(esc(CREADO_POR), "Fraunces-Creado.ttf", "FrauncesCreado", 20.0, 239.1, COLOR_TEXTO, 600)}
+  {texto_base(esc(BANDA), "Manrope-ExtraBold.ttf", "Manrope", 26.2, 255.7, "#fff", 800, tracking=0.03)}
+  {texto_base(esc(BANDA_SUB), "Manrope-Medium.ttf", "Manrope", 18, 264.6, "#fff", 500, tracking=0.02)}
+  {texto_base(esc(PARA_MAMA), "Fraunces-Mama.ttf", "FrauncesMama", 21.7, 282.4, COLOR_MAMA, 500, "italic")}
 </section>"""
 
 
@@ -354,7 +390,7 @@ def pagina_reflexion(ch, indice, n):
 # ===================================================================== ARMADO
 def informacion_paginas(fase=1):
     """Descripción de cada página impresa, para los controles de verificar.py."""
-    info = [dict(nombre="portada", numero=None, paleta=(M.MARFIL, M.CACAO, M.ROSA_CENIZAS)), dict(nombre="dedicatoria", numero=None),
+    info = [dict(nombre="portada", numero=None, margen_mm=12), dict(nombre="dedicatoria", numero=None),
             dict(nombre="como_usar", numero=3)]
     n = 4
     for i, ch in enumerate(CHAKRAS[:1] if fase == 1 else CHAKRAS):
@@ -374,7 +410,7 @@ def construir(fase):
     mandalas_svg = {"raiz": M.raiz()}
     for clave, svg in mandalas_svg.items():
         (AQUI / "svg" / f"{clave}.svg").write_text(svg, encoding="utf-8")
-    (AQUI / "svg" / "portada_mandala.svg").write_text(M.portada_mandala(), encoding="utf-8")
+    (AQUI / "svg" / "portada_arte.svg").write_text(M.portada_arte(), encoding="utf-8")
     (AQUI / "svg" / "dedicatoria_corazon.svg").write_text(M.corazon_linea(), encoding="utf-8")
 
     # (nombre de archivo del PNG, html)

@@ -175,6 +175,7 @@ def verificar_pdf(ruta_pdf, paginas_info, margen_mm=15, ancho_mm=210, alto_mm=29
     for k, info in enumerate(paginas_info):
         lineas = texto_por_pagina[2 * k]
         etiqueta = f"p.{k + 1} {info['nombre']}"
+        margen = info.get("margen_mm", margen_mm)
         for l in lineas:
             es_numero = info.get("numero") is not None and l["texto"] == str(info["numero"])
             minimo = 16 if es_numero else 18
@@ -183,9 +184,9 @@ def verificar_pdf(ruta_pdf, paginas_info, margen_mm=15, ancho_mm=210, alto_mm=29
             if es_numero and abs(l["pt"] - 16) > 0.3:
                 fallos.append(f"{etiqueta}: el número de página mide {l['pt']:.1f} pt (debe ser 16)")
             tol = 1.5 if es_numero else 0.5
-            if (l["x0"] < margen_mm - tol or l["x1"] > ancho_mm - margen_mm + tol
-                    or l["y0"] < margen_mm - tol or l["y1"] > alto_mm - margen_mm + tol):
-                fallos.append(f"{etiqueta}: «{l['texto'][:30]}» se sale del margen de {margen_mm} mm "
+            if (l["x0"] < margen - tol or l["x1"] > ancho_mm - margen + tol
+                    or l["y0"] < margen - tol or l["y1"] > alto_mm - margen + tol):
+                fallos.append(f"{etiqueta}: «{l['texto'][:30]}» se sale del margen de {margen} mm "
                               f"(x {l['x0']:.1f}–{l['x1']:.1f}, y {l['y0']:.1f}–{l['y1']:.1f})")
             if es_numero:
                 centro = (l["x0"] + l["x1"]) / 2
@@ -219,23 +220,6 @@ def verificar_pdf(ruta_pdf, paginas_info, margen_mm=15, ancho_mm=210, alto_mm=29
                 py = min(max(cy, l["y0"]), l["y1"])
                 if ((px - cx) ** 2 + (py - cy) ** 2) ** 0.5 < r + 3:
                     fallos.append(f"{etiqueta}: «{l['texto'][:30]}» toca el mandala")
-
-    # Paleta de marca en las páginas que la declaran (máximo 3 colores contando el fondo)
-    for k, info in enumerate(paginas_info):
-        if not info.get("paleta"):
-            continue
-        img = _raster(ruta_pdf, 2 * k + 1, 100).reshape(-1, 3).astype(float)
-        cols = [np.array([int(h[i:i + 2], 16) for i in (1, 3, 5)], float) for h in info["paleta"]]
-        mejor = np.full(len(img), np.inf)
-        for a in range(len(cols)):
-            for b in range(a, len(cols)):
-                d = cols[b] - cols[a]
-                t = np.clip(((img - cols[a]) @ d) / (d @ d), 0, 1) if (d @ d) else np.zeros(len(img))
-                mejor = np.minimum(mejor, np.linalg.norm(img - (cols[a] + t[:, None] * d), axis=1))
-        fuera = (mejor > 12).mean() * 100
-        notas.append(f"p.{k + 1} {info['nombre']}: {100 - fuera:.2f}% de los píxeles dentro de la paleta de marca")
-        if fuera > 0.2:
-            fallos.append(f"p.{k + 1} {info['nombre']}: {fuera:.2f}% de los píxeles fuera de la paleta {info['paleta']}")
 
     # Pestaña: ancho 8 mm y color del chakra (a 110 dpi)
     import mandalas as M
@@ -278,7 +262,42 @@ def verificar_pdf(ruta_pdf, paginas_info, margen_mm=15, ancho_mm=210, alto_mm=29
         notas.append(f"p.{k + 1}: línea medida en el PDF = {grosor_mm:.2f} mm = {grosor_px96:.2f} px a 96 dpi ({len(largos)} cruces)")
         if not (LINEA_MIN_PX96 - 0.1 <= grosor_px96 <= 3.1):
             fallos.append(f"p.{k + 1}: línea de {grosor_px96:.2f} px (se pide entre {LINEA_MIN_PX96} y 3)")
+    # Fidelidad de la portada al diseño original de Dani (sin contar lo que cambia a propósito:
+    # el subtítulo y la segunda línea de la banda, que pasa a 18 pt)
+    ref = AQUI_REF / "portada_original.png"
+    if paginas_info and paginas_info[0].get("nombre") == "portada" and ref.exists():
+        medio, peor = fidelidad_portada(ruta_pdf, ref)
+        notas.append(f"portada vs original (suavizado): error medio {medio:.2f}/255 · peor zona de 12 mm {peor:.1f} "
+                     "(sin subtítulo ni sub-línea de banda)")
+        if medio > 4.0 or peor > 28:
+            fallos.append(f"la portada se aparta del diseño original (error medio {medio:.2f}, peor zona {peor:.1f})")
     return fallos, notas
+
+
+from pathlib import Path
+AQUI_REF = Path(__file__).resolve().parent / "referencia"
+
+
+def fidelidad_portada(ruta_pdf, ruta_ref):
+    """Compara la portada generada con portada_original.png, ambas suavizadas (el borde de las letras y
+    de las líneas varía de un render a otro). Devuelve (error medio 0–255, error de la peor zona de 12 mm)."""
+    import subprocess
+    import tempfile
+    from scipy import ndimage
+    px = 910 / 210
+    ref = np.array(Image.open(ruta_ref).convert("RGB")).astype(float)
+    with tempfile.TemporaryDirectory() as tmp:
+        subprocess.run(["pdftoppm", "-r", f"{25.4 * px:.4f}", "-f", "1", "-l", "1", "-png", "-singlefile", ruta_pdf, f"{tmp}/p"], check=True)
+        mia = np.array(Image.open(f"{tmp}/p.png").convert("RGB")).astype(float)
+    h, w = min(ref.shape[0], mia.shape[0]), min(ref.shape[1], mia.shape[1])
+    d = np.abs(ndimage.uniform_filter(ref[:h, :w], size=(9, 9, 1)) - ndimage.uniform_filter(mia[:h, :w], size=(9, 9, 1))).sum(axis=2) / 3
+    valido = np.ones((h, w), bool)
+    for y0, y1 in ((62, 80), (258, 268.5)):                    # subtítulo y sub-línea de la banda
+        valido[int(y0 * px):int(y1 * px), :] = False
+    d = np.where(valido, d, 0)
+    celda = int(12 * px)
+    celdas = d[:h // celda * celda, :w // celda * celda].reshape(h // celda, celda, w // celda, celda).mean(axis=(1, 3))
+    return float(d[valido].mean()), float(celdas.max())
 
 
 def main():

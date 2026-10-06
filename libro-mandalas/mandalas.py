@@ -26,12 +26,6 @@ COLORES = {
 }
 
 
-# Paleta de marca "Luz plena" v2. Máximo 3 colores por pieza, contando el fondo.
-MARFIL = "#F7F1E9"        # fondo
-CACAO = "#4A3B33"         # tinta
-ROSA_CENIZAS = "#8E4E52"  # acento único
-
-
 # ---------------------------------------------------------------- utilidades
 def _n(x):
     s = f"{x:.3f}".rstrip("0").rstrip(".")
@@ -160,11 +154,7 @@ def documento(cuerpo, radio, margen=2.0, fondo=None):
 RADIO_MANDALA = 86  # deja lugar arriba (nombre y color) y abajo (frase) dentro de los márgenes de 15 mm
 
 
-_ACENTO = "@ACENTO@"
-
-
-def raiz(radio=RADIO_MANDALA, ancho_petalo=34, r_piedra=47, d_piedra=15,
-         fondo=BLANCO, trazo_color=NEGRO, acento=None):
+def raiz(radio=RADIO_MANDALA, ancho_petalo=34, r_piedra=47, d_piedra=15):
     """Muladhara · 4 pétalos · cuadrado (tierra).
 
     Del centro hacia afuera: triángulo hacia abajo dentro de un cuadrado, 4 pétalos
@@ -189,23 +179,18 @@ def raiz(radio=RADIO_MANDALA, ancho_petalo=34, r_piedra=47, d_piedra=15,
     # Piedras en las diagonales: rombos lisos
     for i in range(4):
         x, y = polar(r(r_piedra), 45 + 90 * i)
-        e.append(rombo(x, y, r(d_piedra), fill=_ACENTO))
+        e.append(rombo(x, y, r(d_piedra)))
     # 4 pétalos, cada uno con su corazón (pétalo interior)
     for i in range(4):
         a = 90 * i
         e.append(petalo(a, r(14), r(62), r(ancho_petalo)))
-        e.append(petalo(a, r(29), r(51), r(ancho_petalo - 20), fill=_ACENTO, clase="petalo-interior"))
+        e.append(petalo(a, r(29), r(51), r(ancho_petalo - 20), clase="petalo-interior"))
     # Cuadrado central con triángulo hacia abajo y una semilla
     h = r(20)
     e.append(cuadrado(0, 0, h))
     e.append(poligono([(-h, -h), (h, -h), (0, h)]))
-    e.append(circulo(r(6.5), 0, -r(8), fill=_ACENTO))
-    svg = documento(e, radio).replace(_ACENTO, acento or fondo)
-    if fondo != BLANCO:
-        svg = svg.replace(f'fill="{BLANCO}"', f'fill="{fondo}"')
-    if trazo_color != NEGRO:
-        svg = svg.replace(f'stroke="{NEGRO}"', f'stroke="{trazo_color}"')
-    return svg
+    e.append(circulo(r(6.5), 0, -r(8)))
+    return documento(e, radio)
 
 
 # ------------------------------------------------- DEDICATORIA (solo línea)
@@ -222,11 +207,90 @@ def corazon_linea():
 
 
 # ----------------------------------------------------------------- PORTADA
-RADIO_PORTADA = 70
+# La portada es la que diseñó Dani: siete flores de colores unidas por una red dorada, sobre una
+# tarjeta crema, con una banda turquesa. Todas las medidas se tomaron de portada.png (4,333 px/mm).
+# Cada flor: pétalos exteriores claros, pétalos medios con una gota clara adentro, y un centro de
+# disco, aro y punto. La flor central es la satélite agrandada, con 12 pétalos en lugar de 8.
+COLORES_FLOR = {
+    "centro":   dict(linea="#7A4A9E", exterior="#CAB7D8", medio="#A989C0", claro="#E7DEEE"),
+    "rojo":     dict(linea="#B3362C", exterior="#E1AFAB", medio="#CE7C76", claro="#F1DBD9"),
+    "naranja":  dict(linea="#C8651B", exterior="#E9C1A4", medio="#DB9B6B", claro="#F5E3D6"),
+    "amarillo": dict(linea="#B8890A", exterior="#E3D09D", medio="#D1B260", claro="#F2EAD3"),
+    "verde":    dict(linea="#3D8A45", exterior="#B1D0B5", medio="#81B386", claro="#DCEADE"),
+    "azul":     dict(linea="#2F72B5", exterior="#ACC7E1", medio="#78A3CF", claro="#DAE6F2"),
+    "indigo":   dict(linea="#43449B", exterior="#B4B4D7", medio="#8585BE", claro="#DDDDED"),
+}
+ORO_PORTADA = "#C2A878"        # oro de la marca: red de líneas
+FONDO_PORTADA = "#FDFAF5"      # tarjeta crema
+BANDA_PORTADA = "#1F5F78"      # banda turquesa
+# forma de las flores (mm), ajustada por comparación píxel a píxel con portada.png
+FLOR_SAT = dict(n=8, R_o=19.590, r0_o=8.685, w_o=8.865, f_o=(0.177, 0.517, 0.600, 0.525), R_m=15.800, r0_m=3.511,
+                w_m=9.000, f_m=(0.185, 0.619, 0.737, 0.611), h_r0=6.948, h_r1=12.700, h_w=3.120,
+                f_h=(0.045, 0.756, 0.787, 0.629), disc=5.986, circ=3.553, dot=1.156, trazo=0.670)
+FLOR_CEN = dict(n=12, R_o=29.600, r0_o=13.440, w_o=10.640, f_o=(-0.010, 0.558, 0.542, 0.550), R_m=24.100, r0_m=6.064,
+                w_m=10.640, f_m=(0.080, 0.663, 0.674, 0.620), h_r0=10.200, h_r1=19.400, h_w=3.641,
+                f_h=(0.210, 0.852, 0.711, 0.528), disc=9.034, circ=5.400, dot=1.900, trazo=0.914)
+
+# centros de las flores en la página (mm), medidos en portada.png
+CENTROS_PORTADA = {"centro": (104.83, 154.07), "rojo": (105.12, 101.89), "naranja": (149.39, 127.43),
+                   "amarillo": (149.32, 179.93), "verde": (105.20, 205.69), "azul": (60.17, 179.98),
+                   "indigo": (60.24, 127.42)}
+SATELITES = ("rojo", "naranja", "amarillo", "verde", "azul", "indigo")   # en sentido horario desde arriba
+TARJETA = (15.0, 15.0, 194.8, 290.8, 4.0)       # x0, y0, x1, y1, radio de las esquinas
+BANDA = (15.0, 243.5, 194.8, 269.5)             # x0, y0, x1, y1 (de borde a borde de la tarjeta)
+LINEA_ORO = 0.3
 
 
-def portada_mandala(radio=RADIO_PORTADA):
-    """Mandala de la portada: el mismo lenguaje de formas que el interior, en los
-    colores de marca (líneas cacao sobre marfil y un solo acento: rosa de las cenizas).
-    Un color a la vez: lo único "pintado" es el acento."""
-    return raiz(radio=radio, fondo=MARFIL, trazo_color=CACAO, acento=ROSA_CENIZAS)
+def _orden_petalos(n, orden):
+    """Orden en que se apilan los pétalos medios (de atrás hacia adelante)."""
+    if isinstance(orden, tuple):            # (inicio, sentido): apilado secuencial desde `inicio`
+        inicio, sentido = orden
+        return [(inicio + sentido * j) % n for j in range(n)]
+    return list(range(n))
+
+
+def flor(cx, cy, P, col):
+    """Una flor de la portada centrada en (cx, cy). Devuelve un grupo SVG (de atrás hacia adelante)."""
+    n, e = P["n"], []
+    w = P["trazo"]
+    L, F, S = col["linea"], col["exterior"], col["medio"]
+    # pétalos exteriores: entre los medios (medio paso de giro)
+    for k in range(n):
+        a = 180 / n + 360 * k / n
+        e.append(trazo(petalo_d(a, P["r0_o"], P["R_o"], P["w_o"], P["f_o"]), F, L, w))
+    # pétalos medios, cada uno con su gota clara
+    for k in _orden_petalos(n, P.get("orden", "sec")):
+        a = 360 * k / n
+        e.append(trazo(petalo_d(a, P["r0_m"], P["R_m"], P["w_m"], P["f_m"]), S, L, w))
+        e.append(trazo(petalo_d(a, P["h_r0"], P["h_r1"], P["h_w"], P["f_h"]), col["claro"], L, w))
+    # centro: disco claro, aro y punto
+    e.append(circulo(P["disc"], 0, 0, fill=col["claro"], stroke=L, w=w))
+    e.append(circulo(P["circ"], 0, 0, fill=S, stroke=L, w=w))
+    e.append(circulo(P["dot"], 0, 0, fill=L, stroke=None))
+    return f'<g transform="translate({_n(cx)},{_n(cy)})">' + "".join(e) + "</g>"
+
+
+def portada_arte():
+    """Toda la parte gráfica de la portada (sin textos): tarjeta, banda, red dorada y las 7 flores.
+    Página A4 completa en mm."""
+    x0, y0, x1, y1, rx = TARJETA
+    e = [f'<rect x="{_n(x0)}" y="{_n(y0)}" width="{_n(x1 - x0)}" height="{_n(y1 - y0)}" rx="{_n(rx)}" fill="{FONDO_PORTADA}"/>']
+    bx0, by0, bx1, by1 = BANDA
+    e.append(f'<rect x="{_n(bx0)}" y="{_n(by0)}" width="{_n(bx1 - bx0)}" height="{_n(by1 - by0)}" fill="{BANDA_PORTADA}"/>')
+    # red dorada: dos círculos, hexágono, estrella de seis puntas y rayos del centro a cada flor
+    c0 = (104.85, 153.8)
+    oro = dict(fill="none", stroke=ORO_PORTADA, w=LINEA_ORO)
+    e.append(circulo(61.0, c0[0], c0[1], **oro))
+    e.append(circulo(51.6, c0[0], c0[1], **oro))
+    pts = [CENTROS_PORTADA[n] for n in SATELITES]
+    e.append(poligono(pts, **oro))
+    e.append(poligono([pts[0], pts[2], pts[4]], **oro))
+    e.append(poligono([pts[1], pts[3], pts[5]], **oro))
+    for p in pts:
+        e.append(linea(CENTROS_PORTADA["centro"], p, stroke=ORO_PORTADA, w=LINEA_ORO))
+    # flores
+    for n in SATELITES:
+        e.append(flor(*CENTROS_PORTADA[n], FLOR_SAT, COLORES_FLOR[n]))
+    e.append(flor(*CENTROS_PORTADA["centro"], FLOR_CEN, COLORES_FLOR["centro"]))
+    return ('<svg xmlns="http://www.w3.org/2000/svg" width="210mm" height="297mm" viewBox="0 0 210 297">'
+            + "".join(e) + "</svg>")

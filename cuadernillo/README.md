@@ -86,3 +86,15 @@ la hoja es 17,6 mm más baja que A4 y hoy varias páginas se desbordan
 `fuentes/variables/` tiene los archivos originales de Google Fonts.
 `python fuentes/preparar_fuentes.py` regenera las instancias estáticas.
 Licencias en `fuentes/OFL-*.txt`.
+
+## Portadas "Mandalas de los Chakras"
+
+`python portada_chakras.py` genera dos tapas con 7 lotos vectoriales:
+
+- `salida/portada_regalo.pdf`: A4 sin sangrado, con dedicatoria y sin "para Adultos Mayores".
+- `salida/portada_amazon.pdf`: tapa frontal KDP 8,625 × 11,25 in (8,5 × 11 + sangrado),
+  con "para Adultos Mayores", texto dentro de la zona segura de 0,375 in.
+  Para subir a KDP falta la tapa completa (contratapa + lomo), que depende de la
+  cantidad de páginas del interior.
+
+Los textos de cada versión están en `VARIANTES`, dentro del script.

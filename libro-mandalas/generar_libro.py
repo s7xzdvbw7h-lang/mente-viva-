@@ -65,7 +65,7 @@ LEER_FRASE = "Al terminar, leé en voz alta:"
 
 # clave, nombre, "Está en", emoción que cuida, afirmación (líneas), respiración, pregunta
 CHAKRAS = [
-    dict(clave="raiz", nombre="Raíz", petalos=4, zonas=(34, 38),   # 36 zonas
+    dict(clave="raiz", nombre="Raíz", petalos=4, zonas=(25, 30),   # 27 zonas
          esta_en="la base de la columna y los pies",
          emocion="sentirme segura y sostenida",
          afirmacion=["Estoy a salvo.", "La vida me sostiene."],

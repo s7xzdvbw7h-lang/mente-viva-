@@ -55,11 +55,6 @@ def linea(p, q, stroke=NEGRO, w=LINEA):
     return trazo(f"M{_n(p[0])},{_n(p[1])} L{_n(q[0])},{_n(q[1])}", stroke=stroke, w=w)
 
 
-def cuadrado(cx, cy, medio_lado, fill=BLANCO, stroke=NEGRO, w=LINEA):
-    h = medio_lado
-    return poligono([(cx - h, cy - h), (cx + h, cy - h), (cx + h, cy + h), (cx - h, cy + h)], fill, stroke, w)
-
-
 def petalo_d(grados, r0, r1, ancho, forma=(0.22, 0.66, 0.62, 0.66)):
     """Contorno de un pétalo (almendra con punta) sobre el eje `grados`.
 
@@ -104,15 +99,15 @@ def media_luna(cx, cy, r_ext, r_int, desplazamiento, grados=0, fill=BLANCO, stro
     return trazo(dpath, fill, stroke, w)
 
 
-def borde_festoneado(r_valle, r_max, n, fill=BLANCO, stroke=NEGRO, w=LINEA):
+def borde_festoneado(r_valle, r_max, n, fase=0.0, fill=BLANCO, stroke=NEGRO, w=LINEA):
     """Contorno de n arcos hacia afuera, apoyados en un círculo de radio r_valle.
-    La cresta de cada arco llega justo a r_max."""
+    La cresta de cada arco llega justo a r_max. `fase` gira el borde (grados)."""
     paso = 360 / n
     punto_medio = r_valle * math.cos(math.radians(paso / 2))   # distancia al centro de la cuerda
     altura = r_max - punto_medio
     cuerda = 2 * r_valle * math.sin(math.radians(paso / 2))
     rho = (cuerda ** 2 / 4 + altura ** 2) / (2 * altura)
-    pts = [polar(r_valle, paso * k) for k in range(n)]
+    pts = [polar(r_valle, paso * k + fase) for k in range(n)]
     d = f"M{_n(pts[0][0])},{_n(pts[0][1])}"
     for k in range(1, n + 1):
         x, y = pts[k % n]
@@ -120,8 +115,27 @@ def borde_festoneado(r_valle, r_max, n, fill=BLANCO, stroke=NEGRO, w=LINEA):
     return trazo(d + " Z", fill, stroke, w)
 
 
-def rombo(cx, cy, d, fill=BLANCO, stroke=NEGRO, w=LINEA):
-    return poligono([(cx, cy - d), (cx + d, cy), (cx, cy + d), (cx - d, cy)], fill, stroke, w)
+def rombo_suave(cx, cy, d, suavidad=0.3, fill=BLANCO, stroke=NEGRO, w=LINEA):
+    """Rombo de semidiagonal d con las cuatro puntas redondeadas (suavidad = fracción del lado)."""
+    v = [(cx, cy - d), (cx + d, cy), (cx, cy + d), (cx - d, cy)]
+    lerp = lambda a, b, t: (a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t)
+    desc = ""
+    for i in range(4):
+        ant, p, sig = v[i - 1], v[i], v[(i + 1) % 4]
+        a, b = lerp(p, ant, suavidad), lerp(p, sig, suavidad)
+        desc += ("M" if i == 0 else "L") + f"{_n(a[0])},{_n(a[1])} Q{_n(p[0])},{_n(p[1])} {_n(b[0])},{_n(b[1])} "
+    return trazo(desc + "Z", fill, stroke, w)
+
+
+def cuadrado_suave(cx, cy, medio_lado, radio_esquina, fill=BLANCO, stroke=NEGRO, w=LINEA):
+    """Cuadrado con las esquinas redondeadas."""
+    h, rr = medio_lado, radio_esquina
+    x0, x1, y0, y1 = cx - h, cx + h, cy - h, cy + h
+    desc = (f"M{_n(x0 + rr)},{_n(y0)} L{_n(x1 - rr)},{_n(y0)} Q{_n(x1)},{_n(y0)} {_n(x1)},{_n(y0 + rr)} "
+            f"L{_n(x1)},{_n(y1 - rr)} Q{_n(x1)},{_n(y1)} {_n(x1 - rr)},{_n(y1)} "
+            f"L{_n(x0 + rr)},{_n(y1)} Q{_n(x0)},{_n(y1)} {_n(x0)},{_n(y1 - rr)} "
+            f"L{_n(x0)},{_n(y0 + rr)} Q{_n(x0)},{_n(y0)} {_n(x0 + rr)},{_n(y0)} Z")
+    return trazo(desc, fill, stroke, w)
 
 
 def estrella(cx, cy, r, puntas, rot=0, fill=BLANCO, stroke=NEGRO, w=LINEA):
@@ -142,42 +156,38 @@ def documento(cuerpo, radio, margen=2.0, fondo=None):
 RADIO_MANDALA = 86  # deja lugar arriba (nombre y color) y abajo (frase) dentro de los márgenes de 15 mm
 
 
-def raiz(radio=RADIO_MANDALA, ancho_petalo=34, r_piedra=47, d_piedra=15):
+def raiz(radio=RADIO_MANDALA):
     """Muladhara · 4 pétalos · cuadrado (tierra).
 
-    Del centro hacia afuera: triángulo hacia abajo dentro de un cuadrado, 4 pétalos
-    (cada uno con su corazón) que nacen de los lados del cuadrado, 4 "piedras" (rombos)
-    en los huecos, y dos anillos de 8 ladrillos escalonados, el exterior festoneado.
-    Los pétalos son SOLO 4: el resto de las formas son de tierra (cuadrados, rombos).
+    Del centro hacia afuera: cuadrado con un círculo, 4 pétalos (cada uno con su corazón) que
+    nacen de los lados del cuadrado, 4 "piedras" (rombos) en los huecos, un anillo liso y un
+    borde de puntillas dividido en 8 ladrillos. Los pétalos son SOLO 4: el resto de las formas
+    son de tierra (cuadrados, rombos). Sin triángulo: ese símbolo (fuego) es del Plexo solar.
     """
     k = radio / 89
     r = lambda v: v * k
+    forma_petalo = (0.20, 0.72, 0.74, 0.40)       # pétalo de loto: cuerpo lleno y punta fina
+    forma_corazon = (0.14, 0.78, 0.70, 0.45)      # el corazón de cada pétalo: gota
     e = []
-    # Borde festoneado dividido en 8 ladrillos, y anillo liso
-    e.append(borde_festoneado(r(84), radio, 16))
+    # Borde de puntillas (24, tres por ladrillo) dividido en 8 ladrillos, y anillo liso
+    e.append(borde_festoneado(r(84), radio, 24, fase=7.5))
     for i in range(8):
         a = 22.5 + 45 * i
         e.append(linea(polar(r(74), a), polar(r(84), a)))
     e.append(circulo(r(74)))
-    # Segundo anillo, también de ladrillos pero escalonados (juntas desfasadas), como un muro
-    for i in range(8):
-        a = 45 * i
-        e.append(linea(polar(r(62), a), polar(r(74), a)))
     e.append(circulo(r(62)))
-    # Piedras en las diagonales: rombos lisos
+    # Piedras en las diagonales: rombos de puntas suaves
     for i in range(4):
-        x, y = polar(r(r_piedra), 45 + 90 * i)
-        e.append(rombo(x, y, r(d_piedra)))
-    # 4 pétalos, cada uno con su corazón (pétalo interior)
+        x, y = polar(r(47), 45 + 90 * i)
+        e.append(rombo_suave(x, y, r(16.5), 0.30))
+    # 4 pétalos, cada uno con su corazón
     for i in range(4):
         a = 90 * i
-        e.append(petalo(a, r(14), r(62), r(ancho_petalo)))
-        e.append(petalo(a, r(29), r(51), r(ancho_petalo - 20), clase="petalo-interior"))
-    # Cuadrado central con triángulo hacia abajo y una semilla
-    h = r(20)
-    e.append(cuadrado(0, 0, h))
-    e.append(poligono([(-h, -h), (h, -h), (0, h)]))
-    e.append(circulo(r(6.5), 0, -r(8)))
+        e.append(petalo(a, r(14), r(62), r(36), forma=forma_petalo))
+        e.append(petalo(a, r(29), r(51), r(18), forma=forma_corazon, clase="petalo-interior"))
+    # Cuadrado central de esquinas suaves, con un círculo
+    e.append(cuadrado_suave(0, 0, r(20), r(3)))
+    e.append(circulo(r(10)))
     return documento(e, radio)
 
 

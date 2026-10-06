@@ -303,13 +303,13 @@ def pagina_portada():
     return f"""
 <section class="pagina">
   <div class="arte">{M.portada_arte()}</div>
-  {texto_base(esc(TITULO_LIBRO[0]), "Fraunces-Portada.ttf", "FrauncesPortada", 64.9, 44.8, COLOR_TITULO, 600)}
-  {texto_base(letras, "Manrope-ExtraBold.ttf", "Manrope", 33.7, 60.0, COLOR_TITULO, 800, tracking=0.02)}
-  {texto_base(esc(SUBTITULO), "Fraunces-Italica.ttf", "FrauncesItalica", 32, 73.2, COLOR_TEXTO, 400, "italic")}
-  {texto_base(esc(CREADO_POR), "Fraunces-Creado.ttf", "FrauncesCreado", 20.0, 239.1, COLOR_TEXTO, 600)}
-  {texto_base(esc(BANDA), "Manrope-ExtraBold.ttf", "Manrope", 26.2, 255.7, "#fff", 800, tracking=0.03)}
-  {texto_base(esc(BANDA_SUB), "Manrope-Medium.ttf", "Manrope", 18, 264.6, "#fff", 500, tracking=0.02)}
-  {texto_base(esc(PARA_MAMA), "Fraunces-Mama.ttf", "FrauncesMama", 21.7, 282.4, COLOR_MAMA, 500, "italic")}
+  {texto_base(esc(TITULO_LIBRO[0]), "Fraunces-Portada.ttf", "FrauncesPortada", 64.9, 44.8 - M.SUBIR_TITULO, COLOR_TITULO, 600)}
+  {texto_base(letras, "Manrope-ExtraBold.ttf", "Manrope", 33.7, 60.0 - M.SUBIR_TITULO, COLOR_TITULO, 800, tracking=0.02)}
+  {texto_base(esc(SUBTITULO), "Fraunces-Italica.ttf", "FrauncesItalica", 32, 73.2 - M.SUBIR_TITULO, COLOR_TEXTO, 400, "italic")}
+  {texto_base(esc(CREADO_POR), "Fraunces-Creado.ttf", "FrauncesCreado", 20.0, 239.1 - M.SUBIR_RESTO, COLOR_TEXTO, 600)}
+  {texto_base(esc(BANDA), "Manrope-ExtraBold.ttf", "Manrope", 26.2, 255.7 - M.SUBIR_RESTO, "#fff", 800, tracking=0.03)}
+  {texto_base(esc(BANDA_SUB), "Manrope-Medium.ttf", "Manrope", 18, 264.6 - M.SUBIR_RESTO, "#fff", 500, tracking=0.02)}
+  {texto_base(esc(PARA_MAMA), "Fraunces-Mama.ttf", "FrauncesMama", 21.7, 282.4 - M.SUBIR_RESTO, COLOR_MAMA, 500, "italic")}
 </section>"""
 
 
@@ -391,7 +391,7 @@ def pagina_reflexion(ch, indice, n):
 # ===================================================================== ARMADO
 def informacion_paginas(fase=1):
     """Descripción de cada página impresa, para los controles de verificar.py."""
-    info = [dict(nombre="portada", numero=None, margen_mm=12), dict(nombre="dedicatoria", numero=None),
+    info = [dict(nombre="portada", numero=None), dict(nombre="dedicatoria", numero=None),
             dict(nombre="como_usar", numero=3)]
     n = 4
     for i, ch in enumerate(CHAKRAS[:1] if fase == 1 else CHAKRAS):

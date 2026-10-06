@@ -224,13 +224,20 @@ FLOR_CEN = dict(n=12, R_o=29.600, r0_o=13.440, w_o=10.640, f_o=(-0.010, 0.558, 0
                 w_m=10.640, f_m=(0.080, 0.663, 0.674, 0.620), h_r0=10.200, h_r1=19.400, h_w=3.641,
                 f_h=(0.210, 0.852, 0.711, 0.528), disc=9.034, circ=5.400, dot=1.900, trazo=0.914)
 
-# centros de las flores en la página (mm), medidos en portada.png
-CENTROS_PORTADA = {"centro": (104.83, 154.07), "rojo": (105.12, 101.89), "naranja": (149.39, 127.43),
-                   "amarillo": (149.32, 179.93), "verde": (105.20, 205.69), "azul": (60.17, 179.98),
-                   "indigo": (60.24, 127.42)}
+# Para que todo entre en los márgenes de 15 mm de impresión, la composición original se subió:
+# el título y el subtítulo SUBIR_TITULO mm y todo lo demás SUBIR_RESTO mm (el borde de abajo de la
+# tarjeta pasa de 290,8 a 282 mm). El original tenía "Para mamá" a 13 mm del borde de la hoja.
+SUBIR_TITULO = 3.5
+SUBIR_RESTO = 7.0
+
+# centros de las flores en portada.png (mm, posición original) y ya subidos
+_CENTROS_ORIGINAL = {"centro": (104.83, 154.07), "rojo": (105.12, 101.89), "naranja": (149.39, 127.43),
+                     "amarillo": (149.32, 179.93), "verde": (105.20, 205.69), "azul": (60.17, 179.98),
+                     "indigo": (60.24, 127.42)}
+CENTROS_PORTADA = {k: (x, y - SUBIR_RESTO) for k, (x, y) in _CENTROS_ORIGINAL.items()}
 SATELITES = ("rojo", "naranja", "amarillo", "verde", "azul", "indigo")   # en sentido horario desde arriba
-TARJETA = (15.0, 15.0, 194.8, 290.8, 4.0)       # x0, y0, x1, y1, radio de las esquinas
-BANDA = (15.0, 243.5, 194.8, 269.5)             # x0, y0, x1, y1 (de borde a borde de la tarjeta)
+TARJETA = (15.0, 15.0, 194.8, 282.0, 4.0)       # x0, y0, x1, y1, radio de las esquinas (el original llegaba a 290,8)
+BANDA = (15.0, 243.5 - SUBIR_RESTO, 194.8, 269.5 - SUBIR_RESTO)   # x0, y0, x1, y1 (de borde a borde de la tarjeta)
 LINEA_ORO = 0.3
 
 
@@ -271,7 +278,7 @@ def portada_arte():
     bx0, by0, bx1, by1 = BANDA
     e.append(f'<rect x="{_n(bx0)}" y="{_n(by0)}" width="{_n(bx1 - bx0)}" height="{_n(by1 - by0)}" fill="{BANDA_PORTADA}"/>')
     # red dorada: dos círculos, hexágono, estrella de seis puntas y rayos del centro a cada flor
-    c0 = (104.85, 153.8)
+    c0 = (104.85, 153.8 - SUBIR_RESTO)
     oro = dict(fill="none", stroke=ORO_PORTADA, w=LINEA_ORO)
     e.append(circulo(61.0, c0[0], c0[1], **oro))
     e.append(circulo(51.6, c0[0], c0[1], **oro))

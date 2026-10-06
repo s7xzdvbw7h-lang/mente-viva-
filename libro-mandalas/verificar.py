@@ -280,23 +280,36 @@ AQUI_REF = Path(__file__).resolve().parent / "referencia"
 
 def fidelidad_portada(ruta_pdf, ruta_ref):
     """Compara la portada generada con portada_original.png, ambas suavizadas (el borde de las letras y
-    de las líneas varía de un render a otro). Devuelve (error medio 0–255, error de la peor zona de 12 mm)."""
+    de las líneas varía de un render a otro). La portada se subió para entrar en los márgenes, así que se
+    alinea cada bloque del original con su nueva posición. Devuelve (error medio 0–255, peor zona de 12 mm)."""
     import subprocess
     import tempfile
     from scipy import ndimage
+    import mandalas as M
     px = 910 / 210
     ref = np.array(Image.open(ruta_ref).convert("RGB")).astype(float)
     with tempfile.TemporaryDirectory() as tmp:
         subprocess.run(["pdftoppm", "-r", f"{25.4 * px:.4f}", "-f", "1", "-l", "1", "-png", "-singlefile", ruta_pdf, f"{tmp}/p"], check=True)
         mia = np.array(Image.open(f"{tmp}/p.png").convert("RGB")).astype(float)
-    h, w = min(ref.shape[0], mia.shape[0]), min(ref.shape[1], mia.shape[1])
-    d = np.abs(ndimage.uniform_filter(ref[:h, :w], size=(9, 9, 1)) - ndimage.uniform_filter(mia[:h, :w], size=(9, 9, 1))).sum(axis=2) / 3
-    valido = np.ones((h, w), bool)
-    for y0, y1 in ((62, 80), (258, 268.5)):                    # subtítulo y sub-línea de la banda
-        valido[int(y0 * px):int(y1 * px), :] = False
-    d = np.where(valido, d, 0)
+    h, w = min(mia.shape[0], ref.shape[0]), min(mia.shape[1], ref.shape[1])    # pdftoppm a veces rinde 1 px de más
+    mia = mia[:h, :w]
+    ref_al = np.zeros_like(mia)
+    valido = np.zeros((h, w), bool)
+    # bloques del original (mm): título | flores, "Creado por", banda y "Para mamá"; cada uno subió distinto
+    for y0, y1, sube in ((20, 62, M.SUBIR_TITULO), (82, 285, M.SUBIR_RESTO)):
+        a, b, s = int(y0 * px), int(y1 * px), int(round(sube * px))
+        n = min(b - a, h - (a - s))
+        ref_al[a - s:a - s + n] = ref[a:a + n, :w]
+        valido[a - s:a - s + n] = True
+    for y0, y1 in ((62 - M.SUBIR_TITULO, 80 - M.SUBIR_TITULO), (258 - M.SUBIR_RESTO, 268.5 - M.SUBIR_RESTO)):
+        valido[int(y0 * px):int(y1 * px), :] = False             # lo que cambia a propósito: subtítulo y sub-línea
+    valido = ndimage.binary_erosion(valido, iterations=6)       # sin los bordes de los bloques
+    d = np.abs(ndimage.uniform_filter(ref_al, size=(9, 9, 1)) - ndimage.uniform_filter(mia, size=(9, 9, 1))).sum(axis=2) / 3
     celda = int(12 * px)
-    celdas = d[:h // celda * celda, :w // celda * celda].reshape(h // celda, celda, w // celda, celda).mean(axis=(1, 3))
+    hh, ww = h // celda * celda, w // celda * celda
+    suma = (d * valido)[:hh, :ww].reshape(hh // celda, celda, ww // celda, celda).sum(axis=(1, 3))
+    cuenta = valido[:hh, :ww].reshape(hh // celda, celda, ww // celda, celda).sum(axis=(1, 3))
+    celdas = np.where(cuenta > celda * celda / 2, suma / np.maximum(cuenta, 1), 0)
     return float(d[valido].mean()), float(celdas.max())
 
 

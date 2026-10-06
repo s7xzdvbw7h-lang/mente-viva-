@@ -26,6 +26,12 @@ COLORES = {
 }
 
 
+# Paleta de marca "Luz plena" v2. Máximo 3 colores por pieza, contando el fondo.
+MARFIL = "#F7F1E9"        # fondo
+CACAO = "#4A3B33"         # tinta
+ROSA_CENIZAS = "#8E4E52"  # acento único
+
+
 # ---------------------------------------------------------------- utilidades
 def _n(x):
     s = f"{x:.3f}".rstrip("0").rstrip(".")
@@ -116,6 +122,26 @@ def media_luna(cx, cy, r_ext, r_int, desplazamiento, grados=0, fill=BLANCO, stro
     return trazo(dpath, fill, stroke, w)
 
 
+def borde_festoneado(r_valle, r_max, n, fill=BLANCO, stroke=NEGRO, w=LINEA):
+    """Contorno de n arcos hacia afuera, apoyados en un círculo de radio r_valle.
+    La cresta de cada arco llega justo a r_max."""
+    paso = 360 / n
+    punto_medio = r_valle * math.cos(math.radians(paso / 2))   # distancia al centro de la cuerda
+    altura = r_max - punto_medio
+    cuerda = 2 * r_valle * math.sin(math.radians(paso / 2))
+    rho = (cuerda ** 2 / 4 + altura ** 2) / (2 * altura)
+    pts = [polar(r_valle, paso * k) for k in range(n)]
+    d = f"M{_n(pts[0][0])},{_n(pts[0][1])}"
+    for k in range(1, n + 1):
+        x, y = pts[k % n]
+        d += f" A{_n(rho)},{_n(rho)} 0 0 1 {_n(x)},{_n(y)}"
+    return trazo(d + " Z", fill, stroke, w)
+
+
+def rombo(cx, cy, d, fill=BLANCO, stroke=NEGRO, w=LINEA):
+    return poligono([(cx, cy - d), (cx + d, cy), (cx, cy + d), (cx - d, cy)], fill, stroke, w)
+
+
 def estrella(cx, cy, r, puntas, rot=0, fill=BLANCO, stroke=NEGRO, w=LINEA):
     pts = [polar(r, rot + 360 * k / puntas) for k in range(puntas)]
     pts = [(x + cx, y + cy) for x, y in pts]
@@ -131,39 +157,55 @@ def documento(cuerpo, radio, margen=2.0, fondo=None):
 
 
 # ------------------------------------------------------------------- RAÍZ
-RADIO_MANDALA = 89  # cabe justo en el ancho útil (A4 menos márgenes de 15 mm)
+RADIO_MANDALA = 86  # deja lugar arriba (nombre y color) y abajo (frase) dentro de los márgenes de 15 mm
 
-def raiz():
+
+_ACENTO = "@ACENTO@"
+
+
+def raiz(radio=RADIO_MANDALA, ancho_petalo=34, r_piedra=47, d_piedra=15,
+         fondo=BLANCO, trazo_color=NEGRO, acento=None):
     """Muladhara · 4 pétalos · cuadrado (tierra).
 
-    Del centro hacia afuera: triángulo hacia abajo dentro de un cuadrado,
-    4 pétalos que nacen de los lados del cuadrado, 4 "piedras" cuadradas en
-    los huecos, un anillo liso y un anillo de 8 ladrillos.
+    Del centro hacia afuera: triángulo hacia abajo dentro de un cuadrado, 4 pétalos
+    (cada uno con su corazón) que nacen de los lados del cuadrado, 4 "piedras" (rombos)
+    en los huecos, y dos anillos de 8 ladrillos escalonados, el exterior festoneado.
+    Los pétalos son SOLO 4: el resto de las formas son de tierra (cuadrados, rombos).
     """
+    k = radio / 89
+    r = lambda v: v * k
     e = []
-    R = RADIO_MANDALA
-    # Anillo exterior de 8 ladrillos + anillo liso
-    e.append(circulo(R))
-    for k in range(8):
-        a = 22.5 + 45 * k
-        e.append(linea(polar(78, a), polar(R, a)))
-    e.append(circulo(78))
-    e.append(circulo(66))
-    # Piedras cuadradas en los huecos (diagonales)
-    for k in range(4):
-        x, y = polar(47, 45 + 90 * k)
-        e.append(cuadrado(x, y, 8))
+    # Borde festoneado dividido en 8 ladrillos, y anillo liso
+    e.append(borde_festoneado(r(84), radio, 16))
+    for i in range(8):
+        a = 22.5 + 45 * i
+        e.append(linea(polar(r(74), a), polar(r(84), a)))
+    e.append(circulo(r(74)))
+    # Segundo anillo, también de ladrillos pero escalonados (juntas desfasadas), como un muro
+    for i in range(8):
+        a = 45 * i
+        e.append(linea(polar(r(62), a), polar(r(74), a)))
+    e.append(circulo(r(62)))
+    # Piedras en las diagonales: rombos lisos
+    for i in range(4):
+        x, y = polar(r(r_piedra), 45 + 90 * i)
+        e.append(rombo(x, y, r(d_piedra), fill=_ACENTO))
     # 4 pétalos, cada uno con su corazón (pétalo interior)
-    for k in range(4):
-        a = 90 * k
-        e.append(petalo(a, 14, 66, 42))
-        e.append(petalo(a, 31, 55, 18, clase="petalo-interior"))
+    for i in range(4):
+        a = 90 * i
+        e.append(petalo(a, r(14), r(62), r(ancho_petalo)))
+        e.append(petalo(a, r(29), r(51), r(ancho_petalo - 20), fill=_ACENTO, clase="petalo-interior"))
     # Cuadrado central con triángulo hacia abajo y una semilla
-    h = 21
+    h = r(20)
     e.append(cuadrado(0, 0, h))
     e.append(poligono([(-h, -h), (h, -h), (0, h)]))
-    e.append(circulo(6.5, 0, -8))
-    return documento(e, R)
+    e.append(circulo(r(6.5), 0, -r(8), fill=_ACENTO))
+    svg = documento(e, radio).replace(_ACENTO, acento or fondo)
+    if fondo != BLANCO:
+        svg = svg.replace(f'fill="{BLANCO}"', f'fill="{fondo}"')
+    if trazo_color != NEGRO:
+        svg = svg.replace(f'stroke="{NEGRO}"', f'stroke="{trazo_color}"')
+    return svg
 
 
 # ------------------------------------------------- DEDICATORIA (solo línea)
@@ -180,38 +222,11 @@ def corazon_linea():
 
 
 # ----------------------------------------------------------------- PORTADA
-def _clarear(hex_color, t):
-    c = hex_color.lstrip("#")
-    r, g, b = (int(c[i:i + 2], 16) for i in (0, 2, 4))
-    return "#%02x%02x%02x" % tuple(int(v + (255 - v) * t) for v in (r, g, b))
+RADIO_PORTADA = 70
 
 
-# (chakra, cantidad de pétalos, radio de la base, radio de la punta, ancho)
-_ANILLOS_PORTADA = [
-    ("raiz", 4, 0, 19, 15),
-    ("sacro", 6, 11, 28, 15),
-    ("plexo", 10, 20, 37, 13),
-    ("corazon", 12, 29, 46, 13),
-    ("garganta", 16, 38, 55, 12),
-    ("tercer_ojo", 2, 47, 64, 22),
-    ("corona", 36, 56, 72, 9.5),
-]
-CONTORNO_PORTADA = "#ffffff"
-
-
-def portada_mandala(radio=72):
-    """Loto de siete anillos, del centro (Raíz) hacia afuera (Corona), en color."""
-    e = []
-    for chakra, n, r0, r1, ancho in reversed(_ANILLOS_PORTADA):
-        color = COLORES[chakra]
-        if chakra == "tercer_ojo":
-            # dos pétalos grandes a los costados (ojo), sobre un disco liso
-            e.append(circulo(57, fill=_clarear(color, 0.78), stroke=CONTORNO_PORTADA, w=1.0))
-            angulos = [90, 270]
-        else:
-            angulos = [360 * k / n for k in range(n)]
-        for a in angulos:
-            e.append(petalo(a, r0, r1, ancho, fill=color, stroke=CONTORNO_PORTADA, w=1.0, clase="petalo-portada"))
-    e.append(circulo(5.5, fill="#ffffff", stroke=COLORES["corona"], w=1.2))
-    e.append(circulo(2.2, fill=COLORES["plexo"], stroke=None))
-    return documento(e, radio, margen=1.0)
+def portada_mandala(radio=RADIO_PORTADA):
+    """Mandala de la portada: el mismo lenguaje de formas que el interior, en los
+    colores de marca (líneas cacao sobre marfil y un solo acento: rosa de las cenizas).
+    Un color a la vez: lo único "pintado" es el acento."""
+    return raiz(radio=radio, fondo=MARFIL, trazo_color=CACAO, acento=ROSA_CENIZAS)

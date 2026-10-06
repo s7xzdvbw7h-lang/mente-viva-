@@ -37,7 +37,7 @@ un rato de calma, un color a la vez.
 Pintá despacio, respirá tranquila
 y disfrutá cada página.
 
-Te quiero con todo mi corazón,
+Te amo con todo mi corazón,
 Dani"""
 
 TITULO_LIBRO = ("MANDALAS", "DE LOS CHAKRAS")
@@ -59,10 +59,11 @@ COMO_USAR_NOTA = ("Usá papel de 120 g o más, y lápices o marcadores gruesos, 
 
 TEXTO_COLOR = "Este es su color, pero podés usar los que quieras."
 TEXTO_ESCRIBIR = "Podés escribirlo o contárselo a alguien."
+LEER_FRASE = "Al terminar, leé en voz alta:"
 
 # clave, nombre, "Está en", emoción que cuida, afirmación (líneas), respiración, pregunta
 CHAKRAS = [
-    dict(clave="raiz", nombre="Raíz", petalos=4, zonas=(26, 34),   # ≈30 zonas
+    dict(clave="raiz", nombre="Raíz", petalos=4, zonas=(34, 38),   # 36 zonas
          esta_en="la base de la columna y los pies",
          emocion="sentirme segura y sostenida",
          afirmacion=["Estoy a salvo.", "La vida me sostiene."],
@@ -106,18 +107,13 @@ CHAKRAS = [
          pregunta="¿Qué te da paz en este momento de tu vida?"),
 ]
 
-# La portada original (portada.png) no estaba disponible: esta portada es una
-# recreación provisoria hecha a partir de la descripción. Poner en False cuando
-# se reemplace por la fiel al original.
-PORTADA_PROVISORIA = True
-
 # ================================================================== MEDIDAS (mm)
 MARGEN = 15
 ANCHO, ALTO = 210, 297
 ANCHO_UTIL = ANCHO - 2 * MARGEN
 PESTANA_ANCHO = 8
 PESTANA_ALTO = 34
-CENTRO_MANDALA_Y = 111      # centro del mandala medido desde arriba
+CENTRO_MANDALA_Y = 134      # centro del mandala medido desde arriba (deja lugar al nombre y a la frase)
 PESTANA_PASO = 38          # cada capítulo baja un escalón, para encontrarlo al hojear
 TINTA = "#1b1b1b"
 
@@ -127,6 +123,8 @@ def preparar_fuentes():
     destino = AQUI / "fuentes" / "estaticas"
     trabajos = [
         ("Fraunces[SOFT,WONK,opsz,wght].ttf", "Fraunces-Titulo.ttf", {"wght": 700, "opsz": 36, "SOFT": 100, "WONK": 0}),
+        ("Fraunces[SOFT,WONK,opsz,wght].ttf", "Fraunces-Portada.ttf", {"wght": 600, "opsz": 72, "SOFT": 30, "WONK": 0}),
+        ("Fraunces-Italic[SOFT,WONK,opsz,wght].ttf", "Fraunces-Italica.ttf", {"wght": 400, "opsz": 72, "SOFT": 30, "WONK": 0}),
         ("Manrope[wght].ttf", "Manrope-Medium.ttf", {"wght": 500}),
         ("Manrope[wght].ttf", "Manrope-Bold.ttf", {"wght": 700}),
         ("Manrope[wght].ttf", "Manrope-ExtraBold.ttf", {"wght": 800}),
@@ -176,6 +174,8 @@ def css():
     f = (AQUI / "fuentes" / "estaticas").as_uri()
     return f"""
 @font-face {{ font-family: 'Fraunces'; font-weight: 700; src: url('{f}/Fraunces-Titulo.ttf'); }}
+@font-face {{ font-family: 'FrauncesPortada'; font-weight: 600; font-style: normal; src: url('{f}/Fraunces-Portada.ttf'); }}
+@font-face {{ font-family: 'FrauncesPortada'; font-weight: 400; font-style: italic; src: url('{f}/Fraunces-Italica.ttf'); }}
 @font-face {{ font-family: 'Manrope'; font-weight: 500; src: url('{f}/Manrope-Medium.ttf'); }}
 @font-face {{ font-family: 'Manrope'; font-weight: 700; src: url('{f}/Manrope-Bold.ttf'); }}
 @font-face {{ font-family: 'Manrope'; font-weight: 800; src: url('{f}/Manrope-ExtraBold.ttf'); }}
@@ -196,14 +196,18 @@ p {{ margin: 0; }}
 b {{ font-weight: 800; }}
 img {{ display: block; }}
 
-/* portada */
-.banda {{ position: absolute; left: {MARGEN}mm; width: {ANCHO_UTIL}mm; top: 17mm; height: 14mm;
-          border-radius: 7mm; background: #5b2a86; color: #fff; text-align: center;
-          font-weight: 800; font-size: 20pt; letter-spacing: 0.14em; line-height: 14mm; }}
-.titulo-portada {{ text-align: center; font-size: 46pt; line-height: 1.08; color: #3b1f5c; }}
-.subtitulo {{ text-align: center; font-size: 28pt; color: #8e4bb5; }}
-.creado {{ text-align: center; font-weight: 800; font-size: 20pt; }}
-.paramama {{ text-align: center; font-family: 'Fraunces', serif; font-weight: 700; font-size: 22pt; color: #3b1f5c; }}
+/* portada (marca "Luz plena": marfil + cacao + rosa de las cenizas) */
+.portada {{ background: {M.MARFIL}; color: {M.CACAO}; }}
+.etiqueta {{ position: absolute; left: 45mm; width: 120mm; top: 17mm; height: 13mm; border-radius: 6.5mm;
+             background: {M.CACAO}; color: {M.MARFIL}; text-align: center; font-weight: 800; font-size: 18pt;
+             letter-spacing: 0.16em; line-height: 13mm; }}
+.titulo-portada {{ text-align: center; font-family: 'FrauncesPortada', serif; font-weight: 600; font-size: 48pt;
+                   line-height: 1.06; color: {M.CACAO}; }}
+.subtitulo {{ text-align: center; font-family: 'FrauncesPortada', serif; font-style: italic; font-weight: 400;
+              font-size: 36pt; line-height: 1.1; color: {M.ROSA_CENIZAS}; }}
+.creado {{ text-align: center; font-weight: 800; font-size: 20pt; color: {M.CACAO}; }}
+.paramama {{ text-align: center; font-family: 'FrauncesPortada', serif; font-style: italic; font-weight: 400;
+             font-size: 26pt; color: {M.ROSA_CENIZAS}; }}
 
 /* dedicatoria */
 .dedic {{ text-align: center; font-size: 20pt; line-height: 1.7; }}
@@ -218,22 +222,23 @@ img {{ display: block; }}
 .paso .t {{ margin-left: 8mm; font-size: 24pt; line-height: 1.3; }}
 .nota-uso {{ border: 0.75mm solid {TINTA}; border-radius: 6mm; padding: 8mm 9mm; font-size: 22pt; line-height: 1.45; }}
 
-/* presentación de capítulo */
-.titulo-cap {{ font-size: 58pt; line-height: 1.05; margin-bottom: 7mm; }}
-.esta-en {{ font-size: 18pt; margin-bottom: 5mm; }}
-.emocion {{ font-size: 20pt; line-height: 1.35; margin-bottom: 11mm; }}
-.color-fila {{ display: flex; align-items: center; margin-bottom: 13mm; }}
-.color-fila svg {{ flex: 0 0 22mm; }}
-.color-fila p {{ margin-left: 7mm; font-size: 18pt; line-height: 1.35; }}
-.afirmacion {{ font-family: 'Fraunces', serif; font-weight: 700; font-size: 32pt; line-height: 1.2; margin-bottom: 13mm; }}
-.respiracion {{ font-size: 18pt; line-height: 1.4; margin-bottom: 13mm; }}
-.pregunta {{ font-weight: 700; font-size: 20pt; line-height: 1.35; margin-bottom: 3mm; }}
-.renglon {{ height: 16mm; border-bottom: 0.75mm solid {TINTA}; }}
-.nota-escribir {{ font-size: 18pt; margin-top: 5mm; }}
-
-/* mandala */
+/* página del mandala: nombre + color arriba, frase abajo */
+.cab-fila {{ display: flex; align-items: center; }}
+.cab-fila svg {{ flex: 0 0 15mm; }}
+.titulo-mandala {{ margin-left: 6mm; font-size: 40pt; line-height: 1.05; }}
+.color-texto {{ margin-top: 3mm; font-size: 18pt; line-height: 1.35; }}
+.etiqueta-frase {{ position: absolute; left: {MARGEN}mm; width: {ANCHO_UTIL}mm; text-align: center; font-weight: 700; font-size: 18pt; }}
 .pie-afirmacion {{ position: absolute; left: {MARGEN}mm; width: {ANCHO_UTIL}mm; text-align: center;
                    font-family: 'Fraunces', serif; font-weight: 700; font-size: 32pt; line-height: 1.22; }}
+
+/* página de reflexión: la tarea, después de decir la frase */
+.titulo-cap {{ font-size: 58pt; line-height: 1.05; margin-bottom: 9mm; }}
+.esta-en {{ font-size: 18pt; margin-bottom: 6mm; }}
+.emocion {{ font-size: 20pt; line-height: 1.35; margin-bottom: 14mm; }}
+.respiracion {{ font-size: 18pt; line-height: 1.4; margin-bottom: 16mm; }}
+.pregunta {{ font-weight: 700; font-size: 20pt; line-height: 1.35; margin-bottom: 4mm; }}
+.renglon {{ height: 25mm; border-bottom: 0.75mm solid {TINTA}; }}
+.nota-escribir {{ font-size: 18pt; margin-top: 6mm; }}
 """
 
 
@@ -257,17 +262,17 @@ def _svg_img(ruta_svg, ancho_mm):
 
 def pagina_portada():
     mandala = M.portada_mandala()
-    ancho = 2 * (72 + 1)
-    cy = 168
+    ancho = 2 * (M.RADIO_PORTADA + 2)
+    cy = 172
     top = cy - ancho / 2
     return f"""
-<section class="pagina">
-  <div class="banda">{esc(BANDA)}</div>
-  <div class="caja titulo-portada serif" style="top:40mm">{esc(TITULO_LIBRO[0])}<br>{esc(TITULO_LIBRO[1])}</div>
-  <div class="caja subtitulo serif" style="top:80mm">{esc(SUBTITULO)}</div>
+<section class="pagina portada">
+  <div class="etiqueta">{esc(BANDA)}</div>
+  <div class="caja titulo-portada" style="top:38mm">{esc(TITULO_LIBRO[0])}<br>{esc(TITULO_LIBRO[1])}</div>
+  <div class="caja subtitulo" style="top:82mm">{esc(SUBTITULO)}</div>
   <div style="position:absolute; left:{(ANCHO - ancho) / 2}mm; top:{top}mm; width:{ancho}mm">{mandala}</div>
-  <div class="caja creado" style="top:250mm">{esc(CREADO_POR)}</div>
-  <div class="caja paramama" style="top:262mm">{esc(PARA_MAMA)}</div>
+  <div class="caja creado" style="top:252mm">{esc(CREADO_POR)}</div>
+  <div class="caja paramama" style="top:263mm">{esc(PARA_MAMA)}</div>
 </section>"""
 
 
@@ -306,11 +311,30 @@ def pagina_como_usar(n):
 </section>"""
 
 
-def pagina_presentacion(ch, indice, n):
+def pagina_mandala(ch, indice, n, ruta_svg, radio):
+    """Primero se pinta: nombre y color arriba, mandala, y abajo la frase para leer al terminar."""
     color = M.COLORES[ch["clave"]]
-    circulo = (f'<svg width="22mm" height="22mm" viewBox="0 0 22 22" xmlns="http://www.w3.org/2000/svg">'
-               f'<circle cx="11" cy="11" r="10.5" fill="{color}" stroke="{M.NEGRO}" stroke-width="{M.LINEA}"/></svg>')
+    circulo = (f'<svg width="15mm" height="15mm" viewBox="0 0 15 15" xmlns="http://www.w3.org/2000/svg">'
+               f'<circle cx="7.5" cy="7.5" r="7.1" fill="{color}" stroke="{M.NEGRO}" stroke-width="{M.LINEA}"/></svg>')
+    ancho = 2 * (radio + 2)
+    top = CENTRO_MANDALA_Y - ancho / 2
     afirmacion = "<br>".join(esc(l) for l in ch["afirmacion"])
+    return f"""
+<section class="pagina">
+  {pestana(indice, ch["clave"])}
+  <div class="caja" style="top:{MARGEN}mm">
+    <div class="cab-fila">{circulo}<h1 class="titulo-mandala">{esc(ch["nombre"])}</h1></div>
+    <p class="color-texto">{esc(TEXTO_COLOR)}</p>
+  </div>
+  <div style="position:absolute; left:{(ANCHO - ancho) / 2}mm; top:{top}mm; width:{ancho}mm">{_svg_img(ruta_svg, ancho)}</div>
+  <div class="etiqueta-frase" style="top:{CENTRO_MANDALA_Y + radio + 8}mm">{esc(LEER_FRASE)}</div>
+  <div class="pie-afirmacion" style="top:{CENTRO_MANDALA_Y + radio + 18}mm">{afirmacion}</div>
+  {numero(n)}
+</section>"""
+
+
+def pagina_reflexion(ch, indice, n):
+    """Después de leer la frase: la tarea (pregunta de recuerdo). La frase no se repite acá."""
     return f"""
 <section class="pagina">
   {pestana(indice, ch["clave"])}
@@ -318,8 +342,6 @@ def pagina_presentacion(ch, indice, n):
     <h1 class="titulo-cap">{esc(ch["nombre"])}</h1>
     <p class="esta-en"><b>Está en:</b> {esc(ch["esta_en"])}.</p>
     <p class="emocion"><b>Emoción que cuida:</b> {partir(ch["emocion"] + ".", "cuerpo", 20, ANCHO_UTIL * 0.96 - ancho_mm("Emoción que cuida: ", "negrita", 20))}</p>
-    <div class="color-fila">{circulo}<p>{esc(TEXTO_COLOR)}</p></div>
-    <p class="afirmacion">{afirmacion}</p>
     <p class="respiracion"><b>Respirá:</b> {esc(ch["respiracion"])}</p>
     <p class="pregunta">{partir(ch["pregunta"], "negrita", 20)}</p>
     <div class="renglon"></div><div class="renglon"></div><div class="renglon"></div>
@@ -329,30 +351,17 @@ def pagina_presentacion(ch, indice, n):
 </section>"""
 
 
-def pagina_mandala(ch, indice, n, ruta_svg, radio):
-    ancho = 2 * (radio + 2)
-    cy = CENTRO_MANDALA_Y
-    top = cy - ancho / 2
-    afirmacion = "<br>".join(esc(l) for l in ch["afirmacion"])
-    return f"""
-<section class="pagina">
-  {pestana(indice, ch["clave"])}
-  <div style="position:absolute; left:{(ANCHO - ancho) / 2}mm; top:{top}mm; width:{ancho}mm">{_svg_img(ruta_svg, ancho)}</div>
-  <div class="pie-afirmacion" style="top:218mm">{afirmacion}</div>
-  {numero(n)}
-</section>"""
-
-
 # ===================================================================== ARMADO
 def informacion_paginas(fase=1):
     """Descripción de cada página impresa, para los controles de verificar.py."""
-    info = [dict(nombre="portada", numero=None), dict(nombre="dedicatoria", numero=None),
+    info = [dict(nombre="portada", numero=None, paleta=(M.MARFIL, M.CACAO, M.ROSA_CENIZAS)), dict(nombre="dedicatoria", numero=None),
             dict(nombre="como_usar", numero=3)]
     n = 4
     for i, ch in enumerate(CHAKRAS[:1] if fase == 1 else CHAKRAS):
-        info.append(dict(nombre=f"{ch['clave']}_presentacion", numero=n, clave=ch["clave"], afirmacion=ch["afirmacion"]))
-        info.append(dict(nombre=f"{ch['clave']}_mandala", numero=n + 1, clave=ch["clave"], afirmacion=ch["afirmacion"],
+        info.append(dict(nombre=f"{ch['clave']}_mandala", numero=n, clave=ch["clave"], afirmacion=ch["afirmacion"],
                          mandala=(ANCHO / 2, CENTRO_MANDALA_Y, M.RADIO_MANDALA)))
+        info.append(dict(nombre=f"{ch['clave']}_reflexion", numero=n + 1, clave=ch["clave"],
+                         sin_texto=ch["afirmacion"]))      # la frase aparece una sola vez por capítulo
         n += 2
     return info
 
@@ -371,7 +380,7 @@ def construir(fase):
     # (nombre de archivo del PNG, html)
     paginas = []
     n = 1
-    paginas.append(("portada_PROVISORIA" if PORTADA_PROVISORIA else "portada", pagina_portada()))
+    paginas.append(("portada", pagina_portada()))
     n += 1
     paginas.append(("dedicatoria", pagina_dedicatoria(n)))
     n += 1
@@ -379,9 +388,9 @@ def construir(fase):
     n += 1
     chakras = CHAKRAS[:1] if fase == 1 else CHAKRAS
     for i, ch in enumerate(chakras):
-        paginas.append((f"{ch['clave']}_presentacion", pagina_presentacion(ch, i, n)))
-        n += 1
         paginas.append((f"{ch['clave']}_mandala", pagina_mandala(ch, i, n, f"svg/{ch['clave']}.svg", M.RADIO_MANDALA)))
+        n += 1
+        paginas.append((f"{ch['clave']}_reflexion", pagina_reflexion(ch, i, n)))
         n += 1
 
     documento = f"""<!doctype html><html lang="es"><head><meta charset="utf-8">

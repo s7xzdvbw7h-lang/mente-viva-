@@ -164,7 +164,11 @@ def verificar_pdf(ruta_pdf, paginas_info, margen_mm=15, ancho_mm=210, alto_mm=29
         partes = linea.split()
         if len(partes) >= 6 and partes[-5] != "yes":      # columna "emb"
             fallos.append(f"fuente sin incrustar: {partes[0]}")
-    notas.append(f"fuentes incrustadas: {sorted({l.split()[0].split('+')[-1] for l in fuentes if l.strip()})}")
+    nombres = sorted({l.split()[0].split('+')[-1] for l in fuentes if l.strip()})
+    notas.append(f"fuentes incrustadas: {nombres}")
+    ajenas = [n for n in nombres if not n.startswith(("Fraunces", "Manrope"))]
+    if ajenas:
+        fallos.append(f"tipografías fuera de la marca (solo Fraunces y Manrope): {ajenas}")
 
     # Texto: tamaños, márgenes, superposición (solo páginas impresas = índices pares)
     texto_por_pagina = _lineas_pdf(ruta_pdf)
@@ -203,6 +207,10 @@ def verificar_pdf(ruta_pdf, paginas_info, margen_mm=15, ancho_mm=210, alto_mm=29
                     fallos.append(f"{etiqueta}: no encuentro la afirmación «{linea_af}»")
                 elif hit[0]["pt"] < 30 or "Fraunces" not in hit[0]["fuente"]:
                     fallos.append(f"{etiqueta}: afirmación «{linea_af}» a {hit[0]['pt']:.1f} pt / {hit[0]['fuente']}")
+        # la frase aparece una sola vez por capítulo
+        for t in info.get("sin_texto") or []:
+            if any(t in l["texto"] for l in lineas):
+                fallos.append(f"{etiqueta}: la frase «{t}» está repetida (ya figura bajo el mandala)")
         # texto vs mandala
         if info.get("mandala"):
             cx, cy, r = info["mandala"]
@@ -211,6 +219,23 @@ def verificar_pdf(ruta_pdf, paginas_info, margen_mm=15, ancho_mm=210, alto_mm=29
                 py = min(max(cy, l["y0"]), l["y1"])
                 if ((px - cx) ** 2 + (py - cy) ** 2) ** 0.5 < r + 3:
                     fallos.append(f"{etiqueta}: «{l['texto'][:30]}» toca el mandala")
+
+    # Paleta de marca en las páginas que la declaran (máximo 3 colores contando el fondo)
+    for k, info in enumerate(paginas_info):
+        if not info.get("paleta"):
+            continue
+        img = _raster(ruta_pdf, 2 * k + 1, 100).reshape(-1, 3).astype(float)
+        cols = [np.array([int(h[i:i + 2], 16) for i in (1, 3, 5)], float) for h in info["paleta"]]
+        mejor = np.full(len(img), np.inf)
+        for a in range(len(cols)):
+            for b in range(a, len(cols)):
+                d = cols[b] - cols[a]
+                t = np.clip(((img - cols[a]) @ d) / (d @ d), 0, 1) if (d @ d) else np.zeros(len(img))
+                mejor = np.minimum(mejor, np.linalg.norm(img - (cols[a] + t[:, None] * d), axis=1))
+        fuera = (mejor > 12).mean() * 100
+        notas.append(f"p.{k + 1} {info['nombre']}: {100 - fuera:.2f}% de los píxeles dentro de la paleta de marca")
+        if fuera > 0.2:
+            fallos.append(f"p.{k + 1} {info['nombre']}: {fuera:.2f}% de los píxeles fuera de la paleta {info['paleta']}")
 
     # Pestaña: ancho 8 mm y color del chakra (a 110 dpi)
     import mandalas as M
@@ -231,26 +256,28 @@ def verificar_pdf(ruta_pdf, paginas_info, margen_mm=15, ancho_mm=210, alto_mm=29
         if (xs.max() + 1 + int(190 * px_mm)) < img.shape[1] - 2:
             fallos.append(f"p.{k + 1}: la pestaña no llega al borde derecho")
 
-    # Grosor de línea medido en el PDF a 600 dpi (sobre el eje horizontal del mandala)
+    # Grosor de línea medido en el PDF a 600 dpi: largo de miles de cruces horizontales sobre el
+    # mandala. Los cruces perpendiculares dan el grosor real; los oblicuos dan más. Se toma el percentil 5.
     for k, info in enumerate(paginas_info):
         if not info.get("mandala"):
             continue
         cx, cy, r = info["mandala"]
         img = _raster(ruta_pdf, 2 * k + 1, 600)
         px_mm = 600 / 25.4
-        fila = (img[int(round(cy * px_mm)), :, :].astype(int).sum(axis=1) / 3) < 110
-        xs = np.nonzero(fila[: int((cx - r + 8) * px_mm)])[0]       # borde izquierdo del círculo exterior
-        if len(xs) == 0:
-            fallos.append(f"p.{k + 1}: no encuentro el círculo exterior para medir la línea")
+        oscuro = img.astype(int).sum(axis=2) / 3 < 110
+        largos = []
+        for y in range(int((cy - r) * px_mm), int((cy + r) * px_mm), 3):
+            fila = oscuro[y, int((cx - r - 1) * px_mm):int((cx + r + 1) * px_mm)].astype(int)
+            d = np.diff(np.concatenate(([0], fila, [0])))
+            largos += list(np.nonzero(d == -1)[0] - np.nonzero(d == 1)[0])
+        if len(largos) < 500:
+            fallos.append(f"p.{k + 1}: no pude medir la línea ({len(largos)} cruces)")
             continue
-        corrida = 1
-        while xs[corrida] == xs[0] + corrida if corrida < len(xs) else False:
-            corrida += 1
-        grosor_mm = corrida / px_mm
+        grosor_mm = float(np.percentile(largos, 5)) / px_mm
         grosor_px96 = grosor_mm * MM_A_PX96
-        notas.append(f"p.{k + 1}: línea medida en el PDF = {grosor_mm:.2f} mm = {grosor_px96:.2f} px a 96 dpi")
-        if grosor_px96 < LINEA_MIN_PX96 - 0.1:
-            fallos.append(f"p.{k + 1}: línea de {grosor_px96:.2f} px (<{LINEA_MIN_PX96})")
+        notas.append(f"p.{k + 1}: línea medida en el PDF = {grosor_mm:.2f} mm = {grosor_px96:.2f} px a 96 dpi ({len(largos)} cruces)")
+        if not (LINEA_MIN_PX96 - 0.1 <= grosor_px96 <= 3.1):
+            fallos.append(f"p.{k + 1}: línea de {grosor_px96:.2f} px (se pide entre {LINEA_MIN_PX96} y 3)")
     return fallos, notas
 
 

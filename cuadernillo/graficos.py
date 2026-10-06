@@ -176,3 +176,52 @@ def esquinero(color: str, tam_mm: float = 14) -> str:
          f'<path d="M5 23 V11 Q5 5 11 5 H23" fill="none" stroke="{color}" stroke-width="0.5"/>'
          f'<circle cx="9.5" cy="9.5" r="1.6" fill="{color}"/>')
     return _svg(c, tam_mm, tam_mm, "0 0 24 24")
+
+
+# --------------------------------------------------------------------------
+# Lotos de los chakras (vista superior), para portadas
+# --------------------------------------------------------------------------
+
+def _mezcla(hex_color: str, blanco: float) -> str:
+    """Aclara un color mezclándolo con blanco (0 = igual, 1 = blanco)."""
+    r, g_, b = (int(hex_color[i:i + 2], 16) for i in (1, 3, 5))
+    m = lambda c: round(c + (255 - c) * blanco)
+    return f"#{m(r):02X}{m(g_):02X}{m(b):02X}"
+
+
+def _petalo(r0: float, r1: float, ancho: float, ang: float) -> str:
+    """Pétalo de loto: panza ancha y redonda, punta suave en r1."""
+    L = r1 - r0
+    pts = [(r0, 0), (r0 + 0.15 * L, -ancho * 1.05), (r0 + 0.7 * L, -ancho * 0.95), (r1, 0),
+           (r0 + 0.7 * L, ancho * 0.95), (r0 + 0.15 * L, ancho * 1.05)]
+    c, s = math.cos(ang), math.sin(ang)
+    P = [(x * c - y * s, x * s + y * c) for x, y in pts]
+    f = lambda p: f"{p[0]:.2f} {p[1]:.2f}"
+    return (f"M{f(P[0])} C{f(P[1])} {f(P[2])} {f(P[3])} "
+            f"C{f(P[4])} {f(P[5])} {f(P[0])} Z")
+
+
+def loto(color: str, diametro_mm: float, k: int = 8) -> str:
+    """Flor de loto vista desde arriba: pétalos de fondo, pétalos de frente
+    con una línea interior y un centro redondo. Trazo en el tono oscuro."""
+    R = 50.0
+    oscuro, medio, claro, palido = color, _mezcla(color, 0.35), _mezcla(color, 0.6), _mezcla(color, 0.82)
+    sw = 1.6
+    partes = []
+    paso = TAU_ / k
+    for j in range(k):  # fondo, más largos, intercalados
+        partes.append(f'<path d="{_petalo(10, R - 1, 70 / k + 5, (j + 0.5) * paso - math.pi / 2)}" '
+                      f'fill="{claro}" stroke="{oscuro}" stroke-width="{sw}" stroke-linejoin="round"/>')
+    for j in range(k):  # frente
+        a = j * paso - math.pi / 2
+        partes.append(f'<path d="{_petalo(9, R * 0.8, 70 / k + 5.5, a)}" fill="{medio}" '
+                      f'stroke="{oscuro}" stroke-width="{sw}" stroke-linejoin="round"/>')
+        partes.append(f'<path d="{_petalo(17, R * 0.64, 70 / k * 0.45 + 1.5, a)}" fill="{palido}" '
+                      f'stroke="{oscuro}" stroke-width="{sw * 0.75}" stroke-linejoin="round"/>')
+    partes.append(f'<circle r="15" fill="{palido}" stroke="{oscuro}" stroke-width="{sw}"/>')
+    partes.append(f'<circle r="9" fill="{medio}" stroke="{oscuro}" stroke-width="{sw * 0.8}"/>')
+    partes.append(f'<circle r="3.2" fill="{oscuro}"/>')
+    return _svg("".join(partes), diametro_mm, diametro_mm, f"{-R} {-R} {2 * R} {2 * R}")
+
+
+TAU_ = 2 * math.pi

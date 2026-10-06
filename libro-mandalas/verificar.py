@@ -302,7 +302,6 @@ def fidelidad_portada(ruta_pdf, ruta_ref):
 
 def main():
     import generar_libro as G
-    import mandalas as M
     problemas_total = 0
     print("== MANDALAS (SVG) ==")
     for ch in G.CHAKRAS:
@@ -314,6 +313,13 @@ def main():
         for p in problemas:
             print("    ✗", p)
         problemas_total += len(problemas)
+
+    ruta = G.AQUI / "svg" / "dedicatoria_corazon.svg"          # decorativo, pero también sin zonas diminutas
+    linea, problemas, _ = informe_mandala("Dedicatoria (12 pétalos)", ruta.read_text(encoding="utf-8"))
+    print(" ", linea.replace(" · 0 pétalos", ""))
+    for p in problemas:
+        print("    ✗", p)
+    problemas_total += len(problemas)
 
     print("== PDF ==")
     pdfs = sorted(G.AQUI.glob("libro_mandalas_chakras*.pdf"), key=lambda p: p.stat().st_mtime)

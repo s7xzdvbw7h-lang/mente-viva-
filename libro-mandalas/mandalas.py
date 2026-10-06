@@ -14,18 +14,6 @@ LINEA = 0.75
 NEGRO = "#111111"
 BLANCO = "#ffffff"
 
-# Colores de los chakras (usados en pestañas, círculo de color y portada).
-COLORES = {
-    "raiz": "#D62F2F",
-    "sacro": "#F28A1E",
-    "plexo": "#F2C318",
-    "corazon": "#2F9E5B",
-    "garganta": "#3FA7DC",
-    "tercer_ojo": "#3B3FA6",
-    "corona": "#8E4BB5",
-}
-
-
 # ---------------------------------------------------------------- utilidades
 def _n(x):
     s = f"{x:.3f}".rstrip("0").rstrip(".")
@@ -194,16 +182,16 @@ def raiz(radio=RADIO_MANDALA, ancho_petalo=34, r_piedra=47, d_piedra=15):
 
 
 # ------------------------------------------------- DEDICATORIA (solo línea)
+RADIO_CORAZON = 36
+
+
 def corazon_linea():
-    """Pequeño mandala de corazón: 12 pétalos, solo línea (para la dedicatoria)."""
-    e = []
-    R = 27
-    e.append(circulo(R))
-    e.append(circulo(R - 4))
-    for k in range(12):
-        e.append(petalo(30 * k, 8, 23, 9, clase="petalo-dedicatoria"))
-    e.append(circulo(8))
-    return documento(e, R, margen=1.0)
+    """Pequeño mandala de corazón: 12 pétalos en dos capas (los pares atrás, los impares adelante,
+    así queda simétrico), solo línea. Todas sus zonas miden más de 8 mm."""
+    orden = list(range(0, 12, 2)) + list(range(1, 12, 2))
+    e = [petalo(30 * k, 5, RADIO_CORAZON, 14, forma=(0.30, 0.62, 0.70, 0.62), clase="petalo-dedicatoria") for k in orden]
+    e.append(circulo(10))
+    return documento(e, RADIO_CORAZON, margen=1.0)
 
 
 # ----------------------------------------------------------------- PORTADA
@@ -220,6 +208,11 @@ COLORES_FLOR = {
     "azul":     dict(linea="#2F72B5", exterior="#ACC7E1", medio="#78A3CF", claro="#DAE6F2"),
     "indigo":   dict(linea="#43449B", exterior="#B4B4D7", medio="#8585BE", claro="#DDDDED"),
 }
+# Colores de los chakras en el interior (pestañas y círculo de color): los mismos de la portada de Dani.
+COLORES = {k: COLORES_FLOR[f]["linea"] for k, f in (
+    ("raiz", "rojo"), ("sacro", "naranja"), ("plexo", "amarillo"), ("corazon", "verde"),
+    ("garganta", "azul"), ("tercer_ojo", "indigo"), ("corona", "centro"))}
+
 ORO_PORTADA = "#C2A878"        # oro de la marca: red de líneas
 FONDO_PORTADA = "#FDFAF5"      # tarjeta crema
 BANDA_PORTADA = "#1F5F78"      # banda turquesa

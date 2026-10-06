@@ -54,6 +54,7 @@ COMO_USAR_PASOS = [
     "Pintá sin apuro.",
     "No hay forma de hacerlo mal.",
     "Al terminar, leé la frase en voz alta.",
+    "Después, respondé la pregunta de la página siguiente.",
 ]
 COMO_USAR_NOTA = ("Usá papel de 120 g o más, y lápices o marcadores gruesos, "
                   "fáciles de agarrar.")
@@ -224,7 +225,7 @@ img {{ display: block; }}
 
 /* cómo usar */
 .titulo-uso {{ font-size: 44pt; line-height: 1.1; }}
-.paso {{ display: flex; align-items: center; margin-bottom: 12mm; }}
+.paso {{ display: flex; align-items: center; margin-bottom: 8.5mm; }}
 .paso .n {{ flex: 0 0 15mm; width: 15mm; height: 15mm; border: 0.75mm solid {TINTA}; border-radius: 50%;
            text-align: center; font-family: 'Fraunces', serif; font-weight: 700; font-size: 24pt; line-height: 13.5mm; }}
 .paso .t {{ margin-left: 8mm; font-size: 24pt; line-height: 1.3; }}
@@ -314,7 +315,7 @@ def pagina_portada():
 
 def pagina_dedicatoria(n):
     corazon = M.corazon_linea()
-    ancho = 2 * (27 + 1)
+    ancho = 2 * (M.RADIO_CORAZON + 1)
     estrofas = [e.split("\n") for e in DEDICATORIA.strip().split("\n\n")]
     cuerpo = ""
     for i, lineas in enumerate(estrofas):
@@ -327,8 +328,8 @@ def pagina_dedicatoria(n):
         cuerpo += f'<p class="estrofa">{lineas_html}</p>'
     return f"""
 <section class="pagina">
-  <div style="position:absolute; left:{(ANCHO - ancho) / 2}mm; top:48mm; width:{ancho}mm">{corazon}</div>
-  <div class="caja dedic" style="top:110mm">{cuerpo}</div>
+  <div style="position:absolute; left:{(ANCHO - ancho) / 2}mm; top:38mm; width:{ancho}mm">{corazon}</div>
+  <div class="caja dedic" style="top:124mm">{cuerpo}</div>
 </section>"""
 
 
@@ -339,9 +340,9 @@ def pagina_como_usar(n):
     return f"""
 <section class="pagina">
   <div class="caja" style="top:{MARGEN + 8}mm">
-    <h1 class="titulo-uso" style="margin-bottom:20mm">{esc(COMO_USAR_TITULO)}</h1>
+    <h1 class="titulo-uso" style="margin-bottom:15mm">{esc(COMO_USAR_TITULO)}</h1>
     {pasos}
-    <div class="nota-uso" style="margin-top:18mm">{partir(COMO_USAR_NOTA, "cuerpo", 22, ANCHO_UTIL - 2 * 9 - 4)}</div>
+    <div class="nota-uso" style="margin-top:11mm">{partir(COMO_USAR_NOTA, "cuerpo", 22, ANCHO_UTIL - 2 * 9 - 4)}</div>
   </div>
   {numero(n)}
 </section>"""

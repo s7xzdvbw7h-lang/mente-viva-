@@ -8,7 +8,8 @@ Genera el libro para colorear imprimible (A4 vertical, márgenes de 15 mm):
   - libro_mandalas_chakras*.pdf
 
 Uso:
-    python3 generar_libro.py --fase 1     # portada, dedicatoria, cómo usar, Raíz
+    python3 generar_libro.py              # el libro completo (19 páginas impresas)
+    python3 generar_libro.py --fase 1     # solo portada, dedicatoria, cómo usar y Raíz
     python3 verificar.py                  # controles de calidad sobre lo generado
 
 Dependencias: weasyprint, pypdf, cairosvg, fonttools, pillow, numpy, scipy, pdfminer.six
@@ -63,45 +64,53 @@ TEXTO_COLOR = "Este es su color, pero podés usar los que quieras."
 TEXTO_ESCRIBIR = "Podés escribirlo o contárselo a alguien."
 LEER_FRASE = "Al terminar, leé en voz alta:"
 
+INTEGRACION_TITULO = "Todos juntos"
+INTEGRACION_TEXTO = "Las siete flores son tus siete chakras. Pintalas como quieras."
+
+CIERRE_GRACIAS = "Gracias por regalarte este rato."
+FRASE_FINAL = ["Un color a la vez,", "todo se acomoda."]
+CIERRE_SENTI = "Hoy me sentí…"
+CIERRE_FECHA = "Fecha:"
+
 # clave, nombre, "Está en", emoción que cuida, afirmación (líneas), respiración, pregunta
 CHAKRAS = [
-    dict(clave="raiz", nombre="Raíz", petalos=4, zonas=(25, 30),   # 27 zonas
+    dict(clave="raiz", nombre="Raíz", petalos=4, zonas=(26, 28),             # 27 zonas
          esta_en="la base de la columna y los pies",
          emocion="sentirme segura y sostenida",
          afirmacion=["Estoy a salvo.", "La vida me sostiene."],
          respiracion="inhalá en 4, soltá en 6, sintiendo tus pies.",
          pregunta="¿Qué te enseñaron tus padres que todavía llevás con vos?"),
-    dict(clave="sacro", nombre="Sacro", petalos=6,
+    dict(clave="sacro", nombre="Sacro", petalos=6, zonas=(32, 34),         # 33 zonas
          esta_en="la parte baja de la panza",
          emocion="disfrute y creatividad",
          afirmacion=["Me permito disfrutar."],
          respiracion="inhalá en 4, soltá y aflojá la panza.",
          pregunta="¿Qué te encantaba hacer cuando eras joven?"),
-    dict(clave="plexo", nombre="Plexo solar", petalos=10,
+    dict(clave="plexo", nombre="Plexo solar", petalos=10, zonas=(34, 36),   # 35 zonas
          esta_en="la boca del estómago",
          emocion="confianza y fuerza",
          afirmacion=["Confío en mí", "y en mis decisiones."],
          respiracion="inhalá en 4 y soltá como apagando una vela.",
          pregunta="¿De qué decisión tuya estás orgullosa?"),
-    dict(clave="corazon", nombre="Corazón", petalos=12,
+    dict(clave="corazon", nombre="Corazón", petalos=12, zonas=(43, 45),    # 44 zonas
          esta_en="el centro del pecho",
          emocion="amor y perdón",
          afirmacion=["Doy y recibo amor", "con facilidad."],
          respiracion="una mano en el pecho, inhalá y soltá.",
          pregunta="¿A quién querés agradecerle hoy?"),
-    dict(clave="garganta", nombre="Garganta", petalos=16,
+    dict(clave="garganta", nombre="Garganta", petalos=16, zonas=(51, 53),  # 52 zonas
          esta_en="la garganta y el cuello",
          emocion="expresarme",
          afirmacion=["Mi voz y mis palabras", "importan."],
          respiracion="inhalá por la nariz y soltá con un suspiro.",
          pregunta="¿Qué consejo le darías a tu nieto?"),
-    dict(clave="tercer_ojo", nombre="Tercer ojo", petalos=2,
+    dict(clave="tercer_ojo", nombre="Tercer ojo", petalos=2, zonas=(53, 55),   # 54 zonas
          esta_en="el centro de la frente",
          emocion="intuición y memoria",
          afirmacion=["Confío en lo que siento", "y recuerdo."],
          respiracion="cerrá los ojos, inhalá y soltá despacio.",
          pregunta="¿Qué recuerdo lindo vuelve seguido a tu mente?"),
-    dict(clave="corona", nombre="Corona", petalos=36,
+    dict(clave="corona", nombre="Corona", petalos=30, zonas=(63, 65),         # 64 zonas: loto de 12 + 12 + 6
          esta_en="lo más alto de la cabeza",
          emocion="paz y sentido",
          afirmacion=["Estoy en paz.", "Todo está bien."],
@@ -248,6 +257,19 @@ img {{ display: block; }}
 .pregunta {{ font-weight: 700; font-size: 20pt; line-height: 1.35; margin-bottom: 4mm; }}
 .renglon {{ height: 25mm; border-bottom: 0.75mm solid {TINTA}; }}
 .nota-escribir {{ font-size: 18pt; margin-top: 6mm; }}
+
+/* integración: los siete juntos, con la leyenda de colores abajo */
+.leyenda {{ position: absolute; left: {MARGEN}mm; width: {ANCHO_UTIL}mm; }}
+.leyenda .fila {{ display: flex; justify-content: space-between; height: 12mm; }}
+.leyenda .item {{ display: flex; align-items: center; font-size: 18pt; line-height: 1; white-space: nowrap; }}
+.leyenda .item svg {{ flex: 0 0 7mm; margin-right: 2.5mm; }}
+
+/* cierre */
+.cierre-gracias {{ text-align: center; font-size: 22pt; line-height: 1.3; }}
+.cierre-frase {{ text-align: center; font-family: 'Fraunces', serif; font-weight: 700; font-size: 38pt; line-height: 1.2; }}
+.cierre-senti {{ font-weight: 700; font-size: 24pt; line-height: 1.2; }}
+.cierre-fecha {{ display: flex; align-items: flex-end; font-weight: 700; font-size: 22pt; line-height: 1.2; }}
+.cierre-fecha .linea {{ flex: 1; height: 11mm; margin-left: 5mm; border-bottom: 0.75mm solid {TINTA}; }}
 """
 
 
@@ -388,8 +410,51 @@ def pagina_reflexion(ch, indice, n):
 </section>"""
 
 
+CENTRO_INTEGRACION_Y = 146  # centro del mandala de integración (deja lugar al título arriba y a la leyenda abajo)
+
+
+def pagina_integracion(n, ruta_svg):
+    """Los siete chakras juntos: un mandala para pintar y la leyenda con el color de cada flor."""
+    ancho = 2 * (M.RADIO_INTEGRACION + 2)
+    top = CENTRO_INTEGRACION_Y - ancho / 2
+    items = []
+    for c in CHAKRAS:
+        circ = (f'<svg width="7mm" height="7mm" viewBox="0 0 7 7" xmlns="http://www.w3.org/2000/svg">'
+                f'<circle cx="3.5" cy="3.5" r="3.1" fill="{M.COLORES[c["clave"]]}" stroke="{M.NEGRO}" stroke-width="{M.LINEA}"/></svg>')
+        items.append(f'<div class="item">{circ}{esc(c["nombre"])}</div>')
+    leyenda = f'<div class="fila">{"".join(items[:4])}</div><div class="fila">{"".join(items[4:])}</div>'
+    return f"""
+<section class="pagina">
+  <div class="caja" style="top:{MARGEN}mm">
+    <h1 class="titulo-mandala" style="margin-left:0">{esc(INTEGRACION_TITULO)}</h1>
+    <p class="color-texto">{partir(INTEGRACION_TEXTO, "cuerpo", 18)}</p>
+  </div>
+  <div style="position:absolute; left:{(ANCHO - ancho) / 2}mm; top:{top}mm; width:{ancho}mm">{_svg_img(ruta_svg, ancho)}</div>
+  <div class="leyenda" style="top:{CENTRO_INTEGRACION_Y + M.RADIO_INTEGRACION + 9}mm">{leyenda}</div>
+  {numero(n)}
+</section>"""
+
+
+def pagina_cierre(n):
+    """Cierre: un corazón, la frase final y renglones grandes para escribir cómo se sintió y la fecha."""
+    frase = "<br>".join(esc(l) for l in FRASE_FINAL)
+    renglones = '<div class="renglon" style="height:22mm"></div>' * 3
+    return f"""
+<section class="pagina">
+  <div style="position:absolute; left:{(ANCHO - 64) / 2}mm; top:20mm; width:64mm">{_svg_img("svg/dedicatoria_corazon.svg", 64)}</div>
+  <div class="caja cierre-gracias" style="top:92mm">{esc(CIERRE_GRACIAS)}</div>
+  <div class="caja cierre-frase" style="top:105mm">{frase}</div>
+  <div class="caja" style="top:153mm">
+    <p class="cierre-senti" style="margin-bottom:2mm">{esc(CIERRE_SENTI)}</p>
+    {renglones}
+  </div>
+  <div class="caja cierre-fecha" style="top:238mm">{esc(CIERRE_FECHA)}<div class="linea"></div></div>
+  {numero(n)}
+</section>"""
+
+
 # ===================================================================== ARMADO
-def informacion_paginas(fase=1):
+def informacion_paginas(fase=2):
     """Descripción de cada página impresa, para los controles de verificar.py."""
     info = [dict(nombre="portada", numero=None), dict(nombre="dedicatoria", numero=None),
             dict(nombre="como_usar", numero=3)]
@@ -400,6 +465,9 @@ def informacion_paginas(fase=1):
         info.append(dict(nombre=f"{ch['clave']}_reflexion", numero=n + 1, clave=ch["clave"],
                          sin_texto=ch["afirmacion"]))      # la frase aparece una sola vez por capítulo
         n += 2
+    if fase == 2:
+        info.append(dict(nombre="integracion", numero=n, mandala=(ANCHO / 2, CENTRO_INTEGRACION_Y, M.RADIO_INTEGRACION)))
+        info.append(dict(nombre="cierre", numero=n + 1, afirmacion=FRASE_FINAL))
     return info
 
 
@@ -408,7 +476,9 @@ def construir(fase):
     (AQUI / "svg").mkdir(exist_ok=True)
     (AQUI / "preview").mkdir(exist_ok=True)
 
-    mandalas_svg = {"raiz": M.raiz()}
+    mandalas_svg = {c["clave"]: M.MANDALAS[c["clave"]]() for c in (CHAKRAS[:1] if fase == 1 else CHAKRAS)}
+    if fase == 2:
+        mandalas_svg["integracion"] = M.integracion()
     for clave, svg in mandalas_svg.items():
         (AQUI / "svg" / f"{clave}.svg").write_text(svg, encoding="utf-8")
     (AQUI / "svg" / "portada_arte.svg").write_text(M.portada_arte(), encoding="utf-8")
@@ -428,6 +498,11 @@ def construir(fase):
         paginas.append((f"{ch['clave']}_mandala", pagina_mandala(ch, i, n, f"svg/{ch['clave']}.svg", M.RADIO_MANDALA)))
         n += 1
         paginas.append((f"{ch['clave']}_reflexion", pagina_reflexion(ch, i, n)))
+        n += 1
+    if fase == 2:
+        paginas.append(("integracion", pagina_integracion(n, "svg/integracion.svg")))
+        n += 1
+        paginas.append(("cierre", pagina_cierre(n)))
         n += 1
 
     documento = f"""<!doctype html><html lang="es"><head><meta charset="utf-8">
@@ -470,8 +545,7 @@ def construir(fase):
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
-    ap.add_argument("--fase", type=int, default=1, choices=[1, 2])
+    ap.add_argument("--fase", type=int, default=2, choices=[1, 2],
+                    help="2 = el libro completo (por defecto); 1 = solo portada, dedicatoria, cómo usar y Raíz")
     args = ap.parse_args()
-    if args.fase == 2:
-        sys.exit("La fase 2 (resto de los chakras, integración y cierre) se genera después de aprobar la fase 1.")
     construir(args.fase)

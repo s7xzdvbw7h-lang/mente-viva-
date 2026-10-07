@@ -327,22 +327,28 @@ def main():
             print("    ✗", p)
         problemas_total += len(problemas)
 
-    ruta = G.AQUI / "svg" / "dedicatoria_corazon.svg"          # decorativo, pero también sin zonas diminutas
-    linea, problemas, _ = informe_mandala("Dedicatoria (12 pétalos)", ruta.read_text(encoding="utf-8"))
-    print(" ", linea.replace(" · 0 pétalos", ""))
-    for p in problemas:
-        print("    ✗", p)
-    problemas_total += len(problemas)
+    for nombre, archivo, zonas in (("Integración (7 flores)", "integracion.svg", (66, 68)),
+                                   ("Dedicatoria / cierre (12 pétalos)", "dedicatoria_corazon.svg", None)):
+        ruta = G.AQUI / "svg" / archivo               # sin pétalos de chakra, pero también sin zonas diminutas
+        if not ruta.exists():
+            continue
+        linea, problemas, _ = informe_mandala(nombre, ruta.read_text(encoding="utf-8"), zonas_esperadas=zonas)
+        print(" ", linea.replace(" · 0 pétalos", ""))
+        for p in problemas:
+            print("    ✗", p)
+        problemas_total += len(problemas)
 
     print("== PDF ==")
-    pdfs = sorted(G.AQUI.glob("libro_mandalas_chakras*.pdf"), key=lambda p: p.stat().st_mtime)
-    if not pdfs:
+    completo = G.AQUI / "libro_mandalas_chakras.pdf"
+    parcial = G.AQUI / "libro_mandalas_chakras_fase1.pdf"
+    pdf = completo if completo.exists() else parcial
+    if not pdf.exists():
         print("  (no hay PDF generado)")
         return 1
-    ruta_pdf = str(pdfs[-1])
-    info = G.informacion_paginas(1 if "fase1" in pdfs[-1].name else 2)
+    ruta_pdf = str(pdf)
+    info = G.informacion_paginas(2 if pdf == completo else 1)
     fallos, notas = verificar_pdf(ruta_pdf, info)
-    print(f"  {pdfs[-1].name}: {len(info)} páginas impresas")
+    print(f"  {pdf.name}: {len(info)} páginas impresas")
     for n in notas:
         print("   ·", n)
     for f in fallos:

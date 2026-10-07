@@ -82,6 +82,69 @@ def petalo(grados, r0, r1, ancho, fill=BLANCO, stroke=NEGRO, w=LINEA, forma=(0.2
     return f'<g class="{clase}">' + trazo(petalo_d(grados, r0, r1, ancho, forma), fill, stroke, w) + "</g>"
 
 
+FORMA_PETALO = (0.20, 0.72, 0.74, 0.40)      # pétalo de loto: cuerpo lleno y punta fina
+FORMA_CORAZON = (0.14, 0.78, 0.70, 0.45)     # el corazón de cada pétalo: gota
+
+
+def capa_petalos(n, r0, r1, ancho, forma=FORMA_PETALO, fase=0.0, orden=None, clase="petalo"):
+    """n pétalos parejos alrededor del centro (el primero apunta a `fase` grados, 0 = arriba).
+    `orden` es el apilado de atrás hacia adelante; por defecto, en dos capas (pares atrás, impares
+    adelante) si n es par, así queda simétrico."""
+    if orden is None:
+        orden = list(range(0, n, 2)) + list(range(1, n, 2)) if n % 2 == 0 else list(range(n))
+    return [petalo(fase + 360 * k / n, r0, r1, ancho, forma=forma, clase=clase) for k in orden]
+
+
+def sectores(r0, r1, n, fase=0.0):
+    """n rayitas radiales (divisiones de un anillo)."""
+    return [linea(polar(r0, fase + 360 * k / n), polar(r1, fase + 360 * k / n)) for k in range(n)]
+
+
+def perlas(n, r_centro, r_perla, fase=0.0):
+    """n círculos iguales sobre un anillo."""
+    return [circulo(r_perla, *polar(r_centro, fase + 360 * k / n)) for k in range(n)]
+
+
+def borde_dientes(r_valle, r_max, n, fase=0.0, fill=BLANCO, stroke=NEGRO, w=LINEA):
+    """Borde en zigzag de n dientes (llamas / rayos) apoyados en un círculo de radio r_valle."""
+    paso = 360 / n
+    pts = []
+    for k in range(n):
+        pts.append(polar(r_valle, fase + paso * k))
+        pts.append(polar(r_max, fase + paso * (k + 0.5)))
+    return poligono(pts, fill, stroke, w)
+
+
+def borde_concavo(r_valle, r_max, n, fase=0.0, fill=BLANCO, stroke=NEGRO, w=LINEA):
+    """Estrella de n puntas con los lados curvados hacia adentro (como remolinos de aire)."""
+    paso = 360 / n
+    cuerda = 2 * r_max * math.sin(math.radians(paso / 2))
+    # la hondura del arco hace que el punto medio de cada lado quede en r_valle
+    hondo = r_max * math.cos(math.radians(paso / 2)) - r_valle
+    rho = (cuerda ** 2 / 4 + hondo ** 2) / (2 * hondo)
+    pts = [polar(r_max, fase + paso * k) for k in range(n)]
+    d = f"M{_n(pts[0][0])},{_n(pts[0][1])}"
+    for k in range(1, n + 1):
+        x, y = pts[k % n]
+        d += f" A{_n(rho)},{_n(rho)} 0 0 0 {_n(x)},{_n(y)}"
+    return trazo(d + " Z", fill, stroke, w)
+
+
+def hexagrama(r, fill=BLANCO, stroke=NEGRO, w=LINEA):
+    """Estrella de seis puntas (dos triángulos) con su hexágono central: 7 zonas."""
+    pts = []
+    for k in range(6):
+        pts.append(polar(r, 60 * k))
+        pts.append(polar(r / math.sqrt(3), 60 * k + 30))
+    hexa = [polar(r / math.sqrt(3), 60 * k + 30) for k in range(6)]
+    return poligono(pts, fill, stroke, w) + poligono(hexa, "none", stroke, w)
+
+
+def triangulo_abajo(r, fill=BLANCO, stroke=NEGRO, w=LINEA):
+    """Triángulo con la punta hacia abajo, inscrito en un círculo de radio r."""
+    return poligono([polar(r, 180), polar(r, 300), polar(r, 60)], fill, stroke, w)
+
+
 def media_luna(cx, cy, r_ext, r_int, desplazamiento, grados=0, fill=BLANCO, stroke=NEGRO, w=LINEA):
     """Media luna (creciente) = círculo grande menos otro círculo desplazado."""
     # Intersección de los dos círculos para cerrar el trazo con arcos.
@@ -166,8 +229,6 @@ def raiz(radio=RADIO_MANDALA):
     """
     k = radio / 89
     r = lambda v: v * k
-    forma_petalo = (0.20, 0.72, 0.74, 0.40)       # pétalo de loto: cuerpo lleno y punta fina
-    forma_corazon = (0.14, 0.78, 0.70, 0.45)      # el corazón de cada pétalo: gota
     e = []
     # Borde de puntillas (24, tres por ladrillo) dividido en 8 ladrillos, y anillo liso
     e.append(borde_festoneado(r(84), radio, 24, fase=7.5))
@@ -183,12 +244,153 @@ def raiz(radio=RADIO_MANDALA):
     # 4 pétalos, cada uno con su corazón
     for i in range(4):
         a = 90 * i
-        e.append(petalo(a, r(14), r(62), r(36), forma=forma_petalo))
-        e.append(petalo(a, r(29), r(51), r(18), forma=forma_corazon, clase="petalo-interior"))
+        e.append(petalo(a, r(14), r(62), r(36), forma=FORMA_PETALO))
+        e.append(petalo(a, r(29), r(51), r(18), forma=FORMA_CORAZON, clase="petalo-interior"))
     # Cuadrado central de esquinas suaves, con un círculo
     e.append(cuadrado_suave(0, 0, r(20), r(3)))
     e.append(circulo(r(10)))
     return documento(e, radio)
+
+
+# ------------------------------------------------------- LOS OTROS SEIS
+# Todos comparten el mismo esqueleto (borde, anillo con divisiones, aro liso, pétalos y centro) para
+# que se lean como una familia, y cada uno se distingue por su borde, su número de pétalos y el
+# símbolo del centro. Las zonas crecen de a poco: Raíz 27 → Corona 64.
+def _escala(radio):
+    k = radio / 89
+    return k, (lambda v: v * k)
+
+
+def _aro(radio_aro):
+    """Círculo sin relleno que se dibuja DESPUÉS de los pétalos: tapa las puntas que lo tocan."""
+    return circulo(radio_aro, fill="none")
+
+
+def sacro(radio=RADIO_MANDALA):
+    """Svadhisthana · 6 pétalos · luna creciente (agua)."""
+    k, r = _escala(radio)
+    e = [borde_festoneado(r(84), radio, 12, fase=15)]
+    e += sectores(r(74), r(84), 6, fase=15)
+    e += [circulo(r(74)), circulo(r(62))]
+    for i in range(6):                                   # 6 gotas de agua entre los pétalos
+        e.append(circulo(r(6.5), *polar(r(47), 30 + 60 * i)))
+    for i in range(6):
+        a = 60 * i
+        e.append(petalo(a, r(16), r(62) + 0.3, r(38), forma=FORMA_PETALO))
+        e.append(petalo(a, r(30), r(54), r(18), forma=FORMA_CORAZON, clase="petalo-interior"))
+    e.append(_aro(r(62)))
+    e.append(circulo(r(27)))
+    e.append(media_luna(0, 0, r(22), r(18), r(8), 0))
+    return documento(e, radio)
+
+
+def plexo(radio=RADIO_MANDALA):
+    """Manipura · 10 pétalos · triángulo hacia abajo (fuego), borde de llamitas."""
+    k, r = _escala(radio)
+    e = [borde_dientes(r(78), radio, 20, fase=0)]
+    e += sectores(r(74), r(78), 10, fase=0)
+    e += [circulo(r(74)), circulo(r(62))]
+    e += capa_petalos(10, r(18), r(62) + 0.3, r(22), orden=list(range(10)))
+    e.append(_aro(r(62)))
+    e += [circulo(r(27)), triangulo_abajo(r(27))]
+    return documento(e, radio)
+
+
+def corazon(radio=RADIO_MANDALA):
+    """Anahata · 12 pétalos · hexagrama (aire)."""
+    k, r = _escala(radio)
+    e = [borde_concavo(r(78), radio, 12, fase=0)]
+    e += sectores(r(74), r(78), 6, fase=15)
+    e += [circulo(r(74)), circulo(r(62))]
+    e += capa_petalos(12, r(18), r(62) + 0.3, r(18), forma=(0.30, 0.62, 0.70, 0.62), fase=0, orden=list(range(12)))
+    e.append(_aro(r(62)))
+    e += [circulo(r(32)), hexagrama(r(32))]
+    return documento(e, radio)
+
+
+def garganta(radio=RADIO_MANDALA):
+    """Vishuddha · 16 pétalos · círculo (éter), con un collar de perlas."""
+    k, r = _escala(radio)
+    e = [circulo(radio)]
+    e += sectores(r(77), radio, 16, 0)
+    e.append(circulo(r(77)))
+    e += perlas(16, r(68.5), r(5.4), fase=11.25)
+    e.append(circulo(r(60)))
+    e += capa_petalos(16, r(20), r(54), r(22), forma=(0.30, 0.62, 0.70, 0.62))
+    e += [circulo(r(28)), circulo(r(13))]
+    return documento(e, radio)
+
+
+def tercer_ojo(radio=RADIO_MANDALA):
+    """Ajna · 2 pétalos grandes (las alas) · círculo central (el ojo), con dos abanicos de rayos."""
+    k, r = _escala(radio)
+    e = [borde_festoneado(r(84), radio, 16, fase=0)]
+    e += sectores(r(74), r(84), 16, fase=0)
+    e.append(circulo(r(74)))
+    e += sectores(r(62), r(74), 8, fase=0)
+    e.append(circulo(r(62)))
+    for base in (0, 180):                                # abanicos de rayos arriba y abajo
+        for i in range(6):
+            a = base - 50 + 100 * i / 5
+            e.append(linea(polar(r(26), a), polar(r(62), a)))
+        p, q = polar(r(45), base - 50), polar(r(45), base + 50)
+        e.append(trazo(f"M{_n(p[0])},{_n(p[1])} A{_n(r(45))},{_n(r(45))} 0 0 1 {_n(q[0])},{_n(q[1])}"))
+    for a in (90, 270):
+        e.append(petalo(a, r(14), r(62) + 0.3, r(46), forma=FORMA_PETALO))
+        e.append(petalo(a, r(30), r(52), r(22), forma=FORMA_CORAZON, clase="petalo-interior"))
+    e.append(_aro(r(62)))
+    e += [circulo(r(26)), circulo(r(12))]
+    return documento(e, radio)
+
+
+def corona(radio=RADIO_MANDALA):
+    """Sahasrara · loto de 3 capas (12 + 12 + 6 = 30 pétalos), borde de 36 puntillas."""
+    k, r = _escala(radio)
+    e = [borde_festoneado(r(84), radio, 36, fase=0)]
+    e += sectores(r(74), r(84), 18, 0)
+    e += [circulo(r(74)), circulo(r(62))]
+    e += capa_petalos(12, r(32), r(62) + 0.3, r(24))                                      # capa de atrás
+    e += capa_petalos(12, r(32), r(48), r(12), fase=15)                                   # entre los grandes
+    e += capa_petalos(6, r(24), r(36), r(26))                                             # capa del frente
+    e.append(_aro(r(62)))
+    e += [circulo(r(20)), circulo(r(10))]
+    return documento(e, radio)
+
+
+# ------------------------------------------------------------ INTEGRACIÓN
+# Los siete chakras juntos, como en la portada: la flor del centro (Corona) y seis flores alrededor
+# (Raíz arriba y, en sentido horario, Sacro, Plexo solar, Corazón, Garganta y Tercer ojo), unidas por
+# un aro y por radios. Para colorear: las flores son simples (zonas grandes), no la versión de la portada.
+RADIO_INTEGRACION = 87
+ORDEN_SATELITES = ("raiz", "sacro", "plexo", "corazon", "garganta", "tercer_ojo")   # horario desde arriba
+
+
+def _flor_colorear(x, y, R, n, base, ancho, centro, forma, giro=0):
+    """Flor simple de n pétalos con un círculo en el centro, ubicada en (x, y) y girada `giro` grados."""
+    cuerpo = capa_petalos(n, base, R, ancho, forma=forma, clase="petalo-flor") + [circulo(centro)]
+    return [f'<g transform="translate({_n(x)},{_n(y)}) rotate({_n(giro)})">{"".join(cuerpo)}</g>']
+
+
+def integracion(radio=RADIO_INTEGRACION):
+    """Siete flores (una por chakra) dentro de un aro. Todas las zonas miden más de 10 mm."""
+    Rc, Rs, hueco = 34, 21, 8
+    D = Rc + Rs + hueco                      # distancia del centro a cada flor de alrededor
+    afuera = D + Rs + 3                      # círculo exterior
+    e = [circulo(afuera), circulo(D, fill="none")]
+    for i in range(6):                       # divisiones entre las flores, en el anillo de afuera
+        e.append(linea(polar(D, 30 + 60 * i), polar(afuera, 30 + 60 * i)))
+        e.append(linea((0, 0), polar(D, 60 * i)))                       # radios hacia cada flor
+    e += _flor_colorear(0, 0, Rc, 12, 10, 15, 13, (0.30, 0.62, 0.70, 0.62))
+    for i in range(6):
+        x, y = polar(D, 60 * i)
+        e += _flor_colorear(x, y, Rs, 6, 5, 16, 7.5, FORMA_PETALO, giro=60 * i)
+    return documento(e, afuera)
+
+
+# Cuántos pétalos tiene cada uno (los "petalo-interior" son corazones de adentro, no cuentan)
+MANDALAS = {"raiz": raiz, "sacro": sacro, "plexo": plexo, "corazon": corazon,
+            "garganta": garganta, "tercer_ojo": tercer_ojo, "corona": corona}
+PETALOS = {"raiz": 4, "sacro": 6, "plexo": 10, "corazon": 12, "garganta": 16, "tercer_ojo": 2, "corona": 30}
 
 
 # ------------------------------------------------- DEDICATORIA (solo línea)

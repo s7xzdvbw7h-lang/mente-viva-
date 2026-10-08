@@ -8,7 +8,7 @@ Genera el libro para colorear (8,5 × 11 pulgadas, vertical, listo para KDP):
   - libro_mandalas_chakras.pdf  con sangrado de 0,125" y una hoja en blanco detrás de cada página
 
 Uso:
-    python3 generar_libro.py              # el libro completo (20 páginas impresas)
+    python3 generar_libro.py              # el libro completo (27 páginas impresas)
     python3 verificar.py                  # controles de calidad sobre lo generado
 
 Dependencias: weasyprint, pypdf, cairosvg, fonttools, pillow, numpy, scipy, pdfminer.six
@@ -53,7 +53,8 @@ COMO_USAR_PASOS = [
 COMO_USAR_NOTA = ("Usá lápices de colores o marcadores de punta suave. "
                   "Si usás marcadores, poné una hoja protectora detrás.")
 
-NOTA_PALETA = "Esta es una paleta sugerida. Podés elegir los colores que más te gusten."
+TITULO_EJEMPLO = "Así podría quedar"
+NOTA_EJEMPLO = "Este es solo un ejemplo. Podés copiarlo o elegir tus propios colores."
 LEER_FRASE = "Al terminar, leé en voz alta:"
 TEXTO_ESCRIBIR = "Podés escribirlo o contárselo a alguien."
 TITULO_RESPIRAR = "Una respiración para volver al presente"
@@ -140,7 +141,7 @@ PESTANA_ANCHO = 8
 PESTANA_ALTO = 32
 PESTANA_PASO = 35         # cada capítulo baja un escalón, para encontrarlo al hojear
 RADIO = M.RADIO_MANDALA
-CENTRO_MANDALA_Y = 134.5  # centro del mandala, desde arriba del corte
+CENTRO_MANDALA_Y = 128.5  # centro del mandala, desde arriba del corte
 CENTRO_INTEGRACION_Y = 128.5
 TINTA = "#1b1b1b"
 
@@ -257,16 +258,16 @@ img {{ display: block; }}
 .paso .t {{ margin-left: 8mm; font-size: 24pt; line-height: 1.3; }}
 .nota-uso {{ border: 0.75mm solid {TINTA}; border-radius: 6mm; padding: 8mm 9mm; font-size: 22pt; line-height: 1.45; }}
 
-/* página del mandala: nombre, color protagonista y paleta arriba; frase abajo */
-.cab {{ position: absolute; left: {X0}mm; width: {ANCHO_UTIL}mm; display: flex; justify-content: space-between; align-items: flex-start; }}
-.cab-izq {{ width: 100mm; }}
+/* página del mandala: nombre y color protagonista arriba, paleta en una fila, frase abajo */
+.cab {{ position: absolute; left: {X0}mm; width: {ANCHO_UTIL}mm; display: flex; justify-content: space-between; align-items: flex-end; }}
 .titulo-mandala {{ font-size: 40pt; line-height: 1.05; }}
-.protag {{ display: flex; align-items: center; margin-top: 2.5mm; font-weight: 700; font-size: 18pt; line-height: 1; height: 9mm; white-space: nowrap; }}
+.protag {{ display: flex; align-items: center; margin: 0 0 1mm 0; font-weight: 700; font-size: 18pt; line-height: 1; height: 9mm; white-space: nowrap; }}
 .protag svg {{ flex: 0 0 8mm; margin: 0 2.5mm 0 3mm; }}
-.paleta {{ width: 78mm; display: flex; flex-wrap: wrap; padding-top: 2mm; }}
-.paleta .sw {{ display: flex; align-items: center; width: 39mm; height: 9mm; font-size: 18pt; line-height: 1; white-space: nowrap; }}
-.paleta .sw svg {{ flex: 0 0 7mm; margin-right: 2.5mm; }}
-.nota-paleta {{ position: absolute; left: {X0}mm; width: {ANCHO_UTIL}mm; font-size: 18pt; line-height: 1.35; }}
+.fila-paleta {{ position: absolute; left: {X0}mm; width: {ANCHO_UTIL}mm; height: 9mm; display: flex; justify-content: space-between; align-items: center; }}
+.fila-paleta .sw {{ display: flex; align-items: center; font-size: 18pt; line-height: 1; white-space: nowrap; }}
+.fila-paleta .sw svg {{ flex: 0 0 8mm; margin-right: 2.5mm; }}
+.sub-ejemplo {{ position: absolute; left: {X0}mm; width: {ANCHO_UTIL}mm; font-family: 'Fraunces', serif; font-weight: 700; font-size: 26pt; line-height: 1.2; }}
+.nota-ejemplo {{ position: absolute; left: {X0}mm; width: {ANCHO_UTIL}mm; text-align: center; font-size: 18pt; line-height: 1.4; }}
 .etiqueta-frase {{ position: absolute; left: {X0}mm; width: {ANCHO_UTIL}mm; text-align: center; font-weight: 700; font-size: 18pt; }}
 .pie-afirmacion {{ position: absolute; left: {X0}mm; width: {ANCHO_UTIL}mm; text-align: center;
                    font-family: 'Fraunces', serif; font-weight: 700; font-size: 32pt; line-height: 1.22; }}
@@ -413,25 +414,45 @@ def paleta_de(clave):
     return M.PALETAS[clave]
 
 
-def pagina_mandala(ch, indice, n, ruta_svg):
-    """Primero se pinta: nombre, color protagonista y paleta sugerida arriba; mandala; y abajo la frase."""
+def _cabecera(ch):
+    """Nombre del chakra a la izquierda y su color protagonista a la derecha."""
+    protagonista = paleta_de(ch["clave"])[0]
+    return (f'<div class="cab" style="top:{MARGEN_SUP}mm"><h1 class="titulo-mandala">{esc(ch["nombre"])}</h1>'
+            f'<p class="protag">Color protagonista:{_punto(M.PALETA[protagonista], 8)}{M.NOMBRE_COLOR[protagonista]}</p></div>')
+
+
+def _fila_paleta(clave, top):
+    """Los 5 colores de la paleta sugerida, en una fila: punto de color y nombre."""
+    items = "".join(f'<div class="sw">{_punto(M.PALETA[c], 8)}{M.NOMBRE_COLOR[c]}</div>' for c in paleta_de(clave))
+    return f'<div class="fila-paleta" style="top:{top}mm">{items}</div>'
+
+
+def pagina_ejemplo(ch, indice, n, ruta_svg):
+    """Primera página del capítulo: el mandala pintado ("Así podría quedar"), con su paleta."""
     clave = ch["clave"]
-    nombres = paleta_de(clave)
-    protagonista = nombres[0]
-    items = "".join(f'<div class="sw">{_punto(M.PALETA[c], 7)}{M.NOMBRE_COLOR[c]}</div>' for c in nombres)
+    ancho = 2 * (RADIO + 2)
+    top = CENTRO_MANDALA_Y - ancho / 2
+    return pagina(f"""
+  {pestana(indice, clave)}
+  {_cabecera(ch)}
+  <p class="sub-ejemplo" style="top:{MARGEN_SUP + 17.3}mm">{esc(TITULO_EJEMPLO)}</p>
+  <div style="position:absolute; left:{CX - ancho / 2}mm; top:{top}mm; width:{ancho}mm">{_svg_img(ruta_svg, ancho)}</div>
+  {_fila_paleta(clave, CENTRO_MANDALA_Y + ancho / 2 + 2.5)}
+  <p class="nota-ejemplo" style="top:{CENTRO_MANDALA_Y + ancho / 2 + 15.5}mm">{partir(NOTA_EJEMPLO, "cuerpo", 18, ANCHO_UTIL * 0.8)}</p>
+  {numero(n)}
+""")
+
+
+def pagina_mandala(ch, indice, n, ruta_svg):
+    """Segunda página del capítulo: se pinta. Nombre y paleta arriba, mandala en blanco y negro, y abajo la frase."""
+    clave = ch["clave"]
     ancho = 2 * (RADIO + 2)
     top = CENTRO_MANDALA_Y - ancho / 2
     afirmacion = "<br>".join(esc(l) for l in ch["afirmacion"])
     return pagina(f"""
   {pestana(indice, clave)}
-  <div class="cab" style="top:{MARGEN_SUP}mm">
-    <div class="cab-izq">
-      <h1 class="titulo-mandala">{esc(ch["nombre"])}</h1>
-      <p class="protag">Color protagonista:{_punto(M.PALETA[protagonista], 8)}{M.NOMBRE_COLOR[protagonista]}</p>
-    </div>
-    <div class="paleta">{items}</div>
-  </div>
-  <p class="nota-paleta" style="top:{MARGEN_SUP + 30.8}mm">{esc(NOTA_PALETA)}</p>
+  {_cabecera(ch)}
+  {_fila_paleta(clave, MARGEN_SUP + 18.3)}
   <div style="position:absolute; left:{CX - ancho / 2}mm; top:{top}mm; width:{ancho}mm">{_svg_img(ruta_svg, ancho)}</div>
   <div class="etiqueta-frase" style="top:{CENTRO_MANDALA_Y + ancho / 2 + 3}mm">{esc(LEER_FRASE)}</div>
   <div class="pie-afirmacion" style="top:{CENTRO_MANDALA_Y + ancho / 2 + 12.5}mm">{afirmacion}</div>
@@ -522,11 +543,14 @@ def informacion_paginas():
     n = 4
     for i, ch in enumerate(CHAKRAS):
         paleta = [M.PALETA[c] for c in paleta_de(ch["clave"])]
-        info.append(dict(nombre=f"{ch['clave']}_mandala", numero=n, clave=ch["clave"], afirmacion=ch["afirmacion"],
-                         mandala=(CX, CENTRO_MANDALA_Y, RADIO), paleta=paleta, protagonista=M.PALETA[paleta_de(ch["clave"])[0]]))
-        info.append(dict(nombre=f"{ch['clave']}_reflexion", numero=n + 1, clave=ch["clave"],
+        comun = dict(clave=ch["clave"], mandala=(CX, CENTRO_MANDALA_Y, RADIO), paleta=paleta, protagonista=paleta[0])
+        info.append(dict(nombre=f"{ch['clave']}_ejemplo", numero=n, a_color=True,
+                         fila_paleta=CENTRO_MANDALA_Y + RADIO + 4.5, **comun))
+        info.append(dict(nombre=f"{ch['clave']}_mandala", numero=n + 1, afirmacion=ch["afirmacion"],
+                         fila_paleta=MARGEN_SUP + 18.3, **comun))
+        info.append(dict(nombre=f"{ch['clave']}_reflexion", numero=n + 2, clave=ch["clave"],
                          sin_texto=ch["afirmacion"]))      # la frase aparece una sola vez por capítulo
-        n += 2
+        n += 3
     info.append(dict(nombre="integracion", numero=n, mandala=(CX, CENTRO_INTEGRACION_Y, M.RADIO_INTEGRACION)))
     ancho_par = 2 * (M.RADIO_PAR + 1)
     alto_par = ancho_par * M.RAZON_PAR
@@ -547,6 +571,13 @@ def construir():
     mandalas_svg["par_de_flores"] = M.par_de_flores()
     for clave, svg in mandalas_svg.items():
         (AQUI / "svg" / f"{clave}.svg").write_text(svg, encoding="utf-8")
+    # ejemplos pintados ("Así podría quedar"): el mismo dibujo, con los colores de la paleta, en vector
+    import ejemplos
+    (AQUI / "ejemplos").mkdir(exist_ok=True)
+    for viejo in (AQUI / "ejemplos").glob("*"):
+        viejo.unlink()
+    for c in CHAKRAS:
+        (AQUI / "ejemplos" / f"{c['clave']}.svg").write_text(ejemplos.ejemplo(c["clave"]), encoding="utf-8")
     (AQUI / "svg" / "portada_arte.svg").write_text(M.portada_arte(), encoding="utf-8")
     (AQUI / "svg" / "dedicatoria_corazon.svg").write_text(M.corazon_linea(), encoding="utf-8")
 
@@ -560,6 +591,8 @@ def construir():
     paginas.append(("como_usar", pagina_como_usar(n)))
     n += 1
     for i, ch in enumerate(CHAKRAS):
+        paginas.append((f"{ch['clave']}_ejemplo", pagina_ejemplo(ch, i, n, f"ejemplos/{ch['clave']}.svg")))
+        n += 1
         paginas.append((f"{ch['clave']}_mandala", pagina_mandala(ch, i, n, f"svg/{ch['clave']}.svg")))
         n += 1
         paginas.append((f"{ch['clave']}_reflexion", pagina_reflexion(ch, i, n)))

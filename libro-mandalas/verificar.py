@@ -26,6 +26,8 @@ from scipy import ndimage
 PX_POR_MM = 8
 ZONA_MIN_MM = 10.0      # diámetro mínimo exigido por zona
 ZONA_AVISO_MM = 12.0    # por debajo de esto se cuenta como "zona ajustada" (válida)
+AREA_RUIDO_MM2 = 0.25      # por debajo de esto es ruido de rasterizado (la punta de un pétalo), no una zona
+PROTAGONISTA_MIN, PROTAGONISTA_MAX = 0.59, 0.71   # 60–70 % con 1 punto de tolerancia por el rasterizado
 ZONA_MIN_AREA_MM2 = 100.0   # 1 cm²
 MM_A_PT = 72 / 25.4
 LINEA_MIN_PT = 2.9      # las divisiones internas miden 3 pt
@@ -57,6 +59,8 @@ def analizar_zonas(svg_texto, px_por_mm=PX_POR_MM):
             continue
         mascara = etiquetas == i
         area_mm2 = mascara.sum() / px_por_mm**2
+        if area_mm2 < AREA_RUIDO_MM2:           # puntas de pétalos que se afinan hasta menos de un píxel: no son zonas
+            continue
         diametro = 2 * dist[mascara].max() / px_por_mm
         ys, xs = np.nonzero(mascara)
         zonas.append({"id": i, "area_mm2": area_mm2, "diametro_mm": diametro,
@@ -66,8 +70,11 @@ def analizar_zonas(svg_texto, px_por_mm=PX_POR_MM):
 
 
 def trazos_en_pt(svg_texto):
-    """Grosores de línea declarados en el SVG, en puntos (solo los que se dibujan)."""
-    return [float(x) * MM_A_PT for x in re.findall(r'stroke-width="([\d.]+)"', svg_texto)]
+    """Grosores de línea declarados en el SVG, en puntos (solo los que se dibujan). Si el dibujo se agranda con
+    <g transform="scale(k)">, el grosor que se imprime es el declarado por k."""
+    escala = re.search(r'<g transform="scale\(([\d.]+)\)">', svg_texto)
+    k = float(escala.group(1)) if escala else 1.0
+    return [float(x) * k * MM_A_PT for x in re.findall(r'stroke-width="([\d.]+)"', svg_texto)]
 
 
 def informe_mandala(nombre, svg_texto, petalos_esperados=None, zonas_esperadas=None):
@@ -287,15 +294,24 @@ def verificar_pdf(ruta_pdf, paginas_info, g):
             if (xs.max() + 1 + borde_x) < img.shape[1] - 2:
                 fallos.append(f"p.{k + 1}: la pestaña no llega al borde del sangrado")
         if info.get("paleta"):
-            region = img[int((S + g.MARGEN_SUP - 1) * pxmm):int((S + 46) * pxmm), int(g.X0 * pxmm):int((g.ANCHO - 12) * pxmm)]
-            cuentas = {}
-            for nombre_hex in M.PALETA.values():
-                cuentas[nombre_hex] = int((np.abs(region - HEX(nombre_hex)).sum(axis=2) < 30).sum())
-            visibles = [h for h, c in cuentas.items() if c > 150]
-            if sorted(visibles) != sorted(info["paleta"]):
-                fallos.append(f"p.{k + 1}: la paleta visible no es la sugerida ({len(visibles)} colores en la cabecera, se esperaban {len(info['paleta'])})")
-            elif cuentas[info["protagonista"]] <= max(c for h, c in cuentas.items() if h != info["protagonista"]):
-                fallos.append(f"p.{k + 1}: el color protagonista no es el que más se ve en la cabecera")
+            def colores_en(desde, hasta):
+                reg = img[int((S + desde) * pxmm):int((S + hasta) * pxmm), int(g.X0 * pxmm):int((g.ANCHO - 12) * pxmm)]
+                return {h: int((np.abs(reg - HEX(h)).sum(axis=2) < 30).sum()) for h in M.PALETA.values()}
+
+            if info.get("a_color"):                       # ejemplo pintado: cabecera con el protagonista; fila de paleta abajo
+                cab = colores_en(g.MARGEN_SUP - 1, g.MARGEN_SUP + 15)
+                if [h for h, c in cab.items() if c > 150] != [info["protagonista"]]:
+                    fallos.append(f"p.{k + 1}: la cabecera debe mostrar solo el color protagonista")
+                fila = colores_en(info["fila_paleta"] - 1, info["fila_paleta"] + 10)
+                if sorted(h for h, c in fila.items() if c > 150) != sorted(info["paleta"]):
+                    fallos.append(f"p.{k + 1}: la fila de colores no muestra los 5 de la paleta sugerida")
+            else:
+                cuentas = colores_en(g.MARGEN_SUP - 1, info["fila_paleta"] + 10)
+                visibles = [h for h, c in cuentas.items() if c > 150]
+                if sorted(visibles) != sorted(info["paleta"]):
+                    fallos.append(f"p.{k + 1}: la paleta visible no es la sugerida ({len(visibles)} colores en la cabecera, se esperaban {len(info['paleta'])})")
+                elif cuentas[info["protagonista"]] <= max(c for h, c in cuentas.items() if h != info["protagonista"]):
+                    fallos.append(f"p.{k + 1}: el color protagonista no es el que más se ve en la cabecera")
 
     # Mandalas en blanco y negro (ningún color adentro del dibujo) y grosor de línea medido a 600 dpi:
     # largo de miles de cruces horizontales sobre el mandala (los perpendiculares dan el grosor real,
@@ -310,11 +326,23 @@ def verificar_pdf(ruta_pdf, paginas_info, g):
         dentro = (xx / p150 - cx) ** 2 + ((yy / p150 - S) - cy) ** 2 <= (r + 1) ** 2
         croma = img.max(axis=2) - img.min(axis=2)
         con_color = int((croma[dentro] > 14).sum())
-        if con_color:
+        if info.get("a_color"):
+            import ejemplos
+            partes, ajenos = ejemplos.medir(img[dentro.any(axis=1)][:, dentro.any(axis=0)], info["paleta"])
+            notas.append(f"p.{k + 1}: reparto de colores del ejemplo: " +
+                         ", ".join(f"{n} {p * 100:.0f}%" for n, p in zip(M.PALETAS[info["clave"]], partes)))
+            if not PROTAGONISTA_MIN <= partes[0] <= PROTAGONISTA_MAX:
+                fallos.append(f"p.{k + 1}: el color protagonista ocupa {partes[0] * 100:.1f} % de lo pintado "
+                              f"(debe estar entre {PROTAGONISTA_MIN * 100:.0f} y {PROTAGONISTA_MAX * 100:.0f} %)")
+            if partes.min() < 0.015:
+                fallos.append(f"p.{k + 1}: hay un color de la paleta casi sin usar ({partes.min() * 100:.1f} %)")
+            if ajenos > 60:
+                fallos.append(f"p.{k + 1}: {ajenos} píxeles con colores que no son de la paleta")
+        elif con_color:
             fallos.append(f"p.{k + 1}: hay {con_color} píxeles con color adentro del mandala (debe ser blanco y negro)")
         img = _raster(ruta_pdf, 2 * k + 1, 600)
         px_mm = 600 / 25.4
-        oscuro = img.astype(int).sum(axis=2) / 3 < 110
+        oscuro = img.astype(int).max(axis=2) < 70          # solo el negro de la línea (no los colores oscuros)
         largos = []
         for y in range(int((S + cy - r) * px_mm), int((S + cy + r) * px_mm), 3):
             fila = oscuro[y, int((cx - r - 1) * px_mm):int((cx + r + 1) * px_mm)].astype(int)
@@ -341,6 +369,34 @@ def main():
         linea, problemas, _ = informe_mandala(ch["nombre"], ruta.read_text(encoding="utf-8"),
                                               petalos_esperados=M.PETALOS[ch["clave"]], zonas_esperadas=ZONAS_ESPERADAS[ch["clave"]])
         print(" ", linea)
+        for p in problemas:
+            print("    ✗", p)
+        problemas_total += len(problemas)
+    print("== EJEMPLOS PINTADOS (SVG) ==")
+    import ejemplos
+    for ch in G.CHAKRAS:
+        clave = ch["clave"]
+        pintado = (G.AQUI / "ejemplos" / f"{clave}.svg").read_text(encoding="utf-8")
+        base = (G.AQUI / "svg" / f"{clave}.svg").read_text(encoding="utf-8")
+        problemas = []
+        usados = set(re.findall(r'fill="(#[0-9A-Fa-f]{6})"', pintado)) - {"#FFFFFF", M.NEGRO}
+        ajenos = usados - set(ejemplos.colores_de(clave))
+        if ajenos:
+            problemas.append(f"colores fuera de la paleta: {sorted(ajenos)}")
+        if len(usados) != 5:
+            problemas.append(f"usa {len(usados)} colores (deben ser 5)")
+        # las líneas son las mismas que las del mandala para colorear: sin color, los dos dibujos son idénticos
+        sin_color = pintado
+        for h in usados:
+            sin_color = sin_color.replace(f'fill="{h}"', f'fill="{M.BLANCO}"')
+        dif = np.abs(rasterizar(sin_color).astype(int) - rasterizar(base).astype(int))
+        if int((dif > 60).sum()) > 20:
+            problemas.append(f"el ejemplo no tiene las mismas líneas que el mandala ({int((dif > 60).sum())} píxeles distintos)")
+        partes = ejemplos.proporciones(clave, pintado)
+        prot = partes[M.PALETAS[clave][0]]
+        if not PROTAGONISTA_MIN <= prot <= PROTAGONISTA_MAX:
+            problemas.append(f"el protagonista ocupa {prot * 100:.1f} % de lo pintado")
+        print(f"  {ch['nombre']}: " + " · ".join(f"{n} {p * 100:.0f}%" for n, p in partes.items()))
         for p in problemas:
             print("    ✗", p)
         problemas_total += len(problemas)

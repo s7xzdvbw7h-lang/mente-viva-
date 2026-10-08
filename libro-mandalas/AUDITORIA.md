@@ -42,11 +42,12 @@ vista, la respiración o la familia que tenga, y que no digan "ella" a quien tal
 | Plexo, respiración | "soltá como apagando una vela" | "soltá despacio, como apagando una vela" | Soplar fuerte puede marear o cansar |
 | Plexo, pregunta | "…estás orgullosa?" | "¿Qué decisión tuya te da orgullo?" | Sin género |
 | Garganta, respiración | "Inhalá por la nariz…" | "Inhalá y soltá con un suspiro suave." | No todas respiran bien por la nariz (resfrío, alergia) |
-| Garganta, pregunta | "…le darías a tu nieto?" | "¿Qué consejo le darías hoy a alguien que querés?" | No todas tienen nietos |
 | Tercer ojo, frase | "Confío en mi intuición. Veo con claridad." | "Confío en mi intuición / y en mi propia mirada." | "Veo con claridad" duele a quien tiene cataratas o poca vista (nuestro público) |
 | Tercer ojo, respiración | "Cerrá los ojos suavemente." | "Cerrá los ojos, si te resulta cómodo." | Cerrar los ojos puede dar mareo o inquietud |
 | Tercer ojo, pregunta | "…confiaste en tu intuición y te salió bien?" | "¿Cuándo tu intuición te guió bien?" | La versión anterior era un examen: quien recuerda un error se sentía mal. Se mantiene sin referencia a memoria cognitiva |
 | Corona, frase | "Estoy en paz. Todo está bien." | "Estoy en paz / en este momento." | "Todo está bien" suena falso con un duelo o un dolor; "en este momento" es verdad aunque dure un rato. No se usó "Me permito disfrutar este momento" porque ya es la frase del Sacro |
+
+La pregunta de Garganta ("¿Qué consejo le darías a tu nieto?") se deja como estaba, por decisión de Dani.
 
 Se dejaron como estaban (revisadas): las afirmaciones de Raíz, Sacro, Plexo, Corazón y Garganta; las siete frases "Está
 relacionado con…"; la dedicatoria, "Un momento para compartir", "Todos juntos" y el cierre. Una duda que queda: Corazón dice

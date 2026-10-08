@@ -107,7 +107,7 @@ CHAKRAS = [
          relacion="Está relacionado con la voz, la expresión y la comunicación sincera.",
          afirmacion=["Mi voz y mis palabras", "importan."],
          respiracion=["Sentí el cuello y los hombros sueltos.", "Inhalá y soltá con un suspiro suave."],
-         pregunta="¿Qué consejo le darías hoy a alguien que querés?"),
+         pregunta="¿Qué consejo le darías a tu nieto?"),
     dict(clave="tercer_ojo", nombre="Tercer ojo",
          relacion="Está relacionado con la intuición, la percepción y la mirada interior.",
          afirmacion=["Confío en mi intuición", "y en mi propia mirada."],

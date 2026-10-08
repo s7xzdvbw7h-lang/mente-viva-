@@ -15,7 +15,7 @@ Salen: `libro_mandalas_chakras.pdf`, un PNG por página en `preview/` (recortado
 y cada ejemplo pintado en `ejemplos/`.
 El PDF mide 8,625 × 11,25" (8,5 × 11" más 0,125" de sangrado arriba, abajo y afuera, como pide KDP) y trae las
 cajas de corte y de sangrado. Detrás de cada página hay una hoja en blanco, para que el marcador no traspase
-(54 hojas en total). Si imprimís en una sola cara, imprimí solo las páginas impares.
+(54 páginas en total, o sea 27 hojas). Si imprimís en una sola cara, imprimí solo las páginas impares.
 Márgenes: 0,75" del lado del lomo y 0,5" en el resto.
 
 ## Cómo está armado

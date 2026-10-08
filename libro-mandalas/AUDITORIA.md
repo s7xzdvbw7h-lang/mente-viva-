@@ -30,6 +30,39 @@ No hubo acceso a datos reales de Amazon (búsquedas, ranking, competidores): la 
 | Páginas nuevas: "Un momento para compartir" y cierre emocional | hecho |
 | Portada con "DE LOS 7 CHAKRAS" y "Para colorear, reflexionar y disfrutar" | hecho |
 
+## Auditoría de las frases (leídas desde el lugar de quien las pinta)
+
+Criterios: que se lean fácil en voz alta, que no suenen a examen ni a promesa que ella no siente, que no dependan de la
+vista, la respiración o la familia que tenga, y que no digan "ella" a quien tal vez no lo sea.
+
+| Dónde | Antes | Ahora | Por qué |
+|---|---|---|---|
+| Cómo usar, paso 1 y 5 | "Elegí un mandala." / "Después, respondé la pregunta…" | "Elegí un mandala. Mirá el ejemplo, si querés." / "Si querés, respondé la pregunta…" | Faltaba la página nueva del ejemplo; "respondé" sonaba a obligación |
+| Raíz, pregunta | "¿Qué te enseñaron tus padres…?" | "¿Qué cosa buena aprendiste de tu familia que todavía llevás con vos?" | Suponía padres vivos y buenos recuerdos; "familia" incluye a quien la crió y orienta a lo bueno |
+| Plexo, respiración | "soltá como apagando una vela" | "soltá despacio, como apagando una vela" | Soplar fuerte puede marear o cansar |
+| Plexo, pregunta | "…estás orgullosa?" | "¿Qué decisión tuya te da orgullo?" | Sin género |
+| Garganta, respiración | "Inhalá por la nariz…" | "Inhalá y soltá con un suspiro suave." | No todas respiran bien por la nariz (resfrío, alergia) |
+| Garganta, pregunta | "…le darías a tu nieto?" | "¿Qué consejo le darías hoy a alguien que querés?" | No todas tienen nietos |
+| Tercer ojo, frase | "Confío en mi intuición. Veo con claridad." | "Confío en mi intuición / y en mi propia mirada." | "Veo con claridad" duele a quien tiene cataratas o poca vista (nuestro público) |
+| Tercer ojo, respiración | "Cerrá los ojos suavemente." | "Cerrá los ojos, si te resulta cómodo." | Cerrar los ojos puede dar mareo o inquietud |
+| Tercer ojo, pregunta | "…confiaste en tu intuición y te salió bien?" | "¿Cuándo tu intuición te guió bien?" | La versión anterior era un examen: quien recuerda un error se sentía mal. Se mantiene sin referencia a memoria cognitiva |
+| Corona, frase | "Estoy en paz. Todo está bien." | "Estoy en paz / en este momento." | "Todo está bien" suena falso con un duelo o un dolor; "en este momento" es verdad aunque dure un rato. No se usó "Me permito disfrutar este momento" porque ya es la frase del Sacro |
+
+Se dejaron como estaban (revisadas): las afirmaciones de Raíz, Sacro, Plexo, Corazón y Garganta; las siete frases "Está
+relacionado con…"; la dedicatoria, "Un momento para compartir", "Todos juntos" y el cierre. Una duda que queda: Corazón dice
+"con facilidad"; para alguien viuda o sola podría sonar lejano. Alternativa si preferís: "Hay amor en mi vida."
+
+## ¿27 páginas andan bien?
+
+- **KDP:** 27 páginas impresas = 54 con los reversos en blanco. Cumple el mínimo de 24. Con menos de 79 no hay texto en el lomo.
+- **Quien lo usa:** son 7 mandalas para pintar más "Todos juntos": una semana a un mandala por día. Como ritual y regalo
+  alcanza; como "mucho para pintar" es poco frente a competidores de 50 a 120 mandalas. Conviene no competir por cantidad.
+- **Una molestia real:** el ejemplo está en una hoja y el mandala en otra, con un reverso en blanco en el medio. Para copiar
+  los colores hay que dar vuelta la hoja hacia atrás cada vez. Con el ejemplo en la página izquierda, frente al mandala, se ve
+  todo a la vez y el libro bajaría a unas 38–40 páginas (el marcador del mandala sigue teniendo un reverso en blanco).
+- **Cuaderno anillado (Argentina):** 27 hojas A4 de 150 g. Los precios de Mercado Libre y de la competencia que figuran en el
+  texto de la conversación no los pude comprobar.
+
 ## Decisión: la frase del ejemplo
 
 "Este es solo un ejemplo. Podés copiarlo o elegir tus propios colores." se usa **una sola vez por capítulo, en la página

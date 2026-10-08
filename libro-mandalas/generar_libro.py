@@ -44,11 +44,11 @@ PARA_MAMA = "Para mamá, con todo mi amor."
 
 COMO_USAR_TITULO = "Cómo usar este libro"
 COMO_USAR_PASOS = [
-    "Elegí un mandala.",
+    "Elegí un mandala.\nMirá el ejemplo, si querés.",
     "Respirá tres veces, bien lento.",
     "Pintá sin apuro.",
     "Al terminar, leé la frase en voz alta.",
-    "Después, respondé la pregunta de la página siguiente.",
+    "Si querés, respondé la pregunta\nde la página siguiente.",
 ]
 COMO_USAR_NOTA = ("Usá lápices de colores o marcadores de punta suave. "
                   "Si usás marcadores, poné una hoja protectora detrás.")
@@ -87,7 +87,7 @@ CHAKRAS = [
          relacion="Está relacionado con la sensación de seguridad, pertenencia y sostén.",
          afirmacion=["Estoy a salvo.", "La vida me sostiene."],
          respiracion=["Sentí tus pies apoyados.", "Inhalá suavemente y soltá el aire despacio."],
-         pregunta="¿Qué te enseñaron tus padres que todavía llevás con vos?"),
+         pregunta="¿Qué cosa buena aprendiste de tu familia que todavía llevás con vos?"),
     dict(clave="sacro", nombre="Sacro",
          relacion="Está relacionado con el disfrute, la creatividad y el placer de vivir.",
          afirmacion=["Me permito disfrutar."],
@@ -96,8 +96,8 @@ CHAKRAS = [
     dict(clave="plexo", nombre="Plexo solar",
          relacion="Está relacionado con la confianza, la fuerza interior y la claridad.",
          afirmacion=["Confío en mí", "y en mis decisiones."],
-         respiracion=["Sentí el centro de tu cuerpo.", "Inhalá suavemente y soltá como apagando una vela."],
-         pregunta="¿De qué decisión tuya estás orgullosa?"),
+         respiracion=["Sentí el centro de tu cuerpo.", "Inhalá suavemente y soltá despacio,", "como apagando una vela."],
+         pregunta="¿Qué decisión tuya te da orgullo?"),
     dict(clave="corazon", nombre="Corazón",
          relacion="Está relacionado con el amor, la gratitud y la apertura hacia los demás.",
          afirmacion=["Doy y recibo amor", "con facilidad."],
@@ -106,16 +106,16 @@ CHAKRAS = [
     dict(clave="garganta", nombre="Garganta",
          relacion="Está relacionado con la voz, la expresión y la comunicación sincera.",
          afirmacion=["Mi voz y mis palabras", "importan."],
-         respiracion=["Sentí el cuello y los hombros sueltos.", "Inhalá por la nariz y soltá con un suspiro suave."],
-         pregunta="¿Qué consejo le darías a tu nieto?"),
+         respiracion=["Sentí el cuello y los hombros sueltos.", "Inhalá y soltá con un suspiro suave."],
+         pregunta="¿Qué consejo le darías hoy a alguien que querés?"),
     dict(clave="tercer_ojo", nombre="Tercer ojo",
          relacion="Está relacionado con la intuición, la percepción y la mirada interior.",
-         afirmacion=["Confío en mi intuición.", "Veo con claridad."],
-         respiracion=["Cerrá los ojos suavemente.", "Inhalá y soltá el aire despacio."],
-         pregunta="¿Cuándo confiaste en tu intuición y te salió bien?"),
+         afirmacion=["Confío en mi intuición", "y en mi propia mirada."],
+         respiracion=["Cerrá los ojos, si te resulta cómodo.", "Inhalá suavemente y soltá el aire despacio."],
+         pregunta="¿Cuándo tu intuición te guió bien?"),
     dict(clave="corona", nombre="Corona",
          relacion="Está relacionado con la paz, el sentido y la contemplación.",
-         afirmacion=["Estoy en paz.", "Todo está bien."],
+         afirmacion=["Estoy en paz", "en este momento."],
          respiracion=["Inhalá suavemente.", "Al soltar el aire, imaginá una luz suave."],
          pregunta="¿Qué te da paz en este momento de tu vida?"),
 ]
@@ -397,7 +397,7 @@ def pagina_dedicatoria(n):
 
 def pagina_como_usar(n):
     pasos = "".join(
-        f'<div class="paso"><div class="n">{i}</div><div class="t">{esc(t)}</div></div>'
+        f'<div class="paso"><div class="n">{i}</div><div class="t">{"<br>".join(esc(l) for l in t.split(chr(10)))}</div></div>'
         for i, t in enumerate(COMO_USAR_PASOS, 1))
     return pagina(f"""
   <div class="caja" style="top:{MARGEN_SUP + 8}mm">

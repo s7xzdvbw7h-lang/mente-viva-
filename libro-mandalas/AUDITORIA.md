@@ -89,7 +89,7 @@ preferís mantener un recordatorio en la página para pintar, hay lugar para una
 - **Imprenta de Argentina:** cotizar y confirmar el formato (el libro está en 8,5 × 11", "carta"; en A4 hay que rehacer la
   portada), el papel (150 g si es anillado), si piden PDF en CMYK con negro solo K (el PDF está en RGB, negro puro) y la
   cantidad de ejemplares. Día de la Madre en Argentina: domingo 18 de octubre de 2026.
-- **Registro del libro:** ISBN y depósito legal (en Argentina, ley 11.723) los tiene que hacer la autora; no figuran en la página legal.
+- **ISBN y depósito legal:** no se pudo confirmar que el ISBN sea obligatorio en Argentina (hay que consultarlo con la Agencia Argentina del ISBN o con la imprenta). Para un libro de papel en KDP sí hace falta un ISBN, pero KDP da uno gratis; para un ebook no hace falta. El depósito legal de la ley 11.723 sí figura como obligación para obras publicadas (con multa, según la respuesta de Argentina a la OMPI); lo tramita la autora. Ninguno de los dos figura en la página legal: si se obtiene un ISBN, se agrega ahí en minutos.
 - **Cubierta de KDP:** archivo aparte (frente, lomo y contratapa) con la calculadora de KDP, cuando esté fijada la cantidad de páginas.
 - **Volumen:** hay 8 dibujos para pintar. Los competidores relevados tienen 50 a 120. Idea: 3 dibujos por chakra (21) más integración.
 - **Marca:** la marca v2 prohíbe chakras y mandalas; decidir sello aparte o excepción.

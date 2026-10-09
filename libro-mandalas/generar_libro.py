@@ -81,6 +81,25 @@ CIERRE_SENTI = "Hoy me sentí…"
 CIERRE_FECHA = "Fecha:"
 CIERRE_NOTA = "Podés volver a esta página cada vez que quieras recordar cómo te sentiste."
 
+LEGAL_TITULO = ["MANDALAS DE LOS 7 CHAKRAS", "Un color a la vez"]
+LEGAL_AUTORA = ["Creado por Dani Navarro", "Longevidad Emocional"]
+LEGAL_DERECHOS = ("© 2026 Dani Navarro. Todos los derechos reservados. "
+                  "Prohibida la reproducción total o parcial sin autorización de la autora.")
+LEGAL_AVISO = "Este libro propone un momento de calma y disfrute. No reemplaza la consulta con profesionales de la salud."
+LEGAL_CONTACTO = "¿Querés contarnos cómo te fue? Escribinos a hola@daninavarro.com.ar"
+LEGAL_EDICION = "Primera edición · 2026"
+
+QUE_ES_TITULO = "Qué es un chakra, en simple"
+QUE_ES_PARRAFOS = [
+    "«Chakra» significa «rueda». Es una idea muy antigua que imagina siete lugares del cuerpo, cada uno con su color y su tema.",
+    "No hace falta creer en nada. Cada chakra es una excusa para frenar, respirar y pensar en algo lindo.",
+]
+QUE_ES_CIERRE = "Siete chakras, siete colores, siete momentos para vos."
+QUE_ES_TEMAS = {"raiz": "seguridad", "sacro": "disfrute", "plexo": "confianza", "corazon": "amor",
+                "garganta": "voz", "tercer_ojo": "intuición", "corona": "paz"}
+
+DEDIC_DE = "De:"           # edición para vender: la persona que regala escribe su nombre
+
 # clave, nombre, "relación" (qué cuida), afirmación (líneas), respiración (líneas), pregunta
 CHAKRAS = [
     dict(clave="raiz", nombre="Raíz",
@@ -137,13 +156,15 @@ X0 = MARGEN_INT
 X1 = ANCHO - MARGEN_EXT
 ANCHO_UTIL = X1 - X0
 CX = (X0 + X1) / 2        # eje de la composición (el lomo "se come" unos mm, así se ve centrado)
+DESPLAZ_I = MARGEN_INT - MARGEN_EXT   # en las páginas izquierdas el margen ancho (lomo) queda a la derecha: todo se corre esto a la izquierda
+CX_I = CX - DESPLAZ_I
 PESTANA_ANCHO = 8
 PESTANA_ALTO = 32
 PESTANA_PASO = 35         # cada capítulo baja un escalón, para encontrarlo al hojear
 RADIO = M.RADIO_MANDALA
 CENTRO_MANDALA_Y = 128.5  # centro del mandala, desde arriba del corte
 CENTRO_INTEGRACION_Y = 128.5
-TINTA = "#1b1b1b"
+TINTA = "#000000"
 
 # ======================================================================= FUENTES
 def preparar_fuentes():
@@ -228,11 +249,13 @@ body {{ font-family: 'Manrope', sans-serif; font-weight: 500; font-size: 18pt; l
           page-break-after: always; background: #fff; }}
 .pagina:last-child {{ page-break-after: auto; }}
 .recorte {{ position: absolute; left: 0; top: {SANGRE}mm; width: {ANCHO}mm; height: {ALTO}mm; }}
+.contenido {{ position: absolute; top: 0; width: {ANCHO}mm; height: {ALTO}mm; }}
 .caja {{ position: absolute; left: {X0}mm; width: {ANCHO_UTIL}mm; }}
 .num {{ position: absolute; left: {X0}mm; width: {ANCHO_UTIL}mm; bottom: {MARGEN_INF}mm; text-align: center;
         font-weight: 700; font-size: 18pt; line-height: 1.2; }}
 .pestana {{ position: absolute; right: -{SANGRE}mm; width: {PESTANA_ANCHO + SANGRE}mm; height: {PESTANA_ALTO}mm;
             border-radius: 3mm 0 0 3mm; }}
+.pestana.izq {{ right: auto; left: -{SANGRE}mm; border-radius: 0 3mm 3mm 0; }}
 h1, h2, .serif {{ font-family: 'Fraunces', serif; font-weight: 700; margin: 0; }}
 p {{ margin: 0; }}
 b {{ font-weight: 800; }}
@@ -249,6 +272,25 @@ img {{ display: block; }}
 .dedic .estrofa {{ margin-bottom: 7mm; }}
 .dedic .dest {{ font-family: 'Fraunces', serif; font-weight: 700; font-size: 22pt; }}
 .dedic .firma {{ font-family: 'Fraunces', serif; font-weight: 700; font-size: 28pt; line-height: 1.5; }}
+
+.dedic .de {{ display: flex; align-items: flex-end; justify-content: center; margin-top: 4mm; font-family: 'Fraunces', serif; font-weight: 700; font-size: 26pt; line-height: 1.2; }}
+.dedic .de .linea {{ width: 95mm; height: 10mm; margin-left: 5mm; border-bottom: 0.75mm solid {TINTA}; }}
+
+/* legal y autora */
+.legal {{ text-align: center; }}
+.legal .t1 {{ font-family: 'Fraunces', serif; font-weight: 700; font-size: 26pt; line-height: 1.2; }}
+.legal .t2 {{ font-family: 'Fraunces', serif; font-weight: 700; font-size: 22pt; line-height: 1.3; margin-top: 2mm; }}
+.legal p {{ font-size: 18pt; line-height: 1.45; margin-top: 8mm; }}
+.legal .autora {{ font-weight: 700; margin-top: 12mm; }}
+
+/* qué es un chakra */
+.que-es-t {{ font-size: 40pt; line-height: 1.1; margin-bottom: 9mm; }}
+.que-es-p {{ font-size: 21pt; line-height: 1.4; margin-bottom: 6mm; }}
+.que-es-lista {{ margin: 8mm 0 8mm 0; }}
+.que-es-lista .f {{ display: flex; align-items: center; height: 12.5mm; font-size: 20pt; line-height: 1; white-space: nowrap; }}
+.que-es-lista .f svg {{ flex: 0 0 8mm; margin-right: 4mm; }}
+.que-es-lista b {{ font-weight: 800; }}
+.que-es-cierre {{ font-family: 'Fraunces', serif; font-weight: 700; font-size: 26pt; line-height: 1.25; margin-top: 4mm; }}
 
 /* cómo usar */
 .titulo-uso {{ font-size: 44pt; line-height: 1.1; }}
@@ -283,7 +325,7 @@ img {{ display: block; }}
 
 /* todos juntos */
 .int-texto {{ font-size: 18pt; line-height: 1.35; }}
-.int-colores {{ font-weight: 700; font-size: 18pt; line-height: 1.35; margin-top: 1.5mm; }}
+.int-colores {{ font-weight: 700; font-size: 18pt; line-height: 1.35; margin-top: 0; }}
 .int-frase {{ font-family: 'Fraunces', serif; font-weight: 700; font-size: 24pt; line-height: 1.2; text-align: center; margin-top: 4mm; }}
 
 /* un momento para compartir */
@@ -306,13 +348,23 @@ def esc(t):
     return html.escape(t, quote=False)
 
 
-def pagina(contenido):
-    return f'<section class="pagina"><div class="recorte">{contenido}</div></section>'
+def pagina(contenido, lado="D", tab=""):
+    """lado D = página derecha (recto: sangrado a la derecha), I = izquierda (reverso: sangrado a la izquierda).
+    En las izquierdas el margen ancho del lomo queda a la derecha, así que el contenido se corre a la izquierda."""
+    izq = SANGRE if lado == "I" else 0
+    desp = -DESPLAZ_I if lado == "I" else 0
+    return (f'<section class="pagina"><div class="recorte" style="left:{izq}mm">{tab}'
+            f'<div class="contenido" style="left:{desp}mm">{contenido}</div></div></section>')
 
 
-def pestana(indice, clave):
+def pagina_blanca():
+    return '<section class="pagina"></section>'
+
+
+def pestana(indice, clave, lado="D"):
     top = MARGEN_SUP + indice * PESTANA_PASO
-    return f'<div class="pestana" style="top:{top}mm; background:{M.COLORES[clave]}"></div>'
+    clase = "pestana izq" if lado == "I" else "pestana"
+    return f'<div class="{clase}" style="top:{top}mm; background:{M.COLORES[clave]}"></div>'
 
 
 def numero(n):
@@ -380,19 +432,56 @@ def _linea_dedic(l):
     return f'<span class="dest">{esc(l[2:])}</span>' if l.startswith("**") else esc(l)
 
 
-def pagina_dedicatoria(n):
+def pagina_dedicatoria(edicion="venta"):
+    """Edición "mama": firmada por Dani. Edición "venta": una línea para que escriba su nombre quien regala."""
     corazon = M.corazon_linea()
     ancho = 2 * (M.RADIO_CORAZON + 1)
     cuerpo = ""
     for i, lineas in enumerate(DEDIC_ESTROFAS):
         html_l = "<br>".join(_linea_dedic(l) for l in lineas)
-        if i == len(DEDIC_ESTROFAS) - 1:
+        if i == len(DEDIC_ESTROFAS) - 1 and edicion == "mama":
             html_l += f'<br><span class="firma">{esc(DEDIC_FIRMA)}</span>'
         cuerpo += f'<p class="estrofa">{html_l}</p>'
+    if edicion != "mama":
+        cuerpo += f'<div class="de">{esc(DEDIC_DE)}<div class="linea"></div></div>'
     return pagina(f"""
-  <div style="position:absolute; left:{CX - ancho / 2}mm; top:30mm; width:{ancho}mm">{corazon}</div>
-  <div class="caja dedic" style="top:112mm"><h2>{esc(DEDIC_TITULO)}</h2>{cuerpo}</div>
-""")
+  <div style="position:absolute; left:{CX - ancho / 2}mm; top:24mm; width:{ancho}mm">{corazon}</div>
+  <div class="caja dedic" style="top:104mm"><h2>{esc(DEDIC_TITULO)}</h2>{cuerpo}</div>
+""", "D")
+
+
+def pagina_legal():
+    """Página 2 (reverso de la portada): autora, derechos y aviso de bienestar."""
+    corazon = M.corazon_linea()
+    ancho = 36
+    return pagina(f"""
+  <div style="position:absolute; left:{CX_I + DESPLAZ_I - ancho / 2}mm; top:38mm; width:{ancho}mm">{_svg_img("svg/dedicatoria_corazon.svg", ancho)}</div>
+  <div class="caja legal" style="top:84mm">
+    <div class="t1">{esc(LEGAL_TITULO[0])}</div>
+    <div class="t2">{esc(LEGAL_TITULO[1])}</div>
+    <p class="autora">{"<br>".join(esc(l) for l in LEGAL_AUTORA)}</p>
+    <p>{partir(LEGAL_DERECHOS, "cuerpo", 18, ANCHO_UTIL * 0.95)}</p>
+    <p>{partir(LEGAL_AVISO, "cuerpo", 18, ANCHO_UTIL * 0.95)}</p>
+    <p>{partir(LEGAL_CONTACTO, "cuerpo", 18, ANCHO_UTIL * 0.95)}</p>
+    <p>{esc(LEGAL_EDICION)}</p>
+  </div>
+""", "I")
+
+
+def pagina_que_es(n):
+    """Qué es un chakra, en simple: dos párrafos y los siete chakras con su color y su tema."""
+    parrafos = "".join(f'<p class="que-es-p">{partir(t, "cuerpo", 21, ANCHO_UTIL)}</p>' for t in QUE_ES_PARRAFOS)
+    filas = "".join(f'<div class="f">{_punto(M.COLORES[c["clave"]], 8)}<b>{esc(c["nombre"])}</b>&nbsp;·&nbsp;{esc(QUE_ES_TEMAS[c["clave"]])}</div>'
+                    for c in CHAKRAS)
+    return pagina(f"""
+  <div class="caja" style="top:{MARGEN_SUP + 8}mm">
+    <h1 class="que-es-t">{partir(QUE_ES_TITULO, "titulo", 40, ANCHO_UTIL)}</h1>
+    {parrafos}
+    <div class="que-es-lista">{filas}</div>
+    <p class="que-es-cierre">{partir(QUE_ES_CIERRE, "titulo", 26, ANCHO_UTIL)}</p>
+  </div>
+  {numero(n)}
+""", "I")
 
 
 def pagina_como_usar(n):
@@ -433,14 +522,13 @@ def pagina_ejemplo(ch, indice, n, ruta_svg):
     ancho = 2 * (RADIO + 2)
     top = CENTRO_MANDALA_Y - ancho / 2
     return pagina(f"""
-  {pestana(indice, clave)}
   {_cabecera(ch)}
   <p class="sub-ejemplo" style="top:{MARGEN_SUP + 17.3}mm">{esc(TITULO_EJEMPLO)}</p>
   <div style="position:absolute; left:{CX - ancho / 2}mm; top:{top}mm; width:{ancho}mm">{_svg_img(ruta_svg, ancho)}</div>
   {_fila_paleta(clave, CENTRO_MANDALA_Y + ancho / 2 + 2.5)}
   <p class="nota-ejemplo" style="top:{CENTRO_MANDALA_Y + ancho / 2 + 15.5}mm">{partir(NOTA_EJEMPLO, "cuerpo", 18, ANCHO_UTIL * 0.8)}</p>
   {numero(n)}
-""")
+""", "I", pestana(indice, clave, "I"))
 
 
 def pagina_mandala(ch, indice, n, ruta_svg):
@@ -450,21 +538,19 @@ def pagina_mandala(ch, indice, n, ruta_svg):
     top = CENTRO_MANDALA_Y - ancho / 2
     afirmacion = "<br>".join(esc(l) for l in ch["afirmacion"])
     return pagina(f"""
-  {pestana(indice, clave)}
   {_cabecera(ch)}
   {_fila_paleta(clave, MARGEN_SUP + 18.3)}
   <div style="position:absolute; left:{CX - ancho / 2}mm; top:{top}mm; width:{ancho}mm">{_svg_img(ruta_svg, ancho)}</div>
   <div class="etiqueta-frase" style="top:{CENTRO_MANDALA_Y + ancho / 2 + 3}mm">{esc(LEER_FRASE)}</div>
   <div class="pie-afirmacion" style="top:{CENTRO_MANDALA_Y + ancho / 2 + 12.5}mm">{afirmacion}</div>
   {numero(n)}
-""")
+""", "D", pestana(indice, clave))
 
 
 def pagina_reflexion(ch, indice, n):
     """Después de leer la frase: la tarea (pregunta de recuerdo). La frase no se repite acá."""
     resp = "<br>".join(esc(l) for l in ch["respiracion"])
     return pagina(f"""
-  {pestana(indice, ch["clave"])}
   <div class="caja" style="top:{MARGEN_SUP}mm">
     <h1 class="titulo-cap">{esc(ch["nombre"])}</h1>
     <p class="relacion">{partir(ch["relacion"], "cuerpo", 20, ANCHO_UTIL * 0.9)}</p>
@@ -476,7 +562,28 @@ def pagina_reflexion(ch, indice, n):
     <div class="renglon"></div><div class="renglon"></div><div class="renglon"></div>
   </div>
   {numero(n)}
-""")
+""", "D", pestana(indice, ch["clave"]))
+
+
+def pagina_ejemplo_integracion(n, ruta_svg):
+    """Todos juntos, pintado: cada flor con el color de su chakra, y los siete colores en dos filas."""
+    import ejemplos
+    ancho = 2 * (M.RADIO_INTEGRACION + 2)
+    top = CENTRO_INTEGRACION_Y - ancho / 2
+    base = CENTRO_INTEGRACION_Y + ancho / 2
+    nombres = ("rojo", "naranja", "amarillo", "verde", "azul", "indigo", "violeta")
+    def fila(nom):
+        return '<div class="fila-paleta" style="top:{t}mm; justify-content:center; gap:9mm">' + "".join(
+            f'<div class="sw">{_punto(M.PALETA[c], 8)}{M.NOMBRE_COLOR[c]}</div>' for c in nom) + "</div>"
+    return pagina(f"""
+  <div class="caja" style="top:{MARGEN_SUP}mm"><h1 class="titulo-mandala" style="font-size:34pt">{esc(INTEGRACION_TITULO)}</h1></div>
+  <p class="sub-ejemplo" style="top:{MARGEN_SUP + 17.3}mm">{esc(TITULO_EJEMPLO)}</p>
+  <div style="position:absolute; left:{CX - ancho / 2}mm; top:{top}mm; width:{ancho}mm">{_svg_img(ruta_svg, ancho)}</div>
+  {fila(nombres[:4]).format(t=base + 2.5)}
+  {fila(nombres[4:]).format(t=base + 13)}
+  <p class="nota-ejemplo" style="top:{base + 26}mm">{partir(NOTA_EJEMPLO, "cuerpo", 18, ANCHO_UTIL * 0.8)}</p>
+  {numero(n)}
+""", "I")
 
 
 def pagina_integracion(n, ruta_svg):
@@ -486,8 +593,8 @@ def pagina_integracion(n, ruta_svg):
     base = CENTRO_INTEGRACION_Y + ancho / 2
     return pagina(f"""
   <div class="caja" style="top:{MARGEN_SUP}mm">
-    <h1 class="titulo-mandala">{esc(INTEGRACION_TITULO)}</h1>
-    <p class="int-texto" style="margin-top:2.5mm">{esc(INTEGRACION_ARRIBA)}</p>
+    <h1 class="titulo-mandala" style="font-size:34pt">{esc(INTEGRACION_TITULO)}</h1>
+    <p class="int-texto" style="margin-top:0">{esc(INTEGRACION_ARRIBA)}</p>
     <p class="int-colores">{esc(INTEGRACION_COLORES)}</p>
   </div>
   <div style="position:absolute; left:{CX - ancho / 2}mm; top:{top}mm; width:{ancho}mm">{_svg_img(ruta_svg, ancho)}</div>
@@ -534,37 +641,75 @@ def pagina_cierre(n):
 
 
 # ===================================================================== ARMADO
-def informacion_paginas():
-    """Descripción de cada página impresa, para los controles de verificar.py."""
+# El libro se arma por pliegos (página izquierda + derecha). La portada es la página 1 (derecha); cada
+# mandala y cada página para pintar va en una página derecha, con su reverso (izquierda) en blanco, así el
+# marcador no traspasa. El ejemplo pintado va en la izquierda, enfrente del mandala, para mirarlo a la vez.
+EDICIONES = {"venta": "libro_mandalas_chakras.pdf", "mama": "libro_para_mama.pdf"}
+
+
+def armar_secuencia(edicion="venta"):
+    """Lista de todas las páginas, en orden: dict(nombre, lado, html, info). La posición decide el lado
+    (impar = derecha, par = izquierda) y el número de página."""
+    seq = []
+
+    def add(nombre, lado, html, **info):
+        seq.append(dict(nombre=nombre, lado=lado, html=html, info=dict(nombre=nombre, lado=lado, **info)))
+
+    def n():
+        return len(seq) + 1
+
     ancho_c = 2 * (M.RADIO_CORAZON + 1)
-    info = [dict(nombre="portada", numero=None),
-            dict(nombre="dedicatoria", numero=None, imagenes=[(CX - ancho_c / 2, 30, CX + ancho_c / 2, 30 + ancho_c)]),
-            dict(nombre="como_usar", numero=3)]
-    n = 4
+    ancho_l = 36
+    add("portada", "D", pagina_portada(), numero=None)
+    add("legal", "I", pagina_legal(), numero=None,
+        imagenes=[(CX - ancho_l / 2, 38, CX - ancho_l / 2 + ancho_l, 38 + ancho_l)], x_dibujos="I")
+    add("dedicatoria", "D", pagina_dedicatoria(edicion), numero=None, edicion=edicion,
+        imagenes=[(CX - ancho_c / 2, 24, CX + ancho_c / 2, 24 + ancho_c)])
+    add("que_es_un_chakra", "I", pagina_que_es(n()), numero=n())
+    add("como_usar", "D", pagina_como_usar(n()), numero=n())
     for i, ch in enumerate(CHAKRAS):
-        paleta = [M.PALETA[c] for c in paleta_de(ch["clave"])]
-        comun = dict(clave=ch["clave"], mandala=(CX, CENTRO_MANDALA_Y, RADIO), paleta=paleta, protagonista=paleta[0])
-        info.append(dict(nombre=f"{ch['clave']}_ejemplo", numero=n, a_color=True,
-                         fila_paleta=CENTRO_MANDALA_Y + RADIO + 4.5, **comun))
-        info.append(dict(nombre=f"{ch['clave']}_mandala", numero=n + 1, afirmacion=ch["afirmacion"],
-                         fila_paleta=MARGEN_SUP + 18.3, **comun))
-        info.append(dict(nombre=f"{ch['clave']}_reflexion", numero=n + 2, clave=ch["clave"],
-                         sin_texto=ch["afirmacion"]))      # la frase aparece una sola vez por capítulo
-        n += 3
-    info.append(dict(nombre="integracion", numero=n, mandala=(CX, CENTRO_INTEGRACION_Y, M.RADIO_INTEGRACION)))
+        clave = ch["clave"]
+        paleta = [M.PALETA[c] for c in paleta_de(clave)]
+        comun = dict(clave=clave, paleta=paleta, protagonista=paleta[0])
+        add(f"{clave}_ejemplo", "I", pagina_ejemplo(ch, i, n(), f"ejemplos/{clave}.svg"), numero=n(), a_color=True,
+            mandala=(CX_I, CENTRO_MANDALA_Y, RADIO), fila_paleta=CENTRO_MANDALA_Y + RADIO + 4.5, **comun)
+        add(f"{clave}_mandala", "D", pagina_mandala(ch, i, n(), f"svg/{clave}.svg"), numero=n(), marcador=True,
+            afirmacion=ch["afirmacion"], mandala=(CX, CENTRO_MANDALA_Y, RADIO), fila_paleta=MARGEN_SUP + 18.3, **comun)
+        add(f"{clave}_en_blanco", "I", pagina_blanca(), en_blanco=True)
+        add(f"{clave}_reflexion", "D", pagina_reflexion(ch, i, n()), numero=n(), clave=clave,
+            sin_texto=ch["afirmacion"])                      # la frase aparece una sola vez por capítulo
+    add("integracion_ejemplo", "I", pagina_ejemplo_integracion(n(), "ejemplos/integracion.svg"), numero=n(),
+        a_color=True, sin_proporcion=True, mandala=(CX_I, CENTRO_INTEGRACION_Y, M.RADIO_INTEGRACION),
+        paleta=ejemplos_colores_integracion(), fila_paleta=CENTRO_INTEGRACION_Y + M.RADIO_INTEGRACION + 4.5)
+    add("integracion", "D", pagina_integracion(n(), "svg/integracion.svg"), numero=n(), marcador=True,
+        mandala=(CX, CENTRO_INTEGRACION_Y, M.RADIO_INTEGRACION))
+    add("integracion_en_blanco", "I", pagina_blanca(), en_blanco=True)
     ancho_par = 2 * (M.RADIO_PAR + 1)
     alto_par = ancho_par * M.RAZON_PAR
-    info.append(dict(nombre="compartir", numero=n + 1,
-                     imagenes=[(CX - ancho_par / 2, ALTO - MARGEN_INF - 22 - alto_par, CX + ancho_par / 2, ALTO - MARGEN_INF - 22)]))
-    info.append(dict(nombre="cierre", numero=n + 2, afirmacion=FRASE_FINAL,
-))
-    return info
+    add("compartir", "D", pagina_compartir(n(), "svg/par_de_flores.svg"), numero=n(), marcador=True,
+        imagenes=[(CX - ancho_par / 2, ALTO - MARGEN_INF - 22 - alto_par, CX + ancho_par / 2, ALTO - MARGEN_INF - 22)])
+    add("compartir_en_blanco", "I", pagina_blanca(), en_blanco=True)
+    add("cierre", "D", pagina_cierre(n()), numero=n(), afirmacion=FRASE_FINAL)
+    add("cierre_en_blanco", "I", pagina_blanca(), en_blanco=True)
+    for k, p in enumerate(seq):                              # impar = derecha, par = izquierda
+        assert p["lado"] == ("D" if k % 2 == 0 else "I"), (k + 1, p["nombre"], p["lado"])
+    return seq
+
+
+def ejemplos_colores_integracion():
+    import ejemplos
+    return ejemplos.colores_integracion()
+
+
+def informacion_paginas(edicion="venta"):
+    """Descripción de cada página, para los controles de verificar.py."""
+    return [p["info"] for p in armar_secuencia(edicion)]
 
 
 def construir():
     preparar_fuentes()
-    (AQUI / "svg").mkdir(exist_ok=True)
-    (AQUI / "preview").mkdir(exist_ok=True)
+    for carpeta in ("svg", "preview", "ejemplos", "_tmp"):
+        (AQUI / carpeta).mkdir(exist_ok=True)
 
     mandalas_svg = {c["clave"]: M.MANDALAS[c["clave"]]() for c in CHAKRAS}
     mandalas_svg["integracion"] = M.integracion()
@@ -573,80 +718,68 @@ def construir():
         (AQUI / "svg" / f"{clave}.svg").write_text(svg, encoding="utf-8")
     # ejemplos pintados ("Así podría quedar"): el mismo dibujo, con los colores de la paleta, en vector
     import ejemplos
-    (AQUI / "ejemplos").mkdir(exist_ok=True)
     for viejo in (AQUI / "ejemplos").glob("*"):
         viejo.unlink()
     for c in CHAKRAS:
         (AQUI / "ejemplos" / f"{c['clave']}.svg").write_text(ejemplos.ejemplo(c["clave"]), encoding="utf-8")
+    (AQUI / "ejemplos" / "integracion.svg").write_text(ejemplos.ejemplo_integracion(), encoding="utf-8")
     (AQUI / "svg" / "portada_arte.svg").write_text(M.portada_arte(), encoding="utf-8")
     (AQUI / "svg" / "dedicatoria_corazon.svg").write_text(M.corazon_linea(), encoding="utf-8")
 
-    # (nombre de archivo del PNG, html)
-    paginas = []
-    n = 1
-    paginas.append(("portada", pagina_portada()))
-    n += 1
-    paginas.append(("dedicatoria", pagina_dedicatoria(n)))
-    n += 1
-    paginas.append(("como_usar", pagina_como_usar(n)))
-    n += 1
-    for i, ch in enumerate(CHAKRAS):
-        paginas.append((f"{ch['clave']}_ejemplo", pagina_ejemplo(ch, i, n, f"ejemplos/{ch['clave']}.svg")))
-        n += 1
-        paginas.append((f"{ch['clave']}_mandala", pagina_mandala(ch, i, n, f"svg/{ch['clave']}.svg")))
-        n += 1
-        paginas.append((f"{ch['clave']}_reflexion", pagina_reflexion(ch, i, n)))
-        n += 1
-    paginas.append(("integracion", pagina_integracion(n, "svg/integracion.svg")))
-    n += 1
-    paginas.append(("compartir", pagina_compartir(n, "svg/par_de_flores.svg")))
-    n += 1
-    paginas.append(("cierre", pagina_cierre(n)))
-
-    documento = f"""<!doctype html><html lang="es"><head><meta charset="utf-8">
-<title>Mandalas de los 7 chakras · Un color a la vez</title><style>{css()}</style></head>
-<body>{"".join(h for _, h in paginas)}</body></html>"""
-    (AQUI / "_tmp").mkdir(exist_ok=True)
-    (AQUI / "_tmp" / "libro.html").write_text(documento, encoding="utf-8")
-
     from weasyprint import HTML
-    pdf_paginas = AQUI / "_tmp" / "paginas_impresas.pdf"
-    HTML(string=documento, base_url=str(AQUI)).write_pdf(str(pdf_paginas))
-
-    # PDF final: cada página impresa va seguida de su reverso en blanco (el marcador no traspasa).
-    # Todas las páginas llevan las cajas de corte y de sangrado, como pide la imprenta.
     from pypdf import PdfReader, PdfWriter
     from pypdf.generic import RectangleObject
     pt = 72 / 25.4
-    lector = PdfReader(str(pdf_paginas))
-    escritor = PdfWriter()
-    corte = RectangleObject([0, SANGRE * pt, ANCHO * pt, (PAG_H - SANGRE) * pt])
+    corte_d = RectangleObject([0, SANGRE * pt, ANCHO * pt, (PAG_H - SANGRE) * pt])               # el sangrado queda a la derecha
+    corte_i = RectangleObject([SANGRE * pt, SANGRE * pt, PAG_W * pt, (PAG_H - SANGRE) * pt])     # y a la izquierda
     sangrado = RectangleObject([0, 0, PAG_W * pt, PAG_H * pt])
-    for p in lector.pages:
-        for pag in (escritor.add_page(p), escritor.add_blank_page(width=p.mediabox.width, height=p.mediabox.height)):
-            pag.trimbox = corte
+    paginas = None
+    for edicion, archivo in EDICIONES.items():
+        paginas = armar_secuencia(edicion)
+        documento = f"""<!doctype html><html lang="es"><head><meta charset="utf-8">
+<title>Mandalas de los 7 chakras · Un color a la vez</title><style>{css()}</style></head>
+<body>{"".join(p["html"] for p in paginas)}</body></html>"""
+        (AQUI / "_tmp" / f"libro_{edicion}.html").write_text(documento, encoding="utf-8")
+        crudo = AQUI / "_tmp" / f"crudo_{edicion}.pdf"
+        HTML(string=documento, base_url=str(AQUI)).write_pdf(str(crudo))
+        # Todas las páginas llevan las cajas de corte y de sangrado, como pide la imprenta.
+        lector = PdfReader(str(crudo))
+        assert len(lector.pages) == len(paginas), (len(lector.pages), len(paginas))
+        escritor = PdfWriter()
+        for p, datos in zip(lector.pages, paginas):
+            pag = escritor.add_page(p)
+            pag.trimbox = corte_i if datos["lado"] == "I" else corte_d
             pag.bleedbox = sangrado
-    escritor.add_metadata({"/Title": "Mandalas de los 7 chakras · Un color a la vez",
-                           "/Author": "Dani Navarro (Daniela Navarro · Longevidad Emocional)"})
-    salida = AQUI / "libro_mandalas_chakras.pdf"
-    with open(salida, "wb") as fh:
-        escritor.write(fh)
+        escritor.add_metadata({"/Title": "Mandalas de los 7 chakras · Un color a la vez",
+                               "/Author": "Dani Navarro (Daniela Navarro · Longevidad Emocional)"})
+        with open(AQUI / archivo, "wb") as fh:
+            escritor.write(fh)
+        print(f"PDF: {archivo} ({len(paginas)} páginas = {len(paginas) // 2} hojas)")
 
-    # PNG de revisión (solo páginas impresas), recortados al tamaño final
+    # PNG de revisión (edición para vender), recortados al tamaño final, y pliegos (izquierda + derecha)
     from PIL import Image
     prev = AQUI / "preview"
-    for viejo in prev.glob("*.png"):
+    for viejo in list(prev.glob("*.png")) + list((prev / "pliegos").glob("*.png") if (prev / "pliegos").exists() else []):
         viejo.unlink()
+    (prev / "pliegos").mkdir(exist_ok=True)
     dpi = 110
-    subprocess.run(["pdftoppm", "-r", str(dpi), "-png", str(pdf_paginas), str(prev / "p")], check=True)
+    subprocess.run(["pdftoppm", "-r", str(dpi), "-png", str(AQUI / EDICIONES["venta"]), str(prev / "p")], check=True)
     generados = sorted(prev.glob("p-*.png"))      # pdftoppm numera p-1, p-01… según la cantidad
     assert len(generados) == len(paginas), (len(generados), len(paginas))
     px = dpi / 25.4
-    for i, (origen, (nombre, _)) in enumerate(zip(generados, paginas), 1):
-        Image.open(origen).crop((0, round(SANGRE * px), round(ANCHO * px), round((SANGRE + ALTO) * px))).save(prev / f"{i:02d}_{nombre}.png")
+    recortes = []
+    for i, (origen, datos) in enumerate(zip(generados, paginas), 1):
+        x0 = round(SANGRE * px) if datos["lado"] == "I" else 0
+        img = Image.open(origen).crop((x0, round(SANGRE * px), x0 + round(ANCHO * px), round((SANGRE + ALTO) * px)))
+        img.save(prev / f"{i:02d}_{datos['nombre']}.png")
+        recortes.append(img)
         origen.unlink()
-    print(f"PDF: {salida.name} ({len(lector.pages)} páginas impresas, {2 * len(lector.pages)} con reversos)")
-    print("PNG:", ", ".join(sorted(p.name for p in prev.glob('*.png'))))
+    for i in range(1, len(recortes) - 1, 2):     # pliegos: izquierda (par) + derecha (impar siguiente)
+        izq, der = recortes[i], recortes[i + 1]
+        lienzo = Image.new("RGB", (izq.width + der.width, izq.height), "#d8d2c8")
+        lienzo.paste(izq, (0, 0)); lienzo.paste(der, (izq.width, 0))
+        lienzo.save(prev / "pliegos" / f"pliego_{i + 1:02d}-{i + 2:02d}.png")
+    print("PNG:", len(list(prev.glob('*.png'))), "páginas y", len(list((prev / 'pliegos').glob('*.png'))), "pliegos")
     return mandalas_svg
 
 

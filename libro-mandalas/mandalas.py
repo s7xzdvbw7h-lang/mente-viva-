@@ -13,7 +13,7 @@ import math
 # Nada más fino que 2,5 pt.
 LINEA = 1.235          # contorno principal (3,5 pt)
 LINEA_FINA = 1.058     # divisiones internas (3 pt)
-NEGRO = "#111111"
+NEGRO = "#000000"
 BLANCO = "#ffffff"
 
 # ---------------------------------------------------------------- utilidades
@@ -394,29 +394,31 @@ def corona(p=None):
 # Los siete chakras juntos, como en la portada: la flor del centro (Corona) y seis flores alrededor
 # (Raíz arriba y, en sentido horario, Sacro, Plexo solar, Corazón, Garganta y Tercer ojo), unidas por
 # un aro y por radios. Para colorear: las flores son simples (zonas grandes), no la versión de la portada.
-RADIO_INTEGRACION = 76
+RADIO_INTEGRACION = RADIO_MANDALA
 ORDEN_SATELITES = ("raiz", "sacro", "plexo", "corazon", "garganta", "tercer_ojo")   # horario desde arriba
 
 
-def _flor_colorear(x, y, R, n, base, ancho, centro, forma, giro=0):
-    """Flor simple de n pétalos con un círculo en el centro, ubicada en (x, y) y girada `giro` grados."""
-    cuerpo = capa_petalos(n, base, R, ancho, forma=forma, clase="petalo-flor") + [circulo(centro)]
+def _flor_colorear(x, y, R, n, base, ancho, centro, forma, giro=0, fp=None, fc=BLANCO):
+    """Flor simple de n pétalos con un círculo en el centro, ubicada en (x, y) y girada `giro` grados.
+    `fp` y `fc` son los colores de los pétalos y del centro (blanco en el dibujo para colorear)."""
+    cuerpo = capa_petalos(n, base, R, ancho, forma=forma, clase="petalo-flor", rellenos=[fp or BLANCO]) + [circulo(centro, fill=fc)]
     return [f'<g transform="translate({_n(x)},{_n(y)}) rotate({_n(giro)})">{"".join(cuerpo)}</g>']
 
 
-def integracion():
+@escalado
+def integracion(p=None):
     """Siete flores (una por chakra) dentro de un aro: las de alrededor de 4 pétalos y la del centro de 8."""
     Rc, Rs, hueco = 26, 20, 7
     D = Rc + Rs + hueco                      # distancia del centro a cada flor de alrededor
     afuera = D + Rs + 3                      # círculo exterior
-    e = [circulo(afuera), circulo(D, fill="none")]
+    e = [circulo(afuera, fill=_c(p, "fondo")), circulo(D, fill="none")]
     for i in range(6):                       # divisiones entre las flores, en el anillo de afuera
         e.append(linea(polar(D, 30 + 60 * i), polar(afuera, 30 + 60 * i)))
         e.append(linea((0, 0), polar(D, 60 * i)))                       # radios hacia cada flor
-    e += _flor_colorear(0, 0, Rc, 8, 8, 16, 11, _FB)
+    e += _flor_colorear(0, 0, Rc, 8, 8, 16, 11, _FB, fp=_c(p, "corona"), fc=_c(p, "centros"))
     for i in range(6):
         x, y = polar(D, 60 * i)
-        e += _flor_colorear(x, y, Rs, 4, 5, 20, 7, _FB, giro=60 * i)
+        e += _flor_colorear(x, y, Rs, 4, 5, 20, 7, _FB, giro=60 * i, fp=_c(p, "satelites", i), fc=_c(p, "centros"))
     return documento(e, afuera)
 
 
@@ -443,10 +445,10 @@ PETALOS = {"raiz": 4, "sacro": 6, "plexo": 10, "corazon": 12, "garganta": 16, "t
 # ----------------------------------------------------------------- PALETAS
 # Cada chakra tiene un color protagonista y una paleta sugerida de 5 colores (el protagonista primero).
 # El interior del libro es blanco y negro: los colores son solo una referencia.
-PALETA = {      # colores vivos y bien distintos entre sí (ΔE ≥ 38 dentro de cada paleta, medido en CIELAB)
-    "rojo": "#CD1327", "naranja": "#FF8000", "amarillo": "#FFD60A", "verde": "#17B84B",
-    "azul": "#0A7BFF", "indigo": "#20139A", "violeta": "#B03AEE",
-    "rosa": "#F2639F", "turquesa": "#0AC3C7", "lila": "#BFA2EB", "dorado": "#E8A200",
+PALETA = {      # colores suaves, vivos y terrosos, de la misma familia que las flores de la portada
+    "rojo": "#B8483F", "naranja": "#DA7A3C", "amarillo": "#E2BF4C", "verde": "#6DB076",
+    "azul": "#6AA3D6", "indigo": "#40418F", "violeta": "#9560B5",
+    "rosa": "#D4718C", "turquesa": "#3DB9B5", "lila": "#CDBBE4", "dorado": "#C99A32",
 }
 NOMBRE_COLOR = {"indigo": "índigo"}
 NOMBRE_COLOR = {k: NOMBRE_COLOR.get(k, k) for k in PALETA}

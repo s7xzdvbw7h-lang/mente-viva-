@@ -49,6 +49,25 @@ def ejemplo(clave):
     return M.MANDALAS[clave](esquema(clave))
 
 
+CREMA = "#F7F0E3"       # fondo del ejemplo de "Todos juntos" (la tarjeta crema de la portada)
+
+
+def esquema_integracion():
+    """Cada flor lleva el color de su chakra (en el orden de la portada) y los centros son dorados."""
+    p = M.PALETA
+    return dict(fondo=CREMA, corona=p["violeta"], centros=p["dorado"],
+                satelites=[p[n] for n in ("rojo", "naranja", "amarillo", "verde", "azul", "indigo")])
+
+
+def colores_integracion():
+    """Los 7 colores de los chakras, de la raíz a la corona."""
+    return [M.PALETA[n] for n in ("rojo", "naranja", "amarillo", "verde", "azul", "indigo", "violeta")]
+
+
+def ejemplo_integracion():
+    return M.integracion(esquema_integracion())
+
+
 def _hex_rgb(h):
     return tuple(int(h[i:i + 2], 16) for i in (1, 3, 5))
 

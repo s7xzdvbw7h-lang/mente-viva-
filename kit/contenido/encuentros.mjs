@@ -286,7 +286,7 @@ export const encuentros = [
     ],
     antes: [
       "Recortá la hoja de monedas y billetes de juguete.",
-      "Armá una lista de 5 productos con precio (del folleto de un supermercado, por ejemplo).",
+      "Armá una lista de 5 productos con su precio.",
       "Elegí la canción y dejala lista.",
     ],
     bienvenida: {
@@ -471,7 +471,7 @@ export const encuentros = [
       ],
       desafiar: [
         serie("1, 1, 2, 3, 5, 8, ___", "13 (cada número es la suma de los dos anteriores)"),
-        problema("Salís de casa a las 10:00. Tenés que ir a la farmacia (15 minutos), al banco (20) y a la verdulería (10). Caminar de un lugar al siguiente lleva 5 minutos: de tu casa a la primera parada, entre las paradas y de la última a tu casa. ¿A qué hora volvés?", "11:05 (45 minutos de trámites y 20 de caminata)"),
+        problema("Salís de casa a las 10:00. Vas a la farmacia (15 minutos), al banco (20) y a la verdulería (10). Caminar entre un lugar y otro lleva 5 minutos, también desde y hasta tu casa. ¿A qué hora volvés?", "11:05 (45 minutos de trámites y 20 de caminata)"),
       ],
     },
     cierre: {

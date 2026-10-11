@@ -57,8 +57,7 @@ export const CUADERNO = {
     reglasTitulo: "Cuatro reglas de oro",
     reglas: ["No se corrige.", "No se examina.", "No hay respuestas equivocadas.", "Se puede parar cuando quiera."],
   },
-  razonamientoIntro:
-    "Elegí la versión que quieras. Se puede cambiar de una a otra. Las respuestas posibles están al final del cuaderno.",
+  razonamientoIntro: "Elegí una versión. Las respuestas están al final.",
   comoMeSenti: "¿Cómo me sentí hoy?",
   cierreMarcar: "Marquen el encuentro en la pizarra de la heladera.",
   mandalaTitulo: "Mandala de cierre",
@@ -282,14 +281,8 @@ export const TARJETAS_TEXTOS = {
 
 export const TARJETA_APP = {
   titulo: "Mente Viva",
-  bajada: "Tu entrenamiento mental, a tu ritmo.",
-  escaneá: "Escaneá el código con la cámara del celular.",
-  pasos: [
-    "Entrá con el código o escribí la dirección.",
-    "Creá tu cuenta con tu mail.",
-    "Elegí un ejercicio y empezá.",
-  ],
+  bajada: "Mantené la mente activa y desafiada, a tu ritmo.",
+  pasos: ["Creá tu cuenta con tu mail.", "Elegí un ejercicio.", "Seguí 3 veces por semana."],
   direccion: "menteviva.daninavarro.com.ar/app.html",
   url: "https://menteviva.daninavarro.com.ar/app.html",
-  pie: "3 veces por semana alcanza.",
 };

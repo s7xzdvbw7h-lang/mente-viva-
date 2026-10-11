@@ -10,6 +10,7 @@ import { armarCuaderno } from "./cuaderno.mjs";
 const PIEZAS = {
   encuentro1: () => armarCuaderno("encuentro1"),
   cuaderno: () => armarCuaderno("completo"),
+  "cuaderno-base": () => armarCuaderno("completo", { sinMarcador: true }),
 };
 // Las demás piezas se suman acá a medida que están listas.
 for (const [clave, modulo, fn] of [
@@ -26,7 +27,7 @@ for (const [clave, modulo, fn] of [
 }
 
 const quiere = process.argv.slice(2);
-const lista = quiere.length ? quiere : Object.keys(PIEZAS).filter((k) => k !== "encuentro1");
+const lista = quiere.length ? quiere : Object.keys(PIEZAS).filter((k) => !["encuentro1", "cuaderno-base"].includes(k));
 const browser = await chromium.launch();
 let problemas = 0;
 for (const clave of lista) {

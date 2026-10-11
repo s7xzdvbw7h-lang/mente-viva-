@@ -30,6 +30,10 @@ ol.pasos li b{color:var(--rosa);font-size:16pt;white-space:nowrap;}
 .dots i{display:block;width:4mm;height:4mm;border-radius:50%;border:.5mm solid var(--rosa);}
 .dots i.on{background:var(--rosa);}
 .kick.sep{margin-bottom:4mm;}
+.grupo-pal{display:inline-flex;gap:2.2mm;align-items:center;}
+.pal{display:inline-block;width:5mm;height:5mm;border-radius:50%;border:.55mm solid var(--rosa);}
+.pal.f{background:var(--rosa);}
+.pal.s{background:transparent;}
 .ej{margin-bottom:1mm;}
 .ej .l{font-size:18pt;line-height:1.3;}
 .ej .s{font-size:22pt;font-weight:700;letter-spacing:.02em;}
@@ -45,22 +49,23 @@ table.reg td.s{font-family:'Fraunces',serif;font-weight:600;font-size:19pt;text-
 .resp .e{margin-bottom:4mm;}
 .resp .e h3{font-size:19pt;margin-bottom:.8mm;}
 .resp .e div{font-size:16pt;line-height:1.3;margin-bottom:.6mm;}
-.billete{position:absolute;width:85mm;height:40mm;border:.5mm solid var(--rosa);border-radius:2.5mm;background:var(--marfil);}
+.billete{position:absolute;width:85mm;height:33mm;border:.5mm solid var(--rosa);border-radius:2.5mm;background:var(--marfil);}
 .billete .in{position:absolute;inset:2mm;border:.3mm solid var(--rosa);border-radius:1.5mm;}
-.billete .lo{position:absolute;left:3mm;top:3mm;width:28mm;height:28mm;}
-.billete .v{position:absolute;right:5mm;top:3mm;font-family:'Fraunces',serif;font-weight:600;font-size:30pt;color:var(--cacao);}
-.billete .t{position:absolute;right:5mm;top:19mm;font-size:16pt;font-weight:700;color:var(--rosa);text-align:right;line-height:1.1;}
-.billete .j{position:absolute;left:0;right:0;bottom:3mm;text-align:center;font-size:16pt;font-weight:700;letter-spacing:.12em;color:var(--rosa);}
-.moneda{position:absolute;width:38mm;height:38mm;border:.5mm solid var(--rosa);border-radius:50%;background:var(--marfil);text-align:center;}
+.billete .lo{position:absolute;left:3mm;top:3mm;width:25mm;height:25mm;}
+.billete .v{position:absolute;right:5mm;top:2mm;font-family:'Fraunces',serif;font-weight:600;font-size:28pt;line-height:1.1;color:var(--cacao);}
+.billete .t{position:absolute;right:5mm;top:15.5mm;font-size:16pt;font-weight:700;color:var(--rosa);text-align:right;line-height:1.1;white-space:nowrap;}
+.billete .j{position:absolute;right:5mm;bottom:3.8mm;text-align:right;font-size:16pt;font-weight:700;letter-spacing:.08em;color:var(--rosa);white-space:nowrap;}
+.moneda{position:absolute;width:48mm;height:48mm;border:.5mm solid var(--rosa);border-radius:50%;background:var(--marfil);text-align:center;}
 .moneda .in{position:absolute;inset:1.8mm;border:.3mm solid var(--rosa);border-radius:50%;}
-.moneda .v{position:absolute;left:0;right:0;top:7mm;font-family:'Fraunces',serif;font-weight:600;font-size:26pt;color:var(--cacao);}
-.moneda .j{position:absolute;left:0;right:0;top:21mm;font-size:16pt;font-weight:700;color:var(--rosa);line-height:1.05;}
+.moneda .v{position:absolute;left:0;right:0;top:9mm;font-family:'Fraunces',serif;font-weight:600;font-size:30pt;line-height:1.1;color:var(--cacao);}
+.moneda .j{position:absolute;left:0;right:0;top:25mm;font-size:16pt;font-weight:700;color:var(--rosa);line-height:1.1;}
 `;
 
-const folio = (n) =>
-  `<div class="folio" style="left:${S + 20}mm;right:${S + 13}mm;bottom:${S + 8}mm;"><span>La hora del té</span><span>${n}</span></div>`;
-const pagina = (cuerpo, n, extra = "") =>
-  `<section class="pagina"><div class="zona" style="${ZONA}${extra}">${cuerpo}</div>${n ? folio(n) : ""}</section>`;
+export const SIN_MARCADOR = { valor: false };
+const folio = (n, etiqueta = "La hora del té") =>
+  `<div class="folio" style="left:${S + 20}mm;right:${S + 13}mm;bottom:${S + 8}mm;"><span>${esc(etiqueta)}</span><span>${n}</span></div>`;
+const pagina = (cuerpo, n, extra = "", etiqueta) =>
+  `<section class="pagina"><div class="zona" style="${ZONA}${extra}">${cuerpo}</div>${n ? folio(n, etiqueta) : ""}</section>`;
 const li = (a) => a.map((x) => `<li>${esc(x)}</li>`).join("");
 const dots = (k) => `<span class="dots">${[1, 2, 3].map((i) => `<i class="${i <= k ? "on" : ""}"></i>`).join("")}</span>`;
 const parte = (n, titulo, min, cuerpo) =>
@@ -72,6 +77,7 @@ const nombreDe = (n) => MOMENTOS.find((m) => m.n === n).nombre;
 function paginasEncuentro(e, num) {
   const out = [];
   const sem = e.semana;
+  const etq = `Encuentro ${e.n} · ${e.tema}`;
 
   // A
   out.push(
@@ -85,14 +91,16 @@ function paginasEncuentro(e, num) {
 ${parte(1, nombreDe(1), minDe(1), `<p class="cons">${esc(e.bienvenida.texto)}</p>
 <p style="margin-top:2mm"><b class="rosa">Para elegir:</b> ${e.bienvenida.canciones.map((c) => `«${esc(c)}»`).join(", ")}.</p>
 <p class="guion" style="margin-top:2mm">${esc(e.bienvenida.guion)}</p>`)}`,
-      num,
+      num, "", etq,
     ),
   );
 
   // B
   const p = e.principal;
+  // Las palmas se dibujan con círculos: Fraunces y Manrope no traen los símbolos ● y ○.
+  const palma = (x) => [...x].filter((c) => c !== " ").map((c) => `<i class="pal ${c === "●" ? "f" : "s"}"></i>`).join("");
   const palmas = p.palmas
-    ? `<div class="caja" style="margin:2mm 0 3mm;padding:2.5mm 5mm"><div style="display:flex;flex-wrap:wrap;gap:2mm 9mm;font-size:22pt;letter-spacing:.12em;font-weight:700">${p.palmas.map((x) => `<span>${x}</span>`).join("")}</div><div style="font-size:16pt;margin-top:1mm" class="rosa">${esc(p.palmasRef)}</div></div>`
+    ? `<div class="caja" style="margin:2mm 0 3mm;padding:3mm 5mm"><div style="display:flex;flex-wrap:wrap;gap:3mm 10mm">${p.palmas.map((x) => `<span class="grupo-pal">${palma(x)}</span>`).join("")}</div><div style="font-size:16pt;margin-top:2mm;display:flex;gap:6mm;align-items:center" class="rosa"><span style="display:flex;gap:2mm;align-items:center"><i class="pal f"></i>palma fuerte</span><span style="display:flex;gap:2mm;align-items:center"><i class="pal s"></i>palma suave</span></div></div>`
     : "";
   out.push(
     pagina(
@@ -104,7 +112,7 @@ ${parte(1, nombreDe(1), minDe(1), `<p class="cons">${esc(e.bienvenida.texto)}</p
 <ol class="pasos">${p.pasos.map((s) => `<li>${esc(s.texto)} <b>${s.min} min</b></li>`).join("")}</ol>${palmas}
 <p class="guion">${p.guion.join("  ")}</p></div></div>
 <div class="caja" style="margin-top:3mm"><h3>Si se traba</h3><ul class="pts">${li(p.siSeTraba)}</ul>${p.cuidado ? `<p class="rosa" style="margin-top:1.5mm">${esc(p.cuidado)}</p>` : ""}</div>`,
-      num + 1,
+      num + 1, "", etq,
     ),
   );
   let k = num + 2;
@@ -121,7 +129,7 @@ ${e.extra.bloques
 <ul class="pts">${b.items.map((it, i) => `<li><span class="cons">${esc(it)}</span> <span class="guion">${esc(b.respuestas[i])}</span></li>`).join("")}</ul></div>`,
   )
   .join("")}`,
-        k,
+        k, "", etq,
       ),
     );
     k += 1;
@@ -136,10 +144,9 @@ ${e.extra.bloques
       : `<div class="ej"><div class="l">${sinRaya(it.consigna)}</div></div><div class="renglon"></div>`;
   out.push(
     pagina(
-      `<div class="kick sep">Encuentro ${e.n} · ${esc(e.tema)}</div>
-${parte(4, nombreDe(4), minDe(4), `<p>${esc(CUADERNO.razonamientoIntro)}</p>`)}
+      `${parte(4, nombreDe(4), minDe(4), `<p>${esc(CUADERNO.razonamientoIntro)}</p>`)}
 ${NIVELES.map((nv) => `<div class="ver"><h3>${esc(nv.nombre)} ${dots(nv.puntos)}</h3>${e.razonamiento[nv.clave].map(bloque).join("")}</div>`).join("")}`,
-      k,
+      k, "", etq,
     ),
   );
   k += 1;
@@ -147,14 +154,13 @@ ${NIVELES.map((nv) => `<div class="ver"><h3>${esc(nv.nombre)} ${dots(nv.puntos)}
   // D: cierre y mandala
   out.push(
     pagina(
-      `<div class="kick sep">Encuentro ${e.n} · ${esc(e.tema)}</div>
-${parte(5, nombreDe(5), minDe(5), `<p class="fr" style="font-size:22pt;line-height:1.2;margin-bottom:2mm">${esc(e.cierre.pregunta)}</p>
+      `${parte(5, nombreDe(5), minDe(5), `<p class="fr" style="font-size:22pt;line-height:1.2;margin-bottom:2mm">${esc(e.cierre.pregunta)}</p>
 <p class="guion">${esc(e.cierre.guion)}</p>`)}
 <div style="margin:2mm 0 5mm"><h3 class="rosa" style="font-size:19pt">${esc(CUADERNO.comoMeSenti)}</h3><div class="renglon"></div><div class="renglon"></div><div class="renglon"></div></div>
 <p style="margin-bottom:6mm">${esc(CUADERNO.cierreMarcar)}</p>
 ${parte(6, nombreDe(6), minDe(6), `<p class="cons">${esc(e.mandala)}</p><p style="margin-top:1.5mm">El mandala está en la página siguiente.</p>`)}
 <div class="pie">${ICONOS[e.pie.icono](ROSA)}<span>${esc(e.pie.texto)}</span></div>`,
-      k,
+      k, "", etq,
     ),
   );
   k += 1;
@@ -164,8 +170,8 @@ ${parte(6, nombreDe(6), minDe(6), `<p class="cons">${esc(e.mandala)}</p><p style
     pagina(
       `<div class="kick">Encuentro ${e.n} · ${esc(e.tema)}</div>
 <h1 class="gr">${esc(CUADERNO.mandalaTitulo)}</h1>
-<div class="slot" data-mandala="${e.n}"><div><div class="fr" style="font-size:24pt">${esc(CUADERNO.mandalaMarcador)}</div><p style="margin-top:3mm">Página del libro de mandalas de ${esc(FIRMA)}.</p></div></div>`,
-      k,
+${SIN_MARCADOR.valor ? "" : `<div class="slot" data-mandala="${e.n}"><div><div class="fr" style="font-size:24pt">${esc(CUADERNO.mandalaMarcador)}</div><p style="margin-top:3mm">Página del libro de mandalas de ${esc(FIRMA)}.</p></div></div>`}`,
+      k, "", etq,
     ),
   );
   return { paginas: out, siguiente: k + 1, mandala: k };
@@ -229,23 +235,23 @@ function paginaDiploma(num) {
 }
 
 const VALORES_BILLETES = [100, 100, 200, 200, 500, 500, 1000, 1000, 1000, 2000, 2000, 5000];
-const VALORES_MONEDAS = [5, 5, 10, 10, 10, 20, 20, 20, 50, 50, 50, 100, 100, 100, 200, 200];
+const VALORES_MONEDAS = [5, 10, 10, 20, 20, 50, 50, 100, 100, 100, 200, 200];
 const pesos = (v) => "$" + String(v).replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 
 function paginasDinero(num) {
   const D = CUADERNO.dinero;
   const x0 = S + 20 + (176 - 170) / 2;
   const billetes = VALORES_BILLETES.map((v, i) => {
-    const x = (i % 2) * 85, y = Math.floor(i / 2) * 40;
-    return `<div class="billete" style="left:${x}mm;top:${y}mm"><div class="in"></div><div class="lo">${lotoDecorativo(ROSA, 0.9, 200)}</div><div class="v">${pesos(v)}</div><div class="t">La hora<br>del té</div><div class="j">${D.leyenda}</div></div>`;
+    const x = (i % 2) * 89, y = Math.floor(i / 2) * 36;
+    return `<div class="billete" style="left:${x}mm;top:${y}mm"><div class="in"></div><div class="lo">${lotoDecorativo(ROSA, 0.9, 200)}</div><div class="v">${pesos(v)}</div><div class="t">La hora del té</div><div class="j">${D.leyenda}</div></div>`;
   }).join("");
   const monedas = VALORES_MONEDAS.map((v, i) => {
-    const x = (i % 4) * 44, y = Math.floor(i / 4) * 44;
+    const x = (i % 3) * 58, y = Math.floor(i / 3) * 52;
     return `<div class="moneda" style="left:${x}mm;top:${y}mm"><div class="in"></div><div class="v">${pesos(v)}</div><div class="j">DE<br>JUGUETE</div></div>`;
   }).join("");
   return [
-    pagina(`<div class="kick">${esc(D.kick)} · billetes</div><h1 class="gr" style="font-size:30pt;margin-bottom:1mm">${esc(D.titulo)}</h1><p style="margin-bottom:3mm">${esc(D.bajada)}</p><div style="position:relative;height:245mm;margin-left:3mm">${billetes}</div>`, num),
-    pagina(`<div class="kick">${esc(D.kick)} · monedas</div><h1 class="gr" style="font-size:30pt;margin-bottom:1mm">${esc(D.titulo)}</h1><p style="margin-bottom:5mm">${esc(D.bajada)}</p><div style="position:relative;height:190mm;margin-left:2mm">${monedas}</div>`, num + 1),
+    pagina(`<div class="kick">${esc(D.kick)} · billetes</div><h1 class="gr" style="font-size:30pt;margin-bottom:1mm">${esc(D.titulo)}</h1><p style="margin-bottom:3mm">${esc(D.bajada)}</p><div style="position:relative;height:212mm;margin-left:1mm">${billetes}</div>`, num),
+    pagina(`<div class="kick">${esc(D.kick)} · monedas</div><h1 class="gr" style="font-size:30pt;margin-bottom:1mm">${esc(D.titulo)}</h1><p style="margin-bottom:5mm">${esc(D.bajada)}</p><div style="position:relative;height:212mm;margin-left:3mm">${monedas}</div>`, num + 1),
   ];
 }
 
@@ -329,7 +335,8 @@ ${MOMENTOS.map((m, i) => `<div class="parte" style="margin-bottom:3.5mm"><div cl
 }
 
 // modo "completo": todo el cuaderno. modo "encuentro1": solo el encuentro 1, para probarlo.
-export function armarCuaderno(modo = "completo") {
+export function armarCuaderno(modo = "completo", opciones = {}) {
+  SIN_MARCADOR.valor = !!opciones.sinMarcador;
   const slots = [];
   let pg = [];
   let n = 1;
@@ -343,7 +350,7 @@ export function armarCuaderno(modo = "completo") {
     return { nombre: "encuentro-1-para-probar", titulo: "La hora del té · Encuentro 1 para probar", W: CUAD.W, H: CUAD.H, paginas: pg, css: CSS_CUADERNO, sangrado: S, slots: [r.mandala] };
   }
 
-  pg.push(...paginasApertura(0));
+  pg.push(...paginasApertura(1));
   n = 5;
   const pausaDe = (sem) => PAUSAS.find((p) => p.semana === sem);
   for (const e of encuentros) {
@@ -367,5 +374,5 @@ export function armarCuaderno(modo = "completo") {
   const resp = paginasRespuestas(encuentros, n);
   pg.push(...resp); n += resp.length;
   pg.push(contratapa());
-  return { nombre: "cuaderno-la-hora-del-te", titulo: "La hora del té · Cuaderno", W: CUAD.W, H: CUAD.H, paginas: pg, css: CSS_CUADERNO, sangrado: S, slots };
+  return { nombre: opciones.sinMarcador ? "cuaderno-base-para-mandalas" : "cuaderno-la-hora-del-te", titulo: "La hora del té · Cuaderno", W: CUAD.W, H: CUAD.H, paginas: pg, css: CSS_CUADERNO, sangrado: S, slots };
 }

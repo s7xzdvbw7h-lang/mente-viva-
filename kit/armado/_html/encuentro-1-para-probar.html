@@ -1,0 +1,109 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><title>La hora del té · Encuentro 1 para probar</title>
+<style>@page{size:216mm 303mm;margin:0;}
+@font-face{font-family:'Fraunces';font-style:normal;font-weight:400;src:url('../../fuentes/Fraunces-400.ttf') format('truetype');}
+@font-face{font-family:'Fraunces';font-style:normal;font-weight:600;src:url('../../fuentes/Fraunces-600.ttf') format('truetype');}
+@font-face{font-family:'Fraunces';font-style:italic;font-weight:400;src:url('../../fuentes/Fraunces-400-italic.ttf') format('truetype');}
+@font-face{font-family:'Manrope';font-style:normal;font-weight:400;src:url('../../fuentes/Manrope-400.ttf') format('truetype');}
+@font-face{font-family:'Manrope';font-style:normal;font-weight:600;src:url('../../fuentes/Manrope-600.ttf') format('truetype');}
+@font-face{font-family:'Manrope';font-style:normal;font-weight:700;src:url('../../fuentes/Manrope-700.ttf') format('truetype');}
+:root{--marfil:#F7F1E9;--cacao:#4A3B33;--rosa:#8E4E52;}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+body{font-family:'Manrope',sans-serif;color:var(--cacao);font-size:16pt;line-height:1.36;}
+h1,h2,h3,.fr{font-family:'Fraunces',serif;font-weight:600;}
+.pagina{width:var(--W);height:var(--H);position:relative;overflow:hidden;background:var(--marfil);break-after:page;page-break-after:always;}
+.pagina:last-child{break-after:auto;page-break-after:auto;}
+.zona{position:absolute;overflow:hidden;}
+.kick{font-size:16pt;font-weight:700;letter-spacing:.1em;color:var(--rosa);text-transform:uppercase;}
+.min{font-family:'Manrope',sans-serif;font-weight:700;font-size:16pt;color:var(--rosa);margin-left:3mm;white-space:nowrap;}
+.rosa{color:var(--rosa);}
+.it{font-family:'Fraunces',serif;font-style:italic;font-weight:400;}
+.guion{font-family:'Fraunces',serif;font-style:italic;font-weight:400;color:var(--rosa);font-size:17pt;line-height:1.3;}
+ul.pts{list-style:none;}
+ul.pts li{position:relative;padding-left:7mm;margin-bottom:1.6mm;}
+ul.pts li::before{content:"";position:absolute;left:0;top:2.7mm;width:2.4mm;height:2.4mm;border-radius:50%;background:var(--rosa);}
+.renglon{height:12mm;border-bottom:.35mm solid var(--rosa);}
+.renglones{background-image:repeating-linear-gradient(to bottom,transparent 0,transparent 11.65mm,var(--rosa) 11.65mm,var(--rosa) 12mm);}
+.caja{border:.4mm solid var(--rosa);border-radius:3mm;padding:3.5mm 5mm;}
+.caja h3{font-size:19pt;line-height:1.15;margin-bottom:1.5mm;}
+.folio{position:absolute;display:flex;justify-content:space-between;font-size:16pt;color:var(--rosa);font-weight:600;}
+.circ{flex:none;width:12mm;height:12mm;border-radius:50%;background:var(--rosa);color:var(--marfil);font-family:'Fraunces',serif;font-weight:600;font-size:19pt;display:flex;align-items:center;justify-content:center;}
+:root{--W:216mm;--H:303mm;}
+h1.tema{font-size:44pt;line-height:1.02;margin:1mm 0 1mm;}
+h1.gr{font-size:36pt;line-height:1.08;margin:1mm 0 3mm;}
+.titulo{font-family:'Fraunces',serif;font-style:italic;font-weight:400;font-size:22pt;color:var(--rosa);line-height:1.15;}
+.filete{height:.4mm;background:var(--rosa);margin:3mm 0 4mm;}
+.parte{display:flex;gap:5mm;margin-bottom:5mm;}
+.pc{flex:1;}
+.pc h2{font-size:21pt;line-height:1.12;margin-bottom:1.5mm;}
+.cons{font-size:18pt;line-height:1.3;}
+ol.pasos{list-style:none;counter-reset:p;margin-bottom:3mm;}
+ol.pasos li{counter-increment:p;position:relative;padding-left:10mm;margin-bottom:3mm;font-size:18pt;line-height:1.3;}
+ol.pasos li::before{content:counter(p,lower-alpha);position:absolute;left:0;top:-.5mm;font-family:'Fraunces',serif;font-weight:600;color:var(--rosa);font-size:21pt;}
+ol.pasos li b{color:var(--rosa);font-size:16pt;white-space:nowrap;}
+.ver{border:.4mm solid var(--rosa);border-radius:3mm;padding:3mm 5mm 1mm;margin-bottom:4mm;}
+.ver h3{font-size:20pt;display:flex;align-items:center;gap:3mm;margin-bottom:1mm;}
+.dots{display:inline-flex;gap:1.6mm;}
+.dots i{display:block;width:4mm;height:4mm;border-radius:50%;border:.5mm solid var(--rosa);}
+.dots i.on{background:var(--rosa);}
+.kick.sep{margin-bottom:4mm;}
+.grupo-pal{display:inline-flex;gap:2.2mm;align-items:center;}
+.pal{display:inline-block;width:5mm;height:5mm;border-radius:50%;border:.55mm solid var(--rosa);}
+.pal.f{background:var(--rosa);}
+.pal.s{background:transparent;}
+.ej{margin-bottom:1mm;}
+.ej .l{font-size:18pt;line-height:1.3;}
+.ej .s{font-size:22pt;font-weight:700;letter-spacing:.02em;}
+.pie{position:absolute;left:0;right:0;bottom:0;display:flex;gap:4mm;align-items:center;border-top:.4mm solid var(--rosa);padding-top:3mm;font-size:18pt;}
+.pie svg{width:11mm;height:11mm;flex:none;}
+.slot{position:absolute;left:0;right:0;top:34mm;bottom:0;border:.5mm dashed var(--rosa);border-radius:4mm;display:flex;align-items:center;justify-content:center;text-align:center;padding:10mm;}
+.cuad2{display:grid;grid-template-columns:1fr 1fr;gap:4mm;}
+table.reg{width:100%;border-collapse:collapse;}
+table.reg th{font-family:'Fraunces',serif;font-weight:600;font-size:19pt;text-align:center;padding-bottom:2mm;border-bottom:.4mm solid var(--rosa);}
+table.reg td{height:30mm;border-top:.3mm solid var(--rosa);text-align:center;vertical-align:middle;}
+table.reg td.s{font-family:'Fraunces',serif;font-weight:600;font-size:19pt;text-align:left;}
+.cir{display:inline-block;width:11mm;height:11mm;border-radius:50%;border:.5mm solid var(--rosa);margin:0 1.2mm;}
+.resp .e{margin-bottom:4mm;}
+.resp .e h3{font-size:19pt;margin-bottom:.8mm;}
+.resp .e div{font-size:16pt;line-height:1.3;margin-bottom:.6mm;}
+.billete{position:absolute;width:85mm;height:33mm;border:.5mm solid var(--rosa);border-radius:2.5mm;background:var(--marfil);}
+.billete .in{position:absolute;inset:2mm;border:.3mm solid var(--rosa);border-radius:1.5mm;}
+.billete .lo{position:absolute;left:3mm;top:3mm;width:25mm;height:25mm;}
+.billete .v{position:absolute;right:5mm;top:2mm;font-family:'Fraunces',serif;font-weight:600;font-size:28pt;line-height:1.1;color:var(--cacao);}
+.billete .t{position:absolute;right:5mm;top:15.5mm;font-size:16pt;font-weight:700;color:var(--rosa);text-align:right;line-height:1.1;white-space:nowrap;}
+.billete .j{position:absolute;right:5mm;bottom:3.8mm;text-align:right;font-size:16pt;font-weight:700;letter-spacing:.08em;color:var(--rosa);white-space:nowrap;}
+.moneda{position:absolute;width:48mm;height:48mm;border:.5mm solid var(--rosa);border-radius:50%;background:var(--marfil);text-align:center;}
+.moneda .in{position:absolute;inset:1.8mm;border:.3mm solid var(--rosa);border-radius:50%;}
+.moneda .v{position:absolute;left:0;right:0;top:9mm;font-family:'Fraunces',serif;font-weight:600;font-size:30pt;line-height:1.1;color:var(--cacao);}
+.moneda .j{position:absolute;left:0;right:0;top:25mm;font-size:16pt;font-weight:700;color:var(--rosa);line-height:1.1;}
+</style></head>
+<body><section class="pagina"><div class="zona" style="left:23mm;top:16mm;right:16mm;bottom:21mm;"><div class="kick">Encuentro 1 · Semana 1</div>
+<h1 class="tema">Infancia</h1>
+<div class="titulo">Objetos de la infancia</div>
+<div class="filete"></div>
+<div class="caja" style="margin-bottom:4mm"><h3>Necesitamos</h3><ul class="pts"><li>Las 10 tarjetas de objetos de la infancia</li><li>La pizarra de la heladera</li><li>Lápiz o fibra</li><li>Este cuaderno</li></ul></div>
+<div class="caja" style="margin-bottom:6mm"><h3>Antes de empezar <span class="rosa" style="font-family:Manrope;font-weight:600;font-size:16pt;margin-left:2mm">Para vos · 5 minutos</span></h3><ul class="pts"><li>Despejá la mesa y buscá buena luz.</li><li>Preparen té o mate, si quieren.</li><li>Dejá la canción lista en el celular.</li><li>Poné las 10 tarjetas de objetos boca arriba.</li></ul></div>
+<div class="parte"><div class="circ">1</div><div class="pc"><h2>Bienvenida con una canción<span class="min">3 min</span></h2><p class="cons">Elijan una canción de las que se cantaban cuando eran chicas. Escúchenla juntas. Pueden cantar bajito.</p>
+<p style="margin-top:2mm"><b class="rosa">Para elegir:</b> «Arroz con leche», «Manuelita», «Mambrú se fue a la guerra».</p>
+<p class="guion" style="margin-top:2mm">«Empecemos con una canción. ¿Cuál te gustaría?»</p></div></div></div><div class="folio" style="left:23mm;right:16mm;bottom:11mm;"><span>Encuentro 1 · Infancia</span><span>1</span></div></section>
+<section class="pagina"><div class="zona" style="left:23mm;top:16mm;right:16mm;bottom:21mm;"><div class="parte"><div class="circ">2</div><div class="pc"><h2>¿Qué día es hoy?<span class="min">3 min</span></h2><p class="cons">Con la pizarra de la heladera, tu mamá completa «Hoy es…»: el día de la semana, el número y el mes.</p>
+<p class="guion" style="margin-top:1.5mm">«¿Me ayudás a completar la pizarra?»</p>
+<p style="margin-top:1.5mm">Si duda, miren el almanaque o el celular juntas. No se corrige: se mira.</p></div></div>
+<div class="parte" style="margin-bottom:2mm"><div class="circ">3</div><div class="pc"><h2>Actividad principal<span class="min">20 min</span></h2>
+<div class="titulo" style="font-size:20pt;margin-bottom:2.5mm">Objetos de la infancia</div>
+<ol class="pasos"><li>Cada una elige 3 tarjetas de objetos y las deja frente a sí. <b>2 min</b></li><li>Tu mamá cuenta, de a una tarjeta: cómo era ese objeto, quién se lo dio o dónde lo veía, y cómo se usaba o se jugaba. Vos escuchás y preguntás, sin corregir. <b>10 min</b></li><li>Ahora contás vos una de tus tarjetas. Tu mamá escucha y puede preguntarte lo que quiera. <b>8 min</b></li></ol>
+<p class="guion">«¿Cómo era el tuyo?»  «¿Con quién jugabas?»  «¿Dónde lo guardabas?»</p></div></div>
+<div class="caja" style="margin-top:3mm"><h3>Si se traba</h3><ul class="pts"><li>Preguntale de qué color era o dónde estaba.</li><li>Si no se acuerda, miren la ilustración juntas y pasen a otra tarjeta.</li><li>Si aparece tristeza, esperá. Quedate al lado.</li></ul></div></div><div class="folio" style="left:23mm;right:16mm;bottom:11mm;"><span>Encuentro 1 · Infancia</span><span>2</span></div></section>
+<section class="pagina"><div class="zona" style="left:23mm;top:16mm;right:16mm;bottom:21mm;"><div class="parte"><div class="circ">4</div><div class="pc"><h2>Bloque de razonamiento<span class="min">5 min</span></h2><p>Elegí una versión. Las respuestas están al final.</p></div></div>
+<div class="ver"><h3>Tranquila <span class="dots"><i class="on"></i><i class=""></i><i class=""></i></span></h3><div class="ej"><span class="l">Completá la serie:</span> <span class="s">2, 4, 6, 8, …</span></div><div class="renglon"></div><div class="ej"><span class="l">Completá la serie:</span> <span class="s">Lunes, martes, miércoles, …</span></div><div class="renglon"></div></div><div class="ver"><h3>Con ganas de pensar <span class="dots"><i class="on"></i><i class="on"></i><i class=""></i></span></h3><div class="ej"><span class="l">Completá la serie:</span> <span class="s">20, 18, 16, 14, …</span></div><div class="renglon"></div><div class="ej"><span class="l">Completá la serie:</span> <span class="s">A, C, E, G, …</span></div><div class="renglon"></div></div><div class="ver"><h3>Me quiero desafiar <span class="dots"><i class="on"></i><i class="on"></i><i class="on"></i></span></h3><div class="ej"><span class="l">Completá la serie:</span> <span class="s">1, 3, 6, 10, …</span></div><div class="renglon"></div><div class="ej"><div class="l">La escuela empieza a las 8:00. Salís de casa 25 minutos antes. ¿A qué hora salís?</div></div><div class="renglon"></div></div></div><div class="folio" style="left:23mm;right:16mm;bottom:11mm;"><span>Encuentro 1 · Infancia</span><span>3</span></div></section>
+<section class="pagina"><div class="zona" style="left:23mm;top:16mm;right:16mm;bottom:21mm;"><div class="parte"><div class="circ">5</div><div class="pc"><h2>Charla de cierre<span class="min">8 min</span></h2><p class="fr" style="font-size:22pt;line-height:1.2;margin-bottom:2mm">¿Qué le contarías hoy a esa nena?</p>
+<p class="guion">«Gracias por contarme.»</p></div></div>
+<div style="margin:2mm 0 5mm"><h3 class="rosa" style="font-size:19pt">¿Cómo me sentí hoy?</h3><div class="renglon"></div><div class="renglon"></div><div class="renglon"></div></div>
+<p style="margin-bottom:6mm">Marquen el encuentro en la pizarra de la heladera.</p>
+<div class="parte"><div class="circ">6</div><div class="pc"><h2>Mandala de cierre<span class="min">6 min</span></h2><p class="cons">Pinten el mandala mientras suena otra vez la canción del comienzo. Sin apuro.</p><p style="margin-top:1.5mm">El mandala está en la página siguiente.</p></div></div>
+<div class="pie"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#8E4E52" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="13" cy="4.5" r="2"/><path d="M13 7.5 11 13l3 2.5 1 5.5M11 13l-3 7M12 9l-3.5 2L7 14M12.5 9.2l3 1.8 2.2-.8"/></svg><span>Mañana, salí a caminar 10 minutos.</span></div></div><div class="folio" style="left:23mm;right:16mm;bottom:11mm;"><span>Encuentro 1 · Infancia</span><span>4</span></div></section>
+<section class="pagina"><div class="zona" style="left:23mm;top:16mm;right:16mm;bottom:21mm;"><div class="kick">Encuentro 1 · Infancia</div>
+<h1 class="gr">Mandala de cierre</h1>
+<div class="slot" data-mandala="1"><div><div class="fr" style="font-size:24pt">Acá va el mandala de cierre</div><p style="margin-top:3mm">Página del libro de mandalas de Daniela Navarro.</p></div></div></div><div class="folio" style="left:23mm;right:16mm;bottom:11mm;"><span>Encuentro 1 · Infancia</span><span>5</span></div></section>
+<section class="pagina"><div class="zona" style="left:23mm;top:16mm;right:16mm;bottom:21mm;"><div class="kick">Al final</div><h1 class="gr" style="font-size:32pt">Respuestas posibles</h1><p style="margin-bottom:4mm">Para mirar juntas, sin corregir. Una serie puede seguir de más de una forma: esta es la más común.</p>
+<div class="resp"><div class="e"><h3>Encuentro 1 · Infancia</h3><div><b class="rosa">Tranquila:</b> a) 10   b) jueves</div><div><b class="rosa">Con ganas de pensar:</b> a) 12   b) I</div><div><b class="rosa">Me quiero desafiar:</b> a) 15 (cada vez se suma uno más: +2, +3, +4, +5)   b) 7:35</div></div></div></div><div class="folio" style="left:23mm;right:16mm;bottom:11mm;"><span>La hora del té</span><span>6</span></div></section></body></html>

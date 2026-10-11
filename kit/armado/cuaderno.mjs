@@ -251,8 +251,16 @@ function paginasDinero(num) {
   }).join("");
   return [
     pagina(`<div class="kick">${esc(D.kick)} · billetes</div><h1 class="gr" style="font-size:30pt;margin-bottom:1mm">${esc(D.titulo)}</h1><p style="margin-bottom:3mm">${esc(D.bajada)}</p><div style="position:relative;height:212mm;margin-left:1mm">${billetes}</div>`, num),
-    pagina(`<div class="kick">${esc(D.kick)} · monedas</div><h1 class="gr" style="font-size:30pt;margin-bottom:1mm">${esc(D.titulo)}</h1><p style="margin-bottom:5mm">${esc(D.bajada)}</p><div style="position:relative;height:212mm;margin-left:3mm">${monedas}</div>`, num + 1),
+    pagina(`<div class="kick">${esc(D.kick)} · monedas</div><h1 class="gr" style="font-size:30pt;margin-bottom:1mm">${esc(D.titulo)}</h1><p style="margin-bottom:5mm">${esc(D.bajada)}</p><div style="position:relative;height:212mm;margin-left:3mm">${monedas}</div>`, num + 2),
   ];
+}
+
+function paginaNotas(num) {
+  return pagina(`<div class="kick">Notas</div><h1 class="gr">Mis notas</h1><div class="renglones" style="height:216mm"></div>`, num);
+}
+
+function paginaDorsoBlanco(num) {
+  return pagina(`<div style="position:absolute;left:0;right:0;bottom:0;text-align:center" class="rosa">Dorso en blanco, para poder recortar.</div>`, num);
 }
 
 function paginasRespuestas(lista, num) {
@@ -358,11 +366,6 @@ export function armarCuaderno(modo = "completo", opciones = {}) {
     pg.push(...r.paginas);
     slots.push(r.mandala);
     n = r.siguiente;
-    if (e.n === 5) {
-      const d = paginasDinero(n);
-      pg.push(...d);
-      n += d.length;
-    }
     if (e.n % 2 === 0) {
       pg.push(paginaPausa(pausaDe(e.semana), n));
       n += 1;
@@ -373,6 +376,14 @@ export function armarCuaderno(modo = "completo", opciones = {}) {
   pg.push(paginaFinal(n)); n += 1;
   const resp = paginasRespuestas(encuentros, n);
   pg.push(...resp); n += resp.length;
+  // Recortables: van sobre una hoja cuyo reverso queda en blanco, para no romper nada al cortar.
+  // Los billetes y las monedas caen siempre en página impar (frente de la hoja).
+  if (n % 2 === 0) { pg.push(paginaNotas(n)); n += 1; }
+  const d = paginasDinero(n);
+  pg.push(d[0], paginaDorsoBlanco(n + 1), d[1], paginaDorsoBlanco(n + 3));
+  n += 4;
+  // La contratapa tiene que ser par: es el dorso de la última hoja.
+  if (n % 2 === 1) { pg.push(paginaNotas(n)); n += 1; }
   pg.push(contratapa());
   return { nombre: opciones.sinMarcador ? "cuaderno-base-para-mandalas" : "cuaderno-la-hora-del-te", titulo: "La hora del té · Cuaderno", W: CUAD.W, H: CUAD.H, paginas: pg, css: CSS_CUADERNO, sangrado: S, slots };
 }

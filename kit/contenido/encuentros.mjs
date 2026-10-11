@@ -57,7 +57,7 @@ export const encuentros = [
     ],
     bienvenida: {
       texto: "Elijan una canción de las que se cantaban cuando eran chicas. Escúchenla juntas. Pueden cantar bajito.",
-      canciones: ["Arroz con leche", "Manuelita", "Mambrú se fue a la guerra"],
+      canciones: ["Arroz con leche", "Manuelita", "Canción del jardinero"],
       guion: "«Empecemos con una canción. ¿Cuál te gustaría?»",
     },
     queDia: {
@@ -260,7 +260,7 @@ export const encuentros = [
       pensar: [serie("9, 8, 7, 6, ___", "5"), serie("Abuela, mamá, hija, ___", "nieta")],
       desafiar: [
         serie("64, 32, 16, 8, ___", "4 (cada número es la mitad del anterior)"),
-        problema("En la foto de la plaza hay 12 personas. 5 son adultos y el resto, chicos. ¿Cuántos chicos hay?", "7"),
+        problema("En una plaza hay 12 personas. 5 son adultos y el resto, chicos. ¿Cuántos chicos hay?", "7"),
       ],
     },
     cierre: {
@@ -279,13 +279,13 @@ export const encuentros = [
     titulo: "Armamos la compra",
     idea: "Armar una compra, calcular el vuelto y comparar precios de antes y de hoy.",
     materiales: [
-      "La hoja de monedas y billetes de juguete (en este cuaderno)",
+      "Las hojas de monedas y billetes de juguete (al final de este cuaderno)",
       "Una lista de 5 productos con precios",
       "Tijera",
       "Este cuaderno",
     ],
     antes: [
-      "Recortá la hoja de monedas y billetes de juguete.",
+      "Recortá las hojas de monedas y billetes de juguete.",
       "Armá una lista de 5 productos con su precio.",
       "Elegí la canción y dejala lista.",
     ],
@@ -503,7 +503,7 @@ export const encuentros = [
     ],
     bienvenida: {
       texto: "Vuelvan a la canción del primer encuentro. Es una forma de cerrar.",
-      canciones: ["Arroz con leche", "Manuelita", "Mambrú se fue a la guerra"],
+      canciones: ["Arroz con leche", "Manuelita", "Canción del jardinero"],
       guion: "«Esta fue la primera que escuchamos.»",
     },
     queDia: {

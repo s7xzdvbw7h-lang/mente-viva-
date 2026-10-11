@@ -153,7 +153,7 @@ export const GUIA_HIJA = {
     titulo: "Guía para vos",
     bajada: "Acompañar sin corregir ni examinar",
     frase: "No le regales otra cosa. Regalale 4 semanas juntas.",
-    producto: "La hora del té · Mente Viva · NeuroGym",
+    producto: "Mente Viva · NeuroGym",
   },
   lugar: {
     kick: "Para empezar",
@@ -276,7 +276,7 @@ export const LAMINA = {
 
 export const TARJETAS_TEXTOS = {
   dorsoTitulo: "Recuerdos",
-  dorsoBajada: "La hora del té",
+  dorsoBajada: "Mente Viva · NeuroGym",
 };
 
 export const TARJETA_APP = {

@@ -38,6 +38,7 @@ export function armarGuia() {
 <p class="fr it" style="font-weight:400;font-size:22pt;color:var(--rosa);margin:5mm auto 0;max-width:110mm;line-height:1.2">${esc(G.portada.bajada)}</p>
 <div style="width:70mm;height:70mm;margin:9mm auto 0">${lotoDecorativo(ROSA, 1, 200)}</div>
 <p style="margin:7mm auto 0;max-width:110mm;font-size:18pt;line-height:1.3">${esc(G.portada.frase)}</p>
+<div class="kick" style="margin-top:5mm">${esc(G.portada.producto)}</div>
 <div style="position:absolute;left:0;right:0;bottom:0"><div class="fr" style="font-size:20pt">${esc(FIRMA)}</div><div class="kick" style="margin-top:1mm;font-size:16pt">${esc(MARCA)}</div></div>
 </div></section>`);
 

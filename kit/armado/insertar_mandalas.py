@@ -15,17 +15,17 @@ from pypdf import PdfReader, PdfWriter, Transformation, PageObject
 MM = 72 / 25.4
 RAIZ = Path(__file__).resolve().parent.parent
 base = RAIZ / "pdf" / "cuaderno-base-para-mandalas.pdf"
-slots = json.loads((RAIZ / "armado" / "_html" / "cuaderno-base-para-mandalas.mandalas.json").read_text())
+info = json.loads((RAIZ / "armado" / "_html" / "cuaderno-base-para-mandalas.mandalas.json").read_text())
+slots = info["paginas"]
+r = info["rect"]
 salida = RAIZ / "pdf" / "cuaderno-la-hora-del-te.pdf"
 
 libro = PdfReader(sys.argv[1])
 paginas = [int(x) for x in sys.argv[2].split(",")]
 assert len(paginas) == 8 and len(slots) == 8, "Hacen falta exactamente 8 páginas del libro"
 
-S = 3  # sangrado
-# Zona útil (en mm, desde el borde con sangrado): ancho sin los 20 mm del espiral, debajo del título y encima del pie.
-X0, X1 = S + 20, S + 210 - 13
-Y_TOP, Y_BOT = S + 34, S + 297 - 20
+# Zona del libro (en mm, desde el borde con sangrado), la misma que dibuja el cuaderno dentro del marco.
+X0, X1, Y_TOP, Y_BOT = r["x0"], r["x1"], r["y0"], r["y1"]
 
 lector = PdfReader(str(base))
 escritor = PdfWriter()

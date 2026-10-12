@@ -8,7 +8,6 @@ import { chromium, renderizar, RAIZ, HTML_DIR } from "./base.mjs";
 import { armarCuaderno } from "./cuaderno.mjs";
 
 const PIEZAS = {
-  encuentro1: () => armarCuaderno("encuentro1"),
   cuaderno: () => armarCuaderno("completo"),
   "cuaderno-base": () => armarCuaderno("completo", { sinMarcador: true }),
 };
@@ -27,7 +26,7 @@ for (const [clave, modulo, fn] of [
 }
 
 const quiere = process.argv.slice(2);
-const lista = quiere.length ? quiere : Object.keys(PIEZAS).filter((k) => !["encuentro1", "cuaderno-base"].includes(k));
+const lista = quiere.length ? quiere : Object.keys(PIEZAS).filter((k) => !["cuaderno-base"].includes(k));
 const browser = await chromium.launch();
 let problemas = 0;
 for (const clave of lista) {
@@ -41,7 +40,7 @@ for (const clave of lista) {
   if (r.desbordes.length) console.log("   SE SALE DE LA PÁGINA:", JSON.stringify(r.desbordes));
   if (r.chicos.length) console.log("   TEXTO MENOR A 16 pt:", JSON.stringify(r.chicos.slice(0, 6)));
   if (r.desbordes.length || r.chicos.length || r.paginasPdf !== r.esperadas) problemas += 1;
-  if (pieza.slots) fs.writeFileSync(path.join(HTML_DIR, `${pieza.nombre}.mandalas.json`), JSON.stringify(pieza.slots));
+  if (pieza.slots) fs.writeFileSync(path.join(HTML_DIR, `${pieza.nombre}.mandalas.json`), JSON.stringify({ paginas: pieza.slots, rect: pieza.rectMandala }));
 }
 await browser.close();
 process.exit(problemas ? 2 : 0);

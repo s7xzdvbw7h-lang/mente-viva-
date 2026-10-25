@@ -15,7 +15,7 @@ PDF (los dos que se imprimen: libro-chakras-venta.pdf y libro-chakras-mama.pdf):
   - mandalas para colorear sin color adentro del dibujo;
   - paleta sugerida: 5 colores, el principal primero; reparto del ejemplo según el chakra; pestaña de 8 mm;
   - todos los textos pedidos están y no vuelven los que se sacaron ("Está relacionado…", "Color protagonista"…);
-  - las dos ediciones son iguales salvo la dedicatoria (p.3), Garganta (p.25) y la página 40.
+  - las dos ediciones son iguales salvo la dedicatoria (p.3) y Garganta (p.25); la venta suma las páginas 41 (QR) y 42 (en blanco).
 """
 import io
 import re
@@ -235,8 +235,7 @@ def _esperado_en_pagina(info, g, edicion):
         return ([g.CIERRE_TITULO] + [l.rstrip(",") for l in g.FRASE_FINAL]
                 + [g.CIERRE_SENTI, g.CIERRE_AYUDA, g.CIERRE_FECHA, g.CIERRE_NOTA])
     if nombre == "contratapa":
-        return ([g.CONTRA_MAMA_TITULO, g.CONTRA_PARA, g.CONTRA_DE] if edicion == "mama" else
-                [g.CONTRA_TITULO] + list(g.CONTRA_LINEAS) + [g.CONTRA_CARINO, g.CONTRA_NOMBRE, g.CONTRA_MARCA])
+        return [g.CONTRA_TITULO] + list(g.CONTRA_LINEAS) + [g.CONTRA_CARINO, g.CONTRA_NOMBRE, g.CONTRA_MARCA]
     if nombre == "cierre_qr":
         return [g.QR_TEXTO, g.QR_NOMBRE, g.CONTRA_USUARIO]
     return []
@@ -550,15 +549,7 @@ def verificar_pdf(ruta_pdf, paginas_info, g, edicion="venta", completo=True):
             debajo(g.CIERRE_FECHA, g.CIERRE_NOTA, "la nota final va debajo de la fecha")
         if n in ("contratapa", "cierre_qr") and re.search(r"www|http|\.com|\.ar\b", todo, re.IGNORECASE):
             fallos.append(f"p.{k + 1} {n}: no se escribe la dirección web (solo va dentro del QR)")
-        if n == "contratapa" and edicion == "mama":
-            titulo = pos(g.CONTRA_MAMA_TITULO)
-            if titulo and ("Fraunces" not in titulo["fuente"] or "Bold" not in titulo["fuente"] or titulo["pt"] < 30):
-                fallos.append(f"p.{k + 1} {n}: el título debe ir en serif negrita, grande ({titulo['fuente']} {titulo['pt']:.0f} pt)")
-            debajo(g.CONTRA_MAMA_TITULO, g.CONTRA_PARA, "«Para:» va debajo del título")
-            debajo(g.CONTRA_PARA, g.CONTRA_DE, "«De:» va debajo de «Para:»")
-            if re.search(r"Daniela|Longevidad|MenteViva|daninavarro", todo):
-                fallos.append(f"p.{k + 1} {n}: la versión de mamá no lleva carta, firma, QR, logo ni usuario")
-        if n == "contratapa" and edicion == "venta":
+        if n == "contratapa":                       # la misma carta en las dos ediciones
             lin = list(g.CONTRA_LINEAS)
             debajo(g.CONTRA_TITULO, lin[0], "el título va arriba de todo")
             for a, b in zip(lin, lin[1:] + [g.CONTRA_CARINO]):
@@ -937,14 +928,14 @@ def main():
         for f in fallos:
             print("    ✗", f)
         problemas_total += len(fallos)
-    distintas, n_venta, n_mama = _comparar_ediciones(str(rutas["venta"]), str(rutas["mama"]), (3, 25, 40))
+    distintas, n_venta, n_mama = _comparar_ediciones(str(rutas["venta"]), str(rutas["mama"]), (3, 25))
     errores = []
     if (n_venta, n_mama) != (42, 40):
         errores.append(f"se esperaban 42 páginas (venta: con el QR en la 41 y la 42 en blanco) y 40 (mamá); hay {n_venta} y {n_mama}")
-    if distintas != [3, 25, 40]:
-        errores.append(f"las ediciones tienen que diferir solo en las páginas 3 (De:/firma), 25 (Garganta) y 40 (las páginas 41 y 42 son solo de la edición para vender); difieren en {distintas}")
+    if distintas != [3, 25]:
+        errores.append(f"las ediciones tienen que diferir solo en las páginas 3 (De:/firma) y 25 (Garganta); las 41 y 42 son solo de la edición para vender; difieren en {distintas}")
     print(f"  ediciones comparadas página por página (las {min(n_venta, n_mama)} primeras): difieren en {distintas}"
-          + (f" (dedicatoria, Garganta y página 40, como se pidió); venta {n_venta} páginas, mamá {n_mama}" if not errores else ""))
+          + (f" (dedicatoria y Garganta, como se pidió; la carta de la 40 es la misma); venta {n_venta} páginas, mamá {n_mama}" if not errores else ""))
     for e in errores:
         print("    ✗", e)
     problemas_total += len(errores)

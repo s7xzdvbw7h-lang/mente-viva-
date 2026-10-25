@@ -11,7 +11,7 @@ referencia: la paleta sugerida y, enfrente de cada mandala, una página "Así po
     python3 generar_libro.py            # arma las dos ediciones y las vistas previas
     python3 verificar.py                # controles de calidad (tarda unos 5 minutos)
 
-Salen dos PDF, iguales salvo las páginas 3, 25 y 40 (y la edición para vender tiene dos páginas más, la 41 y la 42):
+Salen dos PDF, iguales salvo las páginas 3 y 25 (y la edición para vender tiene dos páginas más, la 41 y la 42):
 
 - `libro-chakras-venta.pdf`: **edición para vender**. Dedicatoria con una línea "De: ______" para que escriba su nombre
   quien regala; Garganta pregunta "¿Qué consejo le darías a alguien que querés mucho?"; la página 40 lleva "Antes de
@@ -19,8 +19,8 @@ Salen dos PDF, iguales salvo las páginas 3, 25 y 40 (y la edición para vender 
   página 41 lleva el QR, "MenteViva", el isotipo y `@daninavarro.bienestar` (sin la web escrita); la 42 queda en blanco.
   **42 páginas (21 hojas).**
 - `libro-chakras-mama.pdf`: la edición de Dani. Dedicatoria firmada "Dani"; Garganta pregunta "¿Qué consejo le darías a tu
-  nieto?"; la página 40 lleva "Para que te regales un ratito.", "Para:", "De:" y cinco renglones para una dedicatoria a
-  mano (sin carta, QR, logo ni web). **40 páginas (20 hojas).**
+  nieto?"; la página 40 es la misma carta de cierre que la de la otra edición ("Antes de cerrar este libro…" y la firma);
+  no lleva el QR ni el isotipo. **40 páginas (20 hojas).**
 
 **El QR** de la página 41 lleva a `https://menteviva.daninavarro.com.ar` (`QR_URL` en `generar_libro.py`; no hubo acceso para
 comprobar que la dirección responda). Se dibuja en vector con `codigo_qr.py` (módulos de 28 mm de lado y 4 mm de blanco
@@ -60,7 +60,7 @@ número de página, así el marcador no traspasa.
 | 34 · 35 | Todos juntos: pintado · para pintar (leyenda de 8 colores en las dos) |
 | 36 · 37 | Hoja en blanco · Un momento para compartir |
 | 38 · 39 | Hoja en blanco · Gracias por regalarte este rato |
-| 40 | Carta de Daniela con su firma (venta) / "Para que te regales un ratito.", Para–De y dedicatoria a mano (mamá) |
+| 40 | Carta de cierre de Daniela con su firma (las dos ediciones) |
 | 41 · 42 | Solo en la edición para vender: QR, "MenteViva", isotipo y usuario · hoja en blanco (sin nota ni número) |
 
 Cada chakra tiene su propia forma (en `mandalas.py`): Raíz 4 pétalos, cuadrado con círculo central y 4 rombos grandes;
@@ -114,7 +114,7 @@ cuerpo (nunca por debajo de 18 pt); el tamaño elegido de cada página de texto 
   principal es el que más se ve; pestaña de 8 mm del color del chakra que llega al borde con sangrado.
 - Ejemplos pintados: solo colores de la paleta, usa los 5, el principal ocupa su rango, y sin los colores el dibujo es
   idéntico al mandala para colorear (mismas líneas).
-- Las dos ediciones, comparadas página por página: solo difieren las páginas 3, 25 y 40 (la venta tiene 42 páginas y la de mamá 40; las dos pares).
+- Las dos ediciones, comparadas página por página: solo difieren las páginas 3 y 25 (la venta tiene además la 41 y la 42: 42 páginas contra 40; las dos pares).
 - Página 40 (venta): textos, orden, tamaños, colores, espacio entre párrafos y que no figure la web.
 - Página 41 (venta): el QR mide 28 mm (nunca menos de 25), está centrado, tiene 4 mm de blanco alrededor, es negro sin
   colores y se lee como `https://menteviva.daninavarro.com.ar`; el isotipo mide 25 mm, está centrado, con aire alrededor, sin fondo ni recuadro y con los tres colores de la marca (si faltara el archivo, lo

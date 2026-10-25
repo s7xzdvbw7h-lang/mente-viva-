@@ -86,7 +86,7 @@ CIERRE_AYUDA = "Puede ser una palabra, un color o un dibujo."
 CIERRE_FECHA = "Fecha:"
 CIERRE_NOTA = "Podés volver a leer esta página cuando quieras recordar cómo te sentiste."
 
-# Página 40. Edición para vender: mensaje de la autora y firma (sin la web). Edición para mamá: "Para:", "De:" y renglones.
+# Página 40 (las dos ediciones): mensaje de la autora y firma, sin la web.
 CONTRA_TITULO = "Antes de cerrar este libro…"
 CONTRA_LINEAS = [
     "Hola, soy Daniela.",
@@ -100,8 +100,6 @@ CONTRA_CARINO = "Con cariño,"
 CONTRA_NOMBRE = "Daniela Navarro"
 CONTRA_MARCA = "Longevidad Emocional"
 CONTRA_USUARIO = "@daninavarro.bienestar"
-CONTRA_PARA, CONTRA_DE = "Para:", "De:"
-CONTRA_MAMA_TITULO = "Para que te regales un ratito."
 # Página 41 (solo para vender): el QR, el isotipo y el usuario van en su propia página porque con la carta no entran
 QR_TEXTO = "Si querés seguir cuidando tu mente, escaneá este código con la cámara de tu celular."
 QR_URL = "https://menteviva.daninavarro.com.ar"      # va dentro del QR; la dirección no se escribe en el libro
@@ -412,8 +410,6 @@ img {{ display: block; }}
 .contra .nombre {{ font-family: 'Fraunces', serif; font-weight: 700; font-size: 26pt; line-height: 1.25; }}
 .contra .marca {{ font-size: 18pt; color: {TINTA_CHICA}; }}
 .contra .usuario {{ font-size: 18pt; color: {TINTA_CHICA}; }}
-.para-de {{ display: flex; align-items: flex-end; font-family: 'Fraunces', serif; font-weight: 700; font-size: 26pt; line-height: 1.2; margin-bottom: 8mm; }}
-.para-de .linea {{ flex: 1; height: 11mm; margin-left: 5mm; border-bottom: 1.5px solid {COLOR_RENGLON}; }}
 """
 
 
@@ -815,27 +811,8 @@ def distribucion_contra():
     return pt_t, gap, MARGEN_SUP
 
 
-def _titulo_en_una_linea(texto, maximo=40):
-    """Tamaño de título (pt) más grande, hasta `maximo`, con el que `texto` entra en una línea."""
-    for pt in range(maximo, 27, -2):
-        if ancho_mm(texto, "titulo", pt) <= ANCHO_UTIL * 0.97:
-            return pt
-    return 28
-
-
-def pagina_contratapa(edicion="venta"):
-    """Página 40. Para vender: la carta de Daniela y su firma. Para mamá: título, "Para:", "De:" y renglones para la dedicatoria."""
-    if edicion == "mama":
-        renglones = '<div class="renglon"></div>' * 5
-        pt = _titulo_en_una_linea(CONTRA_MAMA_TITULO)
-        return pagina(f"""
-  <div class="caja contra" style="top:34mm">
-    <h1 style="font-size:{pt}pt; margin-bottom:14mm">{esc(CONTRA_MAMA_TITULO)}</h1>
-    <div class="para-de" style="text-align:left">{esc(CONTRA_PARA)}<div class="linea"></div></div>
-    <div class="para-de" style="text-align:left">{esc(CONTRA_DE)}<div class="linea"></div></div>
-    <div style="margin-top:12mm">{renglones}</div>
-  </div>
-""", "I")
+def pagina_contratapa():
+    """Página 40 (las dos ediciones): "Antes de cerrar este libro…", la carta de Daniela y su firma."""
     pt_t, gap, top = distribucion_contra()
     parrafos = "".join(f'<p style="margin-bottom:{gap}mm">{partir(t, "cuerpo", 20, ANCHO_UTIL)}</p>' for t in CONTRA_LINEAS)
     return pagina(f"""
@@ -929,14 +906,14 @@ def armar_secuencia(edicion="venta"):
     add("compartir_en_blanco", "I", pagina_blanca(n()), en_blanco=True, numero=n(), centrado=True)
     add("cierre", "D", pagina_cierre(n()), numero=n(), afirmacion=FRASE_FINAL, renglones=3, lineas_cortas=1)
     if edicion == "venta":
-        add("contratapa", "I", pagina_contratapa(edicion), numero=None, edicion=edicion, centrado=True,
+        add("contratapa", "I", pagina_contratapa(), numero=None, edicion=edicion, centrado=True,
             titulo_pt=distribucion_contra()[0])
         add("cierre_qr", "D", pagina_qr(), numero=None, edicion=edicion, centrado=True, logo=ruta_logo() is not None,
             logo_ancho=LOGO_ANCHO, qr=dict(url=QR_URL, lado=QR_LADO, margen=QR_MARGEN))
         add("final_en_blanco", "I", pagina_en_blanco_total(), en_blanco=True, sin_nota=True, numero=None)
-    else:
-        add("contratapa", "I", pagina_contratapa(edicion), numero=None, edicion=edicion, renglones=5, lineas_cortas=2,
-            titulo_pt=_titulo_en_una_linea(CONTRA_MAMA_TITULO))
+    else:                                   # la edición de mamá termina con la misma carta (sin el QR ni el isotipo)
+        add("contratapa", "I", pagina_contratapa(), numero=None, edicion=edicion, centrado=True,
+            titulo_pt=distribucion_contra()[0])
     for k, p in enumerate(seq):                              # impar = derecha, par = izquierda
         assert p["lado"] == ("D" if k % 2 == 0 else "I"), (k + 1, p["nombre"], p["lado"])
     return seq

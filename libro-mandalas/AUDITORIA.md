@@ -27,12 +27,12 @@ No hubo acceso a datos reales de Amazon (búsquedas, ranking, competidores): la 
 | Textos, preguntas y notas de los 7 chakras tal como los pidió Dani; frases finales sin cambios salvo Corazón ("Puedo dar y recibir amor.") y Tercer ojo ("Escucho lo que siento por dentro.") | hecho |
 | **Mandalas rediseñados** (Raíz, Sacro, Plexo solar, Corazón, Garganta, Tercer ojo, Corona) con zonas más grandes, según el detalle de cada uno | hecho |
 | **Hojas en blanco** (8, 12, 16, 20, 24, 28, 32 y también 36 y 38) con la nota "Esta hoja queda en blanco a propósito…" y el número de página | hecho |
-| **Dos ediciones con los nombres pedidos** (`libro-chakras-venta.pdf` y `libro-chakras-mama.pdf`); difieren solo en dedicatoria (p.3), Garganta (p.25) y página 40 | hecho |
+| **Dos ediciones con los nombres pedidos** (`libro-chakras-venta.pdf` y `libro-chakras-mama.pdf`); difieren solo en dedicatoria (p.3) y Garganta (p.25); la venta suma las páginas 41 (QR) y 42 (en blanco) | hecho |
 | **Todos juntos** (p.34–35): mismo título que los capítulos, leyenda de 8 colores en las dos páginas (con dorado), "Siete flores, una para cada chakra.", "Antes de empezar…", "Podés usar estos colores o elegir los que vos quieras."; las 6 flores de afuera 30 % más grandes; ejemplo vivo con centros dorados | hecho |
 | **Un momento para compartir** (p.37): una idea por línea, frase en negrita, "Estas dos flores son para colorear de a dos." y flores 30 % más grandes, con aire entre ellas | hecho |
 | **Gracias** (p.39): "Puede ser una palabra, un color o un dibujo." y nota "Podés volver a leer esta página cuando quieras recordar cómo te sentiste." | hecho |
 | **QR en la página 41** (versión para vender): texto de 20 pt, QR de 28 mm con 4 mm de blanco, "MenteViva" en serif negrita, isotipo de 25 mm sin fondo y `@daninavarro.bienestar`; la carta y la firma quedan solas en la 40 y se agrega una 42 en blanco (total 42 páginas, par) | hecho |
-| **Página 40** (versión final): título "Antes de cerrar este libro…", seis párrafos de 20 pt con espacio entre ellos, firma ("Con cariño," / **Daniela Navarro** / Longevidad Emocional), sin la web (venta); "Para que te regales un ratito.", "Para:", "De:" y 5 renglones (mamá; sin carta, QR, logo ni web) | hecho |
+| **Página 40** (versión final): título "Antes de cerrar este libro…", seis párrafos de 20 pt con espacio entre ellos, firma ("Con cariño," / **Daniela Navarro** / Longevidad Emocional), sin la web; es la misma en las dos ediciones (la de mamá no lleva el QR ni el isotipo) | hecho |
 | Armado por pliegos: ejemplo a la izquierda, mandala a la derecha, reverso en blanco detrás de todo lo que se pinta con marcador | hecho |
 
 ## Cómo se interpretó lo que se pidió (decisiones a confirmar)

@@ -1,0 +1,14 @@
+# Versiones con las que se armó y verificó el libro (Python 3.11). Instalar con: pip install -r requirements.txt
+weasyprint>=70.0      # arma las páginas y el PDF
+pypdf>=6.19           # inserta el reverso en blanco de cada página
+cairosvg>=2.9         # pasa los mandalas SVG a imagen para medir las zonas
+fonttools>=4.66       # crea las instancias de Fraunces y Manrope
+pillow>=12.3
+numpy>=2.4
+scipy>=1.17
+pdfminer.six>=20260107  # lee el texto del PDF para los controles de calidad
+segno>=1.6            # dibuja el código QR de la página 41 (codigo_qr.py)
+zxing-cpp>=2.2        # lee el QR del PDF para comprobar que lleva a la dirección correcta (solo en verificar.py)
+
+# Además hace falta poppler (programas pdftoppm y pdffonts):
+#   Debian/Ubuntu: sudo apt install poppler-utils      Mac: brew install poppler

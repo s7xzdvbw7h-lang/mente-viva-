@@ -5,7 +5,7 @@ Creado por Dani Navarro (Daniela Navarro · Longevidad Emocional).
 Genera el libro para colorear (8,5 × 11 pulgadas, vertical, listo para KDP):
   - svg/      cada mandala como SVG vectorial (geometría calculada en mandalas.py)
   - preview/  un PNG por página impresa (recortado al tamaño final)
-  - libro-chakras-venta.pdf y libro-chakras-mama.pdf  con sangrado de 0,125" (40 páginas)
+  - libro-chakras-venta.pdf y libro-chakras-mama.pdf  con sangrado de 0,125" (42 páginas)
 
 Uso:
     python3 generar_libro.py              # el libro completo (27 páginas impresas)
@@ -100,7 +100,7 @@ CONTRA_CARINO = "Con cariño,"
 CONTRA_NOMBRE = "Daniela Navarro"
 CONTRA_MARCA = "Longevidad Emocional"
 CONTRA_USUARIO = "@daninavarro.bienestar"
-# Página 41 (solo para vender): el QR, el isotipo y el usuario van en su propia página porque con la carta no entran
+# Página 41 (las dos ediciones): el QR, el isotipo y el usuario van en su propia página porque con la carta no entran
 QR_TEXTO = "Si querés seguir cuidando tu mente, escaneá este código con la cámara de tu celular."
 QR_URL = "https://menteviva.daninavarro.com.ar"      # va dentro del QR; la dirección no se escribe en el libro
 QR_NOMBRE = "MenteViva"
@@ -831,7 +831,7 @@ QR_TOP = 68      # mm desde arriba del corte: el bloque (texto, QR, nombre, logo
 
 
 def pagina_qr():
-    """Página 41 (solo para vender, a la derecha): texto, QR de 28 mm, "MenteViva", isotipo de 25 mm y usuario, todo centrado."""
+    """Página 41 (a la derecha): texto, QR de 28 mm, "MenteViva", isotipo de 25 mm y usuario, todo centrado."""
     logo = ruta_logo()
     if logo:
         img = f'<img src="{logo.as_uri()}" style="width:{LOGO_ANCHO}mm; margin:0 auto">'
@@ -850,7 +850,7 @@ def pagina_qr():
 
 
 def pagina_en_blanco_total():
-    """Página 42 (solo para vender): completamente en blanco, sin nota ni número, para que el total sea par."""
+    """Página 42: completamente en blanco, sin nota ni número, para que el total sea par."""
     return pagina("", "I")
 
 
@@ -905,15 +905,12 @@ def armar_secuencia(edicion="venta"):
     add("compartir", "D", pagina_compartir(n(), "svg/par_de_flores.svg"), numero=n(), marcador=True, imagenes=True)
     add("compartir_en_blanco", "I", pagina_blanca(n()), en_blanco=True, numero=n(), centrado=True)
     add("cierre", "D", pagina_cierre(n()), numero=n(), afirmacion=FRASE_FINAL, renglones=3, lineas_cortas=1)
-    if edicion == "venta":
-        add("contratapa", "I", pagina_contratapa(), numero=None, edicion=edicion, centrado=True,
-            titulo_pt=distribucion_contra()[0])
-        add("cierre_qr", "D", pagina_qr(), numero=None, edicion=edicion, centrado=True, logo=ruta_logo() is not None,
-            logo_ancho=LOGO_ANCHO, qr=dict(url=QR_URL, lado=QR_LADO, margen=QR_MARGEN))
-        add("final_en_blanco", "I", pagina_en_blanco_total(), en_blanco=True, sin_nota=True, numero=None)
-    else:                                   # la edición de mamá termina con la misma carta (sin el QR ni el isotipo)
-        add("contratapa", "I", pagina_contratapa(), numero=None, edicion=edicion, centrado=True,
-            titulo_pt=distribucion_contra()[0])
+    # el final es igual en las dos ediciones: la carta (40), el QR con el isotipo (41) y una hoja en blanco (42)
+    add("contratapa", "I", pagina_contratapa(), numero=None, edicion=edicion, centrado=True,
+        titulo_pt=distribucion_contra()[0])
+    add("cierre_qr", "D", pagina_qr(), numero=None, edicion=edicion, centrado=True, logo=ruta_logo() is not None,
+        logo_ancho=LOGO_ANCHO, qr=dict(url=QR_URL, lado=QR_LADO, margen=QR_MARGEN))
+    add("final_en_blanco", "I", pagina_en_blanco_total(), en_blanco=True, sin_nota=True, numero=None)
     for k, p in enumerate(seq):                              # impar = derecha, par = izquierda
         assert p["lado"] == ("D" if k % 2 == 0 else "I"), (k + 1, p["nombre"], p["lado"])
     return seq

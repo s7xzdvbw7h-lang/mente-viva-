@@ -15,7 +15,7 @@ PDF (los dos que se imprimen: libro-chakras-venta.pdf y libro-chakras-mama.pdf):
   - mandalas para colorear sin color adentro del dibujo;
   - paleta sugerida: 5 colores, el principal primero; reparto del ejemplo según el chakra; pestaña de 8 mm;
   - todos los textos pedidos están y no vuelven los que se sacaron ("Está relacionado…", "Color protagonista"…);
-  - las dos ediciones son iguales salvo la dedicatoria (p.3) y Garganta (p.25); la venta suma las páginas 41 (QR) y 42 (en blanco).
+  - las dos ediciones (42 páginas) son iguales salvo la dedicatoria (p.3) y Garganta (p.25).
 """
 import io
 import re
@@ -585,7 +585,7 @@ def verificar_pdf(ruta_pdf, paginas_info, g, edicion="venta", completo=True):
                 fallos.append(f"p.{k + 1} {n}: el espacio entre párrafos ({min(entre):.1f} mm) apenas se nota frente al de las líneas ({max(interno):.1f} mm)")
             if re.search(r"MenteViva|QR|escaneá|@", todo):
                 fallos.append(f"p.{k + 1} {n}: el QR, el logo y el usuario van en la página 41, no en la carta")
-            notas.append(f"p.{k + 1}: página 40 (venta): carta y firma, título de {info.get('titulo_pt')} pt")
+            notas.append(f"p.{k + 1}: página 40: carta y firma, título de {info.get('titulo_pt')} pt")
         if n == "cierre_qr":
             debajo(g.QR_TEXTO, g.QR_NOMBRE, "el QR y «MenteViva» van debajo del texto")
             debajo(g.QR_NOMBRE, g.CONTRA_USUARIO, "el logo y el usuario van debajo de «MenteViva»")
@@ -686,7 +686,7 @@ def verificar_pdf(ruta_pdf, paginas_info, g, edicion="venta", completo=True):
                     if (np.abs(fondo_logo - fondo).sum(axis=1) > 6).any():
                         fallos.append(f"p.{k + 1} {n}: el isotipo tiene un recuadro o fondo")
             else:
-                notas.append(f"PENDIENTE p.{k + 1} (venta): falta el isotipo (assets/isotipo.svg)")
+                notas.append(f"PENDIENTE p.{k + 1}: falta el isotipo (assets/isotipo.svg)")
         if info.get("tamanos"):
             notas.append(f"p.{k + 1}: tamaños de la página de texto (título/cuerpo/preguntas) = {info['tamanos']} pt")
 
@@ -930,12 +930,12 @@ def main():
         problemas_total += len(fallos)
     distintas, n_venta, n_mama = _comparar_ediciones(str(rutas["venta"]), str(rutas["mama"]), (3, 25))
     errores = []
-    if (n_venta, n_mama) != (42, 40):
-        errores.append(f"se esperaban 42 páginas (venta: con el QR en la 41 y la 42 en blanco) y 40 (mamá); hay {n_venta} y {n_mama}")
+    if (n_venta, n_mama) != (42, 42):
+        errores.append(f"se esperaban 42 páginas en las dos ediciones (carta en la 40, QR en la 41 y la 42 en blanco); hay {n_venta} y {n_mama}")
     if distintas != [3, 25]:
-        errores.append(f"las ediciones tienen que diferir solo en las páginas 3 (De:/firma) y 25 (Garganta); las 41 y 42 son solo de la edición para vender; difieren en {distintas}")
+        errores.append(f"las ediciones tienen que diferir solo en las páginas 3 (De:/firma) y 25 (Garganta); las 40, 41 y 42 son iguales; difieren en {distintas}")
     print(f"  ediciones comparadas página por página (las {min(n_venta, n_mama)} primeras): difieren en {distintas}"
-          + (f" (dedicatoria y Garganta, como se pidió; la carta de la 40 es la misma); venta {n_venta} páginas, mamá {n_mama}" if not errores else ""))
+          + (f" (dedicatoria y Garganta, como se pidió); venta {n_venta} páginas, mamá {n_mama}" if not errores else ""))
     for e in errores:
         print("    ✗", e)
     problemas_total += len(errores)

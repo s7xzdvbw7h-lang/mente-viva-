@@ -19,9 +19,11 @@ Salen dos PDF, iguales salvo tres páginas:
 - `libro-chakras-mama.pdf`: la edición de Dani. Dedicatoria firmada "Dani"; Garganta pregunta "¿Qué consejo le darías a tu
   nieto?"; la página 40 lleva "Para:" y "De:" y cinco renglones para una dedicatoria a mano (sin logo).
 
-**El logo todavía falta**: el archivo no llegó adjunto. Ponelo en `libro-mandalas/assets/logo.png` (o `logo.svg`, `logo.jpg`)
-y volvé a correr `python3 generar_libro.py`: se coloca solo, de 50 mm de ancho y centrado, entre el mensaje y el usuario.
-Mientras no esté, la página 40 de la edición para vender queda con ese espacio vacío.
+**El logo** de la página 40 (edición para vender) es `assets/logo.svg`: la versión "logo cacao" (isotipo con "Daniela Navarro",
+marrón sobre crema), sin el fondo ni el recorte vacío del archivo original para que quede centrado. Se coloca solo, de 50 mm
+de ancho, entre el mensaje y el usuario. Los cinco archivos originales están en `assets/originales/` (isotipo cacao,
+champán y color, logo cacao y logo reverso): para usar otro, copialo como `assets/logo.svg` (recortando el fondo igual) y
+volvé a correr `python3 generar_libro.py`. `ruta_logo()` busca cualquier `assets/logo.*` (svg, png, jpg).
 
 También salen un PNG por página en `preview/`, los pliegos (página izquierda + derecha) en `preview/pliegos/`, cada
 mandala en `svg/` y cada ejemplo pintado en `ejemplos/`.
@@ -101,7 +103,8 @@ cuerpo (nunca por debajo de 18 pt); el tamaño elegido de cada página de texto 
 - Ejemplos pintados: solo colores de la paleta, usa los 5, el principal ocupa su rango, y sin los colores el dibujo es
   idéntico al mandala para colorear (mismas líneas).
 - Las dos ediciones, comparadas página por página: solo difieren las páginas 3, 25 y 40.
-- Página 40 (venta): avisa como PENDIENTE si falta el logo y, cuando está, controla que se vea y esté centrado.
+- Página 40 (venta): controla que el logo se vea y esté centrado, con lugar entre el mensaje y el usuario (si faltara el
+  archivo, lo avisa como PENDIENTE).
 
 ## Tipografías
 

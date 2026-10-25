@@ -31,7 +31,8 @@ No hubo acceso a datos reales de Amazon (búsquedas, ranking, competidores): la 
 | **Todos juntos** (p.34–35): mismo título que los capítulos, leyenda de 8 colores en las dos páginas (con dorado), "Siete flores, una para cada chakra.", "Antes de empezar…", "Podés usar estos colores o elegir los que vos quieras."; las 6 flores de afuera 30 % más grandes; ejemplo vivo con centros dorados | hecho |
 | **Un momento para compartir** (p.37): una idea por línea, frase en negrita, "Estas dos flores son para colorear de a dos." y flores 30 % más grandes, con aire entre ellas | hecho |
 | **Gracias** (p.39): "Puede ser una palabra, un color o un dibujo." y nota "Podés volver a leer esta página cuando quieras recordar cómo te sentiste." | hecho |
-| **Página 40** (versión final): título "Antes de cerrar este libro…", seis párrafos de 20 pt con espacio entre ellos, firma ("Con cariño," / **Daniela Navarro** / Longevidad Emocional), logo cacao de 40 mm y @daninavarrocoach, sin la web (venta); "Para:", "De:" y 5 renglones (mamá, sin logo) | hecho |
+| **QR en la página 41** (versión para vender): texto de 20 pt, QR de 28 mm con 4 mm de blanco, "MenteViva" en serif negrita, logo de 40 mm y usuario; la carta y la firma quedan solas en la 40 y se agrega una 42 en blanco (total 42 páginas, par) | hecho |
+| **Página 40** (versión final): título "Antes de cerrar este libro…", seis párrafos de 20 pt con espacio entre ellos, firma ("Con cariño," / **Daniela Navarro** / Longevidad Emocional), logo cacao de 40 mm y @daninavarrocoach, sin la web (venta); "Para que te regales un ratito.", "Para:", "De:" y 5 renglones (mamá; sin carta, QR, logo ni web) | hecho |
 | Armado por pliegos: ejemplo a la izquierda, mandala a la derecha, reverso en blanco detrás de todo lo que se pinta con marcador | hecho |
 
 ## Cómo se interpretó lo que se pidió (decisiones a confirmar)
@@ -65,15 +66,16 @@ No hubo acceso a datos reales de Amazon (búsquedas, ranking, competidores): la 
   par más cercano baja a 13,5 en Raíz, Sacro y Plexo (naranja–amarillo), 10,3 en Tercer ojo (índigo–violeta) y **7,6 en
   Garganta (turquesa–rosa)**; por eso el nombre de cada color está siempre escrito.
 
-## Estructura: 40 páginas (20 hojas)
+## Estructura: 42 páginas para vender (21 hojas) y 40 para mamá (20 hojas)
 
-- **KDP:** 40 páginas, el mínimo es 24. Es múltiplo de 4 (sirve si la imprenta cose o abrocha). Con menos de 79 páginas no hay
-  texto en el lomo. Costo de impresión estimado: 1,00 + 40 × 0,0255 = US$ 2,02 en color estándar en EE. UU. (tarifa relevada
+- **KDP:** 42 páginas, el mínimo es 24. Es par, pero **ya no es múltiplo de 4**: si la imprenta cose o abrocha cuadernillos hay que
+  avisarle (la edición de mamá sí es múltiplo de 4); en anillado o encolado no importa. Con menos de 79 páginas no hay
+  texto en el lomo. Costo de impresión estimado: 1,00 + 42 × 0,0255 = US$ 2,07 en color estándar en EE. UU. (tarifa relevada
   antes; confirmalo en la calculadora de KDP). El fondo crema y las pestañas obligan a color en todas las páginas.
 - **Quien lo usa:** son 7 mandalas para pintar más "Todos juntos": una semana a un mandala por día. Como ritual y regalo
   alcanza; como "mucho para pintar" es poco frente a competidores de 50 a 120 mandalas. Conviene no competir por cantidad.
 - **El ejemplo ya está enfrente del mandala**: se ve todo a la vez, sin dar vuelta la hoja. Cada mandala tiene su reverso en blanco.
-- **Cuaderno anillado (Argentina):** 20 hojas. Los precios de Mercado Libre y de la competencia que figuran en el texto de la
+- **Cuaderno anillado (Argentina):** 21 hojas (la de mamá, 20). Los precios de Mercado Libre y de la competencia que figuran en el texto de la
   conversación no los pude comprobar.
 
 ## Decisión: la frase del ejemplo
@@ -83,7 +85,7 @@ del ejemplo** (18 pt, bajo la paleta), porque ahí evita que el ejemplo se lea c
 
 ## Pendiente (decisiones de Dani o trabajo aparte)
 
-- **Logo de la página 40:** se usó el "logo cacao" (isotipo + Daniela Navarro). A 40 mm de ancho el nombre queda chico
+- **Logo de la página 40:** se usó el "logo cacao" (isotipo + Daniela Navarro). En la página 41, a 40 mm de ancho, el nombre queda chico
   (letras de unos 2,5 mm) y además repite el nombre de la firma que está justo arriba; si preferís, se puede usar solo el
   isotipo (hay versión cacao, champán y color en `assets/originales/`), que se puede poner más grande.
 - **Contacto en la página legal:** figura hola@daninavarro.com.ar (el de la landing); confirmá que querés publicarlo.

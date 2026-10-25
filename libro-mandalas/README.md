@@ -11,19 +11,26 @@ referencia: la paleta sugerida y, enfrente de cada mandala, una página "Así po
     python3 generar_libro.py            # arma las dos ediciones y las vistas previas
     python3 verificar.py                # controles de calidad (tarda unos 5 minutos)
 
-Salen dos PDF, iguales salvo tres páginas:
+Salen dos PDF, iguales salvo las páginas 3, 25 y 40 (y la edición para vender tiene dos páginas más, la 41 y la 42):
 
 - `libro-chakras-venta.pdf`: **edición para vender**. Dedicatoria con una línea "De: ______" para que escriba su nombre
   quien regala; Garganta pregunta "¿Qué consejo le darías a alguien que querés mucho?"; la página 40 lleva "Antes de
-  cerrar este libro…", el mensaje de Daniela, la firma ("Con cariño, Daniela Navarro, Longevidad Emocional"), el logo y
-  `@daninavarrocoach` (sin la web).
+  cerrar este libro…", el mensaje de Daniela y su firma ("Con cariño, Daniela Navarro, Longevidad Emocional"); la
+  página 41 lleva el QR, "MenteViva", el logo y `@daninavarrocoach` (sin la web escrita); la 42 queda en blanco.
+  **42 páginas (21 hojas).**
 - `libro-chakras-mama.pdf`: la edición de Dani. Dedicatoria firmada "Dani"; Garganta pregunta "¿Qué consejo le darías a tu
-  nieto?"; la página 40 lleva "Para:" y "De:" y cinco renglones para una dedicatoria a mano (sin logo).
+  nieto?"; la página 40 lleva "Para que te regales un ratito.", "Para:", "De:" y cinco renglones para una dedicatoria a
+  mano (sin carta, QR, logo ni web). **40 páginas (20 hojas).**
 
-**El logo** de la página 40 (edición para vender) es `assets/logo.svg`: la versión "logo cacao" (isotipo con "Daniela Navarro",
+**El QR** de la página 41 lleva a `https://menteviva.daninavarro.com.ar` (`QR_URL` en `generar_libro.py`; no hubo acceso para
+comprobar que la dirección responda). Se dibuja en vector con `codigo_qr.py` (módulos de 28 mm de lado y 4 mm de blanco
+alrededor, negro sobre blanco, nivel de corrección Q) y `verificar.py` lo lee del PDF para confirmar que lleva a esa dirección.
+La dirección no se escribe en el libro. La carta y la firma ocupan toda la página 40, por eso el QR, el logo y el usuario
+pasaron a la 41 y se agregó la 42 en blanco para que el total sea par.
+
+**El logo** de la página 41 (edición para vender) es `assets/logo.svg`: la versión "logo cacao" (isotipo con "Daniela Navarro",
 marrón sobre crema), sin el fondo ni el recorte vacío del archivo original para que quede centrado. Se coloca solo, de 40 mm
-de ancho, entre la firma y el usuario. Si el mensaje no entra, `distribucion_contra()` achica primero los espacios y el logo
-(nunca el texto, que es de 20 pt y de 18 pt la firma y el usuario); hoy entra con el logo entero. Los cinco archivos originales están en `assets/originales/` (isotipo cacao,
+de ancho, entre "MenteViva" y el usuario. Los cinco archivos originales están en `assets/originales/` (isotipo cacao,
 champán y color, logo cacao y logo reverso): para usar otro, copialo como `assets/logo.svg` (recortando el fondo igual) y
 volvé a correr `python3 generar_libro.py`. `ruta_logo()` busca cualquier `assets/logo.*` (svg, png, jpg).
 
@@ -32,7 +39,8 @@ mandala en `svg/` y cada ejemplo pintado en `ejemplos/`.
 
 ## Cómo está armado el PDF
 
-40 páginas = 20 hojas (múltiplo de 4). Tamaño final 8,5 × 11" con sangrado de 0,125" arriba, abajo y **del lado de afuera**
+Edición para vender: 42 páginas = 21 hojas (par, pero no múltiplo de 4); edición de mamá: 40 páginas = 20 hojas (múltiplo
+de 4). Tamaño final 8,5 × 11" con sangrado de 0,125" arriba, abajo y **del lado de afuera**
 (a la derecha en las páginas impares, a la izquierda en las pares), como pide KDP. Cada página trae las cajas de corte y de
 sangrado. Márgenes: 0,75" del lado del lomo y 0,5" en el resto. Todas las páginas llevan fondo #FFFBF5 (papel cálido) hasta
 el borde de sangrado, así que hay que imprimir a color. Las pestañas de color (8 mm) llegan al borde con sangrado, en el lado
@@ -51,7 +59,8 @@ número de página, así el marcador no traspasa.
 | 34 · 35 | Todos juntos: pintado · para pintar (leyenda de 8 colores en las dos) |
 | 36 · 37 | Hoja en blanco · Un momento para compartir |
 | 38 · 39 | Hoja en blanco · Gracias por regalarte este rato |
-| 40 | Mensaje de Daniela, firma, logo y usuario (venta) / Para–De y dedicatoria a mano (mamá) |
+| 40 | Carta de Daniela con su firma (venta) / "Para que te regales un ratito.", Para–De y dedicatoria a mano (mamá) |
+| 41 · 42 | Solo en la edición para vender: QR, "MenteViva", logo y usuario · hoja en blanco (sin nota ni número) |
 
 Cada chakra tiene su propia forma (en `mandalas.py`): Raíz 4 pétalos, cuadrado con círculo central y 4 rombos grandes;
 Sacro 6 pétalos, 6 gotas grandes y luna; Plexo solar 8 pétalos anchos con 8 zonas grandes entre ellos y triángulo central;
@@ -104,9 +113,11 @@ cuerpo (nunca por debajo de 18 pt); el tamaño elegido de cada página de texto 
   principal es el que más se ve; pestaña de 8 mm del color del chakra que llega al borde con sangrado.
 - Ejemplos pintados: solo colores de la paleta, usa los 5, el principal ocupa su rango, y sin los colores el dibujo es
   idéntico al mandala para colorear (mismas líneas).
-- Las dos ediciones, comparadas página por página: solo difieren las páginas 3, 25 y 40.
-- Página 40 (venta): controla que el logo se vea y esté centrado, con lugar entre el mensaje y el usuario (si faltara el
-  archivo, lo avisa como PENDIENTE).
+- Las dos ediciones, comparadas página por página: solo difieren las páginas 3, 25 y 40 (la venta tiene 42 páginas y la de mamá 40; las dos pares).
+- Página 40 (venta): textos, orden, tamaños, colores, espacio entre párrafos y que no figure la web.
+- Página 41 (venta): el QR mide 28 mm (nunca menos de 25), está centrado, tiene 4 mm de blanco alrededor, es negro sin
+  colores y se lee como `https://menteviva.daninavarro.com.ar`; el logo se ve y está centrado (si faltara el archivo, lo
+  avisa como PENDIENTE). Página 42: completamente en blanco, sin nota.
 
 ## Tipografías
 

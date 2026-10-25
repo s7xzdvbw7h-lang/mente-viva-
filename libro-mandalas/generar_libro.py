@@ -101,6 +101,13 @@ CONTRA_NOMBRE = "Daniela Navarro"
 CONTRA_MARCA = "Longevidad Emocional"
 CONTRA_USUARIO = "@daninavarrocoach"
 CONTRA_PARA, CONTRA_DE = "Para:", "De:"
+CONTRA_MAMA_TITULO = "Para que te regales un ratito."
+# Página 41 (solo para vender): el QR, el logo y el usuario van en su propia página porque con la carta no entran
+QR_TEXTO = "Si querés seguir cuidando tu mente, escaneá este código con la cámara de tu celular."
+QR_URL = "https://menteviva.daninavarro.com.ar"      # va dentro del QR; la dirección no se escribe en el libro
+QR_NOMBRE = "MenteViva"
+QR_LADO = 28          # mm que miden los módulos del QR (nunca menos de 25)
+QR_MARGEN = 4         # mm de blanco alrededor
 
 LEGAL_TITULO = ["MANDALAS DE LOS 7 CHAKRAS", "Un color a la vez"]
 LEGAL_AUTORA = ["Creado por Dani Navarro", "Longevidad Emocional"]
@@ -782,49 +789,53 @@ def ruta_logo():
     return next(iter(sorted(carpeta.glob("logo.*"))), None) if carpeta.exists() else None
 
 
-LOGO_ANCHO = 40                  # ancho máximo del logo (mm); si la página no alcanza se achica el logo y los espacios, nunca el texto
+LOGO_ANCHO = 40                  # ancho del logo (mm)
 LOGO_PROPORCION = 1077 / 2112    # alto / ancho del logo (assets/logo.svg)
-# (tamaño del título en pt, espacio entre párrafos, ancho del logo): de lo más cómodo a lo más ajustado
-OPCIONES_CONTRA = [(36, 6, 40), (36, 5, 40), (36, 4, 40), (36, 3.5, 40), (36, 3.5, 36), (34, 3, 32), (32, 3, 28)]
+# (tamaño del título en pt, espacio entre párrafos en mm): de lo más cómodo a lo más ajustado. El texto nunca baja de 20 pt.
+OPCIONES_CONTRA = [(36, 6), (36, 5), (36, 4), (36, 3.5), (34, 3)]
 
 
-def _alto_contra(pt_t, gap, logo):
-    """Alto aproximado (mm) de la página 40 de la edición para vender, con los mismos tamaños que el CSS."""
+def _alto_contra(pt_t, gap):
+    """Alto aproximado (mm) de la carta de la página 40 (título, párrafos y firma), con los tamaños del CSS."""
     h = pt_t * _MM * 1.15 + 6
     h += sum(_n_lineas(t, "cuerpo", 20) * 20 * _MM * 1.5 for t in CONTRA_LINEAS) + gap * (len(CONTRA_LINEAS) - 1)
     h += gap + 2 + 20 * _MM * 1.5 + 26 * _MM * 1.25 + 18 * _MM * 1.5          # firma
-    h += 7 + logo * LOGO_PROPORCION + 4 + 18 * _MM * 1.5                      # logo y usuario
     return h - 2.4                                                            # medido en el PDF: el estimador sobrestima unos 2,4 mm
 
 
 def distribucion_contra():
-    """Elige la primera opción que entra en la página: devuelve (pt del título, espacio entre párrafos, ancho del logo, top)."""
+    """Elige la primera opción que entra en la página: devuelve (pt del título, espacio entre párrafos, top)."""
     libre = ALTO - MARGEN_INF - MARGEN_SUP
-    for pt_t, gap, logo in OPCIONES_CONTRA:
-        h = _alto_contra(pt_t, gap, logo)
+    for pt_t, gap in OPCIONES_CONTRA:
+        h = _alto_contra(pt_t, gap)
         if h <= libre - 1.5:                                                    # 1,5 mm de aire contra el margen de abajo
-            return pt_t, gap, logo, MARGEN_SUP + min((libre - h) / 2, 8)
-    pt_t, gap, logo = OPCIONES_CONTRA[-1]
-    return pt_t, gap, logo, MARGEN_SUP
+            return pt_t, gap, MARGEN_SUP + min((libre - h) / 2, 10)
+    pt_t, gap = OPCIONES_CONTRA[-1]
+    return pt_t, gap, MARGEN_SUP
+
+
+def _titulo_en_una_linea(texto, maximo=40):
+    """Tamaño de título (pt) más grande, hasta `maximo`, con el que `texto` entra en una línea."""
+    for pt in range(maximo, 27, -2):
+        if ancho_mm(texto, "titulo", pt) <= ANCHO_UTIL * 0.97:
+            return pt
+    return 28
 
 
 def pagina_contratapa(edicion="venta"):
-    """Página 40. Para vender: mensaje de la autora, firma, logo y usuario. Para mamá: "Para:", "De:" y renglones para la dedicatoria."""
+    """Página 40. Para vender: la carta de Daniela y su firma. Para mamá: título, "Para:", "De:" y renglones para la dedicatoria."""
     if edicion == "mama":
         renglones = '<div class="renglon"></div>' * 5
+        pt = _titulo_en_una_linea(CONTRA_MAMA_TITULO)
         return pagina(f"""
-  <div class="caja" style="top:46mm">
-    <div class="para-de">{esc(CONTRA_PARA)}<div class="linea"></div></div>
-    <div class="para-de">{esc(CONTRA_DE)}<div class="linea"></div></div>
+  <div class="caja contra" style="top:34mm">
+    <h1 style="font-size:{pt}pt; margin-bottom:14mm">{esc(CONTRA_MAMA_TITULO)}</h1>
+    <div class="para-de" style="text-align:left">{esc(CONTRA_PARA)}<div class="linea"></div></div>
+    <div class="para-de" style="text-align:left">{esc(CONTRA_DE)}<div class="linea"></div></div>
     <div style="margin-top:12mm">{renglones}</div>
   </div>
 """, "I")
-    pt_t, gap, logo_mm, top = distribucion_contra()
-    logo = ruta_logo()
-    if logo:
-        img = f'<img src="{logo.as_uri()}" style="width:{logo_mm}mm; margin:0 auto">'
-    else:
-        img = f'<div style="height:{logo_mm * LOGO_PROPORCION}mm"></div>'          # hueco reservado: falta el archivo del logo
+    pt_t, gap, top = distribucion_contra()
     parrafos = "".join(f'<p style="margin-bottom:{gap}mm">{partir(t, "cuerpo", 20, ANCHO_UTIL)}</p>' for t in CONTRA_LINEAS)
     return pagina(f"""
   <div class="caja contra" style="top:{top}mm">
@@ -833,10 +844,36 @@ def pagina_contratapa(edicion="venta"):
     <p style="margin-top:2mm">{esc(CONTRA_CARINO)}</p>
     <p class="nombre">{esc(CONTRA_NOMBRE)}</p>
     <p class="marca">{esc(CONTRA_MARCA)}</p>
-    <div style="margin-top:7mm">{img}</div>
-    <p class="usuario" style="margin-top:4mm">{esc(CONTRA_USUARIO)}</p>
   </div>
 """, "I")
+
+
+QR_ARCHIVO = "svg/qr_menteviva.svg"
+QR_TOP = 62      # mm desde arriba del corte: el bloque (texto, QR, nombre, logo y usuario) queda al medio de la página
+
+
+def pagina_qr():
+    """Página 41 (solo para vender, a la derecha): texto, QR de 28 mm, "MenteViva", logo de 40 mm y usuario, todo centrado."""
+    logo = ruta_logo()
+    if logo:
+        img = f'<img src="{logo.as_uri()}" style="width:{LOGO_ANCHO}mm; margin:0 auto">'
+    else:
+        img = f'<div style="height:{LOGO_ANCHO * LOGO_PROPORCION}mm"></div>'          # hueco reservado: falta el archivo del logo
+    mm = QR_LADO + 2 * QR_MARGEN
+    return pagina(f"""
+  <div class="caja contra" style="top:{QR_TOP}mm">
+    <p>{partir(QR_TEXTO, "cuerpo", 20, ANCHO_UTIL)}</p>
+    <div style="margin-top:6mm">{_svg_img(QR_ARCHIVO, mm).replace('style="', 'style="margin:0 auto; ')}</div>
+    <p class="nombre" style="margin-top:3mm">{esc(QR_NOMBRE)}</p>
+    <div style="margin-top:12mm">{img}</div>
+    <p class="usuario" style="margin-top:4mm">{esc(CONTRA_USUARIO)}</p>
+  </div>
+""", "D")
+
+
+def pagina_en_blanco_total():
+    """Página 42 (solo para vender): completamente en blanco, sin nota ni número, para que el total sea par."""
+    return pagina("", "I")
 
 
 # ===================================================================== ARMADO
@@ -892,9 +929,13 @@ def armar_secuencia(edicion="venta"):
     add("cierre", "D", pagina_cierre(n()), numero=n(), afirmacion=FRASE_FINAL, renglones=3, lineas_cortas=1)
     if edicion == "venta":
         add("contratapa", "I", pagina_contratapa(edicion), numero=None, edicion=edicion, centrado=True,
-            logo=ruta_logo() is not None, logo_ancho=distribucion_contra()[2], titulo_pt=distribucion_contra()[0])
+            titulo_pt=distribucion_contra()[0])
+        add("cierre_qr", "D", pagina_qr(), numero=None, edicion=edicion, centrado=True, logo=ruta_logo() is not None,
+            logo_ancho=LOGO_ANCHO, qr=dict(url=QR_URL, lado=QR_LADO, margen=QR_MARGEN))
+        add("final_en_blanco", "I", pagina_en_blanco_total(), en_blanco=True, sin_nota=True, numero=None)
     else:
-        add("contratapa", "I", pagina_contratapa(edicion), numero=None, edicion=edicion, renglones=5, lineas_cortas=2)
+        add("contratapa", "I", pagina_contratapa(edicion), numero=None, edicion=edicion, renglones=5, lineas_cortas=2,
+            titulo_pt=_titulo_en_una_linea(CONTRA_MAMA_TITULO))
     for k, p in enumerate(seq):                              # impar = derecha, par = izquierda
         assert p["lado"] == ("D" if k % 2 == 0 else "I"), (k + 1, p["nombre"], p["lado"])
     return seq
@@ -929,6 +970,10 @@ def construir():
     (AQUI / "ejemplos" / "integracion.svg").write_text(ejemplos.ejemplo_integracion(), encoding="utf-8")
     (AQUI / "svg" / "portada_arte.svg").write_text(M.portada_arte(), encoding="utf-8")
     (AQUI / "svg" / "dedicatoria_corazon.svg").write_text(M.corazon_linea(), encoding="utf-8")
+    import codigo_qr
+    qr_svg, qr_modulos, qr_version = codigo_qr.svg_qr(QR_URL, QR_LADO, QR_MARGEN)
+    (AQUI / QR_ARCHIVO).write_text(qr_svg, encoding="utf-8")
+    print(f"QR: versión {qr_version}, {qr_modulos} módulos, {QR_LADO / qr_modulos:.2f} mm por módulo")
 
     for viejo in ("libro_mandalas_chakras.pdf", "libro_para_mama.pdf"):          # nombres anteriores
         (AQUI / viejo).unlink(missing_ok=True)
@@ -966,6 +1011,7 @@ def construir():
 
     # PNG de revisión (edición para vender), recortados al tamaño final, y pliegos (izquierda + derecha)
     from PIL import Image
+    paginas = armar_secuencia("venta")
     prev = AQUI / "preview"
     for viejo in list(prev.glob("*.png")) + list((prev / "pliegos").glob("*.png") if (prev / "pliegos").exists() else []):
         viejo.unlink()

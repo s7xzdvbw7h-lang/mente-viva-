@@ -221,6 +221,8 @@ def _esperado_en_pagina(info, g, edicion):
         d = g._datos_reflexion(ch, edicion)
         return ([d["nombre"], d["parrafo"], g.TITULO_RESPIRAR, d["respiracion"], g.TITULO_RECORDAR]
                 + list(d["preguntas"]) + list(d["nota"]))
+    if nombre == "final_en_blanco":
+        return []
     if nombre.endswith("_en_blanco"):
         return [g.NOTA_BLANCA]
     if nombre == "integracion_ejemplo":
@@ -233,8 +235,10 @@ def _esperado_en_pagina(info, g, edicion):
         return ([g.CIERRE_TITULO] + [l.rstrip(",") for l in g.FRASE_FINAL]
                 + [g.CIERRE_SENTI, g.CIERRE_AYUDA, g.CIERRE_FECHA, g.CIERRE_NOTA])
     if nombre == "contratapa":
-        return ([g.CONTRA_PARA, g.CONTRA_DE] if edicion == "mama" else
-                [g.CONTRA_TITULO] + list(g.CONTRA_LINEAS) + [g.CONTRA_CARINO, g.CONTRA_NOMBRE, g.CONTRA_MARCA, g.CONTRA_USUARIO])
+        return ([g.CONTRA_MAMA_TITULO, g.CONTRA_PARA, g.CONTRA_DE] if edicion == "mama" else
+                [g.CONTRA_TITULO] + list(g.CONTRA_LINEAS) + [g.CONTRA_CARINO, g.CONTRA_NOMBRE, g.CONTRA_MARCA])
+    if nombre == "cierre_qr":
+        return [g.QR_TEXTO, g.QR_NOMBRE, g.CONTRA_USUARIO]
     return []
 
 
@@ -260,8 +264,11 @@ def verificar_pdf(ruta_pdf, paginas_info, g, edicion="venta", completo=True):
         fallos.append(f"el PDF tiene {len(lector.pages)} páginas, se esperaban {n_imp}")
         return fallos, notas
     S = g.SANGRE
-    if n_imp % 4:
-        notas.append(f"ojo: {n_imp} páginas no es múltiplo de 4 (importa solo si la imprenta cose o abrocha)")
+    if n_imp % 2:
+        fallos.append(f"el libro tiene {n_imp} páginas: el total tiene que ser par para imprimir")
+    else:
+        notas.append(f"total de páginas: {n_imp} (par)" + ("" if n_imp % 4 == 0 else
+                     "; no es múltiplo de 4, importa solo si la imprenta cose o abrocha cuadernillos"))
     # impar = derecha, par = izquierda; el reverso de cada página para pintar con marcador tiene que estar en blanco
     for k, info in enumerate(paginas_info):
         if info["lado"] != ("D" if k % 2 == 0 else "I"):
@@ -418,7 +425,13 @@ def verificar_pdf(ruta_pdf, paginas_info, g, edicion="venta", completo=True):
                 fallos.append(f"{etiqueta}: un renglón queda pegado al número de página")
                 break
         # hoja en blanco: solo la nota y el número
-        if info.get("en_blanco"):
+        if info.get("en_blanco") and info.get("sin_nota"):            # página 42: en blanco del todo, sin nota ni número
+            if lineas or dibujos or rellenos:
+                fallos.append(f"{etiqueta}: debe estar completamente en blanco (sin nota ni número)")
+            img = _raster(ruta_pdf, k + 1, 40).astype(int)
+            if (np.abs(img - fondo).sum(axis=2) > 12).any():
+                fallos.append(f"{etiqueta}: la página no es del color de fondo liso")
+        elif info.get("en_blanco"):
             sin_numero = [l for l in lineas if l is not linea_numero]
             if _norm(" ".join(l["texto"] for l in sin_numero)) != _norm(g.NOTA_BLANCA):
                 fallos.append(f"{etiqueta}: la hoja en blanco debe tener solo la nota «{g.NOTA_BLANCA[:30]}…» y el número")
@@ -489,13 +502,6 @@ def verificar_pdf(ruta_pdf, paginas_info, g, edicion="venta", completo=True):
                 fallos.append("Garganta (mamá): la pregunta debe ser la del nieto")
             if edicion == "venta" and ("nieto" in todo or "alguien que querés mucho" not in todo):
                 fallos.append("Garganta (venta): la pregunta debe ser la de «alguien que querés mucho»")
-        if info["nombre"] == "contratapa" and edicion == "venta":
-            if info.get("logo"):
-                pass
-            else:
-                notas.append("PENDIENTE p.40 (venta): falta el logo (no llegó el archivo adjunto); queda el espacio reservado. "
-                             "Ponelo en libro-mandalas/assets/logo.png y volvé a generar")
-
         def pos(frase):
             hit = [l for l in lineas if _norm(frase)[:25] in _norm(l["texto"])]
             return hit[0] if hit else None
@@ -542,6 +548,16 @@ def verificar_pdf(ruta_pdf, paginas_info, g, edicion="venta", completo=True):
             debajo(g.CIERRE_SENTI, g.CIERRE_AYUDA, "«Puede ser una palabra…» va debajo de «Hoy me sentí…»")
             debajo(g.CIERRE_AYUDA, g.CIERRE_FECHA, "los renglones y la fecha van debajo")
             debajo(g.CIERRE_FECHA, g.CIERRE_NOTA, "la nota final va debajo de la fecha")
+        if n in ("contratapa", "cierre_qr") and re.search(r"www|http|\.com|\.ar\b", todo, re.IGNORECASE):
+            fallos.append(f"p.{k + 1} {n}: no se escribe la dirección web (solo va dentro del QR)")
+        if n == "contratapa" and edicion == "mama":
+            titulo = pos(g.CONTRA_MAMA_TITULO)
+            if titulo and ("Fraunces" not in titulo["fuente"] or "Bold" not in titulo["fuente"] or titulo["pt"] < 30):
+                fallos.append(f"p.{k + 1} {n}: el título debe ir en serif negrita, grande ({titulo['fuente']} {titulo['pt']:.0f} pt)")
+            debajo(g.CONTRA_MAMA_TITULO, g.CONTRA_PARA, "«Para:» va debajo del título")
+            debajo(g.CONTRA_PARA, g.CONTRA_DE, "«De:» va debajo de «Para:»")
+            if re.search(r"Daniela|Longevidad|MenteViva|daninavarro", todo):
+                fallos.append(f"p.{k + 1} {n}: la versión de mamá no lleva carta, firma, QR, logo ni usuario")
         if n == "contratapa" and edicion == "venta":
             lin = list(g.CONTRA_LINEAS)
             debajo(g.CONTRA_TITULO, lin[0], "el título va arriba de todo")
@@ -549,12 +565,11 @@ def verificar_pdf(ruta_pdf, paginas_info, g, edicion="venta", completo=True):
                 debajo(a, b, "los párrafos van en orden, cada uno debajo del anterior")
             debajo(g.CONTRA_CARINO, g.CONTRA_NOMBRE, "la firma va en orden: «Con cariño,», nombre y marca")
             debajo(g.CONTRA_NOMBRE, g.CONTRA_MARCA, "«Longevidad Emocional» va debajo del nombre")
-            debajo(g.CONTRA_MARCA, g.CONTRA_USUARIO, "el usuario va debajo de la firma y del logo")
             titulo = pos(g.CONTRA_TITULO)
             if titulo and ("Fraunces" not in titulo["fuente"] or "Bold" not in titulo["fuente"] or titulo["pt"] < 30):
                 fallos.append(f"p.{k + 1} {n}: el título debe ir en serif negrita, grande ({titulo['fuente']} {titulo['pt']:.0f} pt)")
             for t, pt_esp, color, serif in ((g.CONTRA_CARINO, 20, "#222222", False), (g.CONTRA_NOMBRE, None, "#222222", True),
-                                            (g.CONTRA_MARCA, 18, "#333333", False), (g.CONTRA_USUARIO, 18, "#333333", False)):
+                                            (g.CONTRA_MARCA, 18, "#333333", False)):
                 l = pos(t)
                 if l is None:
                     continue
@@ -569,7 +584,6 @@ def verificar_pdf(ruta_pdf, paginas_info, g, edicion="venta", completo=True):
                 if l and (abs(l["pt"] - 20) > 0.3 or l["color"] != "#222222"):
                     fallos.append(f"p.{k + 1} {n}: el párrafo «{t[:25]}…» debe ir en 20 pt #222")
             # espacio entre párrafos: más que el que hay entre las líneas de un mismo párrafo
-            largo = max(lin, key=len)
             ls = sorted((l for l in lineas if l["y0"] > pos(lin[0])["y0"] - 1 and l["y1"] < (pos(g.CONTRA_CARINO) or {"y0": 1e9})["y0"]),
                         key=lambda l: l["y0"])
             interno = [b["y0"] - a["y1"] for a, b in zip(ls, ls[1:]) if b["y0"] - a["y1"] < 6]
@@ -578,31 +592,93 @@ def verificar_pdf(ruta_pdf, paginas_info, g, edicion="venta", completo=True):
                 fallos.append(f"p.{k + 1} {n}: no hay espacio visible entre todos los párrafos")
             elif interno and min(entre) < max(interno) + 2.0:
                 fallos.append(f"p.{k + 1} {n}: el espacio entre párrafos ({min(entre):.1f} mm) apenas se nota frente al de las líneas ({max(interno):.1f} mm)")
-            if re.search(r"www|http|\.com|\.ar\b", todo, re.IGNORECASE):
-                fallos.append(f"p.{k + 1} {n}: la página 40 no lleva la web")
-            la, lb = pos(g.CONTRA_MARCA), pos(g.CONTRA_USUARIO)
-            if la and lb:
-                hueco = lb["y0"] - la["y1"]
-                logo_alto = info.get("logo_ancho", g.LOGO_ANCHO) * g.LOGO_PROPORCION
-                if hueco < logo_alto + 4:
-                    fallos.append(f"p.{k + 1} {n}: no queda lugar para el logo entre la firma y el usuario ({hueco:.0f} mm, hacen falta {logo_alto + 4:.0f})")
-                if info.get("logo"):
-                    img = _raster(ruta_pdf, k + 1, 100).astype(int)
-                    pxmm = 100 / 25.4
-                    reg = img[int((S + la["y1"] + 2) * pxmm):int((S + lb["y0"] - 2) * pxmm), :]
-                    marca = np.abs(reg - fondo).sum(axis=2) > 30
-                    if not marca.any():
-                        fallos.append(f"p.{k + 1} {n}: el logo no se ve en la página")
+            if re.search(r"MenteViva|QR|escaneá|@", todo):
+                fallos.append(f"p.{k + 1} {n}: el QR, el logo y el usuario van en la página 41, no en la carta")
+            notas.append(f"p.{k + 1}: página 40 (venta): carta y firma, título de {info.get('titulo_pt')} pt")
+        if n == "cierre_qr":
+            debajo(g.QR_TEXTO, g.QR_NOMBRE, "el QR y «MenteViva» van debajo del texto")
+            debajo(g.QR_NOMBRE, g.CONTRA_USUARIO, "el logo y el usuario van debajo de «MenteViva»")
+            for t, pt_esp, color, serif in ((g.QR_TEXTO, 20, "#222222", False), (g.QR_NOMBRE, None, "#222222", True),
+                                            (g.CONTRA_USUARIO, 18, "#333333", False)):
+                l = pos(t)
+                if l is None:
+                    continue
+                if pt_esp and abs(l["pt"] - pt_esp) > 0.3:
+                    fallos.append(f"p.{k + 1} {n}: «{t[:30]}» debe medir {pt_esp} pt (mide {l['pt']:.1f})")
+                if l["color"] != color:
+                    fallos.append(f"p.{k + 1} {n}: «{t[:30]}» debe ir en {color} (va en {l['color']})")
+                if serif and ("Fraunces" not in l["fuente"] or "Bold" not in l["fuente"]):
+                    fallos.append(f"p.{k + 1} {n}: «{t}» debe ir en serif negrita")
+            lt, lm, lu = pos(g.QR_TEXTO), pos(g.QR_NOMBRE), pos(g.CONTRA_USUARIO)
+            lt = dict(lt, y1=max(l["y1"] for l in lineas if l["y1"] < lm["y0"]))          # el texto tiene dos líneas: se cuenta hasta la última
+            img = _raster(ruta_pdf, k + 1, 300).astype(int)
+            pxmm = 300 / 25.4
+            x_ini, x_fin = int(ox * pxmm), int((ox + g.ANCHO) * pxmm)
+            # el QR: lo negro entre el texto y «MenteViva»
+            reg_y0, reg_y1 = int((S + lt["y1"] + 1) * pxmm), int((S + lm["y0"]) * pxmm)
+            reg = img[reg_y0:reg_y1, x_ini:x_fin]
+            negro = reg.max(axis=2) < 110
+            if not negro.any():
+                fallos.append(f"p.{k + 1} {n}: no se ve el código QR entre el texto y «MenteViva»")
+            else:
+                ys, xs = np.nonzero(negro)
+                lado_mm = (xs.max() - xs.min() + 1) / pxmm
+                alto_mm = (ys.max() - ys.min() + 1) / pxmm
+                centro = (xs.max() + xs.min()) / 2 / pxmm
+                arriba = (reg_y0 + ys.min()) / pxmm - S
+                abajo = (reg_y0 + ys.max() + 1) / pxmm - S
+                q = info["qr"]
+                notas.append(f"p.{k + 1}: QR de {lado_mm:.1f} × {alto_mm:.1f} mm, centrado en {centro:.1f} mm (eje {eje:.1f}); "
+                             f"queda a {arriba - lt['y1']:.0f} mm del texto y a {lm['y0'] - abajo:.0f} mm de «MenteViva»")
+                if abs(lado_mm - q["lado"]) > 0.5 or abs(alto_mm - q["lado"]) > 0.5:
+                    fallos.append(f"p.{k + 1} {n}: el QR mide {lado_mm:.1f} × {alto_mm:.1f} mm y debería medir {q['lado']} mm de lado")
+                if min(lado_mm, alto_mm) < 25:
+                    fallos.append(f"p.{k + 1} {n}: el QR mide menos de 25 mm")
+                if abs(centro - eje) > 1.0:
+                    fallos.append(f"p.{k + 1} {n}: el QR no está centrado")
+                # margen blanco puro de 4 mm alrededor, y ningún color adentro
+                m = int(q["margen"] * pxmm) - 2
+                caja = img[reg_y0 + ys.min() - m:reg_y0 + ys.max() + 1 + m, x_ini + xs.min() - m:x_ini + xs.max() + 1 + m]
+                borde = np.ones(caja.shape[:2], bool)
+                borde[m - 6:-(m - 6), m - 6:-(m - 6)] = False                 # sin el borde suave de los módulos (6 px)
+                if (caja[borde].min(axis=1) < 250).any():
+                    fallos.append(f"p.{k + 1} {n}: el margen de {q['margen']} mm alrededor del QR no es blanco")
+                dentro = img[reg_y0 + ys.min():reg_y0 + ys.max() + 1, x_ini + xs.min():x_ini + xs.max() + 1]
+                if int((dentro.max(axis=2) - dentro.min(axis=2) > 12).sum()):
+                    fallos.append(f"p.{k + 1} {n}: hay color dentro del QR (debe ser negro sobre blanco)")
+                if arriba - 4 < lt["y1"] + 0.5 or abajo + 0.5 > lm["y0"]:
+                    fallos.append(f"p.{k + 1} {n}: el QR toca el texto o «MenteViva»")
+                try:
+                    import zxingcpp
+                    pagina_img = np.array(Image.fromarray(img.astype(np.uint8)).convert("L"))
+                    leidos = [r.text for r in zxingcpp.read_barcodes(pagina_img)]
+                    if leidos != [q["url"]]:
+                        fallos.append(f"p.{k + 1} {n}: el QR se lee como {leidos}, debería leerse {q['url']}")
                     else:
-                        xs = np.nonzero(marca.any(axis=0))[0]
-                        ancho_logo = (xs.max() - xs.min() + 1) / pxmm
-                        centro_logo = (xs.max() + xs.min()) / 2 / pxmm - ox
-                        notas.append(f"p.{k + 1}: logo de {ancho_logo:.0f} mm de ancho (pedido: unos 40), centrado en {centro_logo:.1f} mm (eje {eje:.1f})")
-                        if abs(centro_logo - eje) > 2.0:
-                            fallos.append(f"p.{k + 1} {n}: el logo no está centrado")
-                        if abs(ancho_logo - info.get("logo_ancho", g.LOGO_ANCHO)) > 2.0 or ancho_logo > g.LOGO_ANCHO + 1:
-                            fallos.append(f"p.{k + 1} {n}: el logo mide {ancho_logo:.0f} mm y debería medir {info.get('logo_ancho', g.LOGO_ANCHO)}")
-            notas.append(f"p.{k + 1}: página 40 (venta): título {info.get('titulo_pt')} pt, logo de {info.get('logo_ancho')} mm")
+                        notas.append(f"p.{k + 1}: el QR se lee bien y lleva a {leidos[0]}")
+                except ImportError:
+                    notas.append(f"p.{k + 1}: no se pudo leer el QR (falta zxing-cpp); instalalo con pip para probarlo")
+            # el logo: entre «MenteViva» y el usuario
+            hueco = lu["y0"] - lm["y1"]
+            logo_alto = info.get("logo_ancho", g.LOGO_ANCHO) * g.LOGO_PROPORCION
+            if hueco < logo_alto + 4:
+                fallos.append(f"p.{k + 1} {n}: no queda lugar para el logo entre «MenteViva» y el usuario ({hueco:.0f} mm, hacen falta {logo_alto + 4:.0f})")
+            if info.get("logo"):
+                reg = img[int((S + lm["y1"] + 2) * pxmm):int((S + lu["y0"] - 2) * pxmm), x_ini:x_fin]
+                marca = np.abs(reg - fondo).sum(axis=2) > 30
+                if not marca.any():
+                    fallos.append(f"p.{k + 1} {n}: el logo no se ve en la página")
+                else:
+                    xs = np.nonzero(marca.any(axis=0))[0]
+                    ancho_logo = (xs.max() - xs.min() + 1) / pxmm
+                    centro_logo = (xs.max() + xs.min()) / 2 / pxmm
+                    notas.append(f"p.{k + 1}: logo de {ancho_logo:.0f} mm de ancho (pedido: unos 40), centrado en {centro_logo:.1f} mm (eje {eje:.1f})")
+                    if abs(centro_logo - eje) > 2.0:
+                        fallos.append(f"p.{k + 1} {n}: el logo no está centrado")
+                    if abs(ancho_logo - info.get("logo_ancho", g.LOGO_ANCHO)) > 2.0:
+                        fallos.append(f"p.{k + 1} {n}: el logo mide {ancho_logo:.0f} mm y debería medir {info.get('logo_ancho', g.LOGO_ANCHO)}")
+            else:
+                notas.append(f"PENDIENTE p.{k + 1} (venta): falta el logo (assets/logo.svg)")
         if info.get("tamanos"):
             notas.append(f"p.{k + 1}: tamaños de la página de texto (título/cuerpo/preguntas) = {info['tamanos']} pt")
 
@@ -742,7 +818,7 @@ def _comparar_ediciones(ruta_a, ruta_b, esperadas):
             # un cambio de texto da miles de píxeles distintos; el ruido de dibujado (medio píxel) no llega a ninguno
             if ia.shape != ib.shape or int((np.abs(ia - ib) > 25).sum()) > 300:
                 distintas.append(i)
-    return distintas, len(pa) == len(pb)
+    return distintas, len(pa), len(pb)
 
 
 def main():
@@ -844,13 +920,14 @@ def main():
         for f in fallos:
             print("    ✗", f)
         problemas_total += len(fallos)
-    distintas, igual_largo = _comparar_ediciones(str(rutas["venta"]), str(rutas["mama"]), (3, 25, 40))
+    distintas, n_venta, n_mama = _comparar_ediciones(str(rutas["venta"]), str(rutas["mama"]), (3, 25, 40))
     errores = []
-    if not igual_largo:
-        errores.append("las ediciones tienen distinta cantidad de páginas")
+    if (n_venta, n_mama) != (42, 40):
+        errores.append(f"se esperaban 42 páginas (venta: con el QR en la 41 y la 42 en blanco) y 40 (mamá); hay {n_venta} y {n_mama}")
     if distintas != [3, 25, 40]:
-        errores.append(f"las ediciones tienen que diferir solo en las páginas 3 (De:/firma), 25 (Garganta) y 40; difieren en {distintas}")
-    print(f"  ediciones comparadas página por página: difieren en {distintas}" + (" (dedicatoria, Garganta y página 40, como se pidió)" if not errores else ""))
+        errores.append(f"las ediciones tienen que diferir solo en las páginas 3 (De:/firma), 25 (Garganta) y 40 (las páginas 41 y 42 son solo de la edición para vender); difieren en {distintas}")
+    print(f"  ediciones comparadas página por página (las {min(n_venta, n_mama)} primeras): difieren en {distintas}"
+          + (f" (dedicatoria, Garganta y página 40, como se pidió); venta {n_venta} páginas, mamá {n_mama}" if not errores else ""))
     for e in errores:
         print("    ✗", e)
     problemas_total += len(errores)

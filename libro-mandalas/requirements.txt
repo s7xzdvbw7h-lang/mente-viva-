@@ -7,6 +7,8 @@ pillow>=12.3
 numpy>=2.4
 scipy>=1.17
 pdfminer.six>=20260107  # lee el texto del PDF para los controles de calidad
+segno>=1.6            # dibuja el código QR de la página 41 (codigo_qr.py)
+zxing-cpp>=2.2        # lee el QR del PDF para comprobar que lleva a la dirección correcta (solo en verificar.py)
 
 # Además hace falta poppler (programas pdftoppm y pdffonts):
 #   Debian/Ubuntu: sudo apt install poppler-utils      Mac: brew install poppler

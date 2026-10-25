@@ -16,7 +16,7 @@ Salen dos PDF, iguales salvo las páginas 3, 25 y 40 (y la edición para vender 
 - `libro-chakras-venta.pdf`: **edición para vender**. Dedicatoria con una línea "De: ______" para que escriba su nombre
   quien regala; Garganta pregunta "¿Qué consejo le darías a alguien que querés mucho?"; la página 40 lleva "Antes de
   cerrar este libro…", el mensaje de Daniela y su firma ("Con cariño, Daniela Navarro, Longevidad Emocional"); la
-  página 41 lleva el QR, "MenteViva", el logo y `@daninavarrocoach` (sin la web escrita); la 42 queda en blanco.
+  página 41 lleva el QR, "MenteViva", el isotipo y `@daninavarro.bienestar` (sin la web escrita); la 42 queda en blanco.
   **42 páginas (21 hojas).**
 - `libro-chakras-mama.pdf`: la edición de Dani. Dedicatoria firmada "Dani"; Garganta pregunta "¿Qué consejo le darías a tu
   nieto?"; la página 40 lleva "Para que te regales un ratito.", "Para:", "De:" y cinco renglones para una dedicatoria a
@@ -25,14 +25,15 @@ Salen dos PDF, iguales salvo las páginas 3, 25 y 40 (y la edición para vender 
 **El QR** de la página 41 lleva a `https://menteviva.daninavarro.com.ar` (`QR_URL` en `generar_libro.py`; no hubo acceso para
 comprobar que la dirección responda). Se dibuja en vector con `codigo_qr.py` (módulos de 28 mm de lado y 4 mm de blanco
 alrededor, negro sobre blanco, nivel de corrección Q) y `verificar.py` lo lee del PDF para confirmar que lleva a esa dirección.
-La dirección no se escribe en el libro. La carta y la firma ocupan toda la página 40, por eso el QR, el logo y el usuario
+La dirección no se escribe en el libro. La carta y la firma ocupan toda la página 40, por eso el QR, el isotipo y el usuario
 pasaron a la 41 y se agregó la 42 en blanco para que el total sea par.
 
-**El logo** de la página 41 (edición para vender) es `assets/logo.svg`: la versión "logo cacao" (isotipo con "Daniela Navarro",
-marrón sobre crema), sin el fondo ni el recorte vacío del archivo original para que quede centrado. Se coloca solo, de 40 mm
-de ancho, entre "MenteViva" y el usuario. Los cinco archivos originales están en `assets/originales/` (isotipo cacao,
-champán y color, logo cacao y logo reverso): para usar otro, copialo como `assets/logo.svg` (recortando el fondo igual) y
-volvé a correr `python3 generar_libro.py`. `ruta_logo()` busca cualquier `assets/logo.*` (svg, png, jpg).
+**El isotipo** de la página 41 (edición para vender) es `assets/isotipo.svg`: el corazón de manos con brote en su versión a
+color (`isotipo-color` de la marca: #8E4E52, #E4D3CD y #C2A878), sin fondo ni recuadro y sin tocar los colores, de 25 mm de
+ancho y centrado, con 8 mm de aire arriba y abajo, y debajo `@daninavarro.bienestar` en 18 pt #333. Se usó el SVG de la marca
+(vectorial, como indica el manual) en lugar del PNG `color-transparente-isotipo.png`, que está en la computadora de Daniela y no se ve desde
+este entorno. Los cinco archivos que llegaron están en `assets/originales/`; para usar otro isotipo, copialo como
+`assets/isotipo.svg` (o `.png`) y volvé a correr `python3 generar_libro.py`. `ruta_logo()` busca cualquier `assets/isotipo.*`.
 
 También salen un PNG por página en `preview/`, los pliegos (página izquierda + derecha) en `preview/pliegos/`, cada
 mandala en `svg/` y cada ejemplo pintado en `ejemplos/`.
@@ -60,7 +61,7 @@ número de página, así el marcador no traspasa.
 | 36 · 37 | Hoja en blanco · Un momento para compartir |
 | 38 · 39 | Hoja en blanco · Gracias por regalarte este rato |
 | 40 | Carta de Daniela con su firma (venta) / "Para que te regales un ratito.", Para–De y dedicatoria a mano (mamá) |
-| 41 · 42 | Solo en la edición para vender: QR, "MenteViva", logo y usuario · hoja en blanco (sin nota ni número) |
+| 41 · 42 | Solo en la edición para vender: QR, "MenteViva", isotipo y usuario · hoja en blanco (sin nota ni número) |
 
 Cada chakra tiene su propia forma (en `mandalas.py`): Raíz 4 pétalos, cuadrado con círculo central y 4 rombos grandes;
 Sacro 6 pétalos, 6 gotas grandes y luna; Plexo solar 8 pétalos anchos con 8 zonas grandes entre ellos y triángulo central;
@@ -116,7 +117,7 @@ cuerpo (nunca por debajo de 18 pt); el tamaño elegido de cada página de texto 
 - Las dos ediciones, comparadas página por página: solo difieren las páginas 3, 25 y 40 (la venta tiene 42 páginas y la de mamá 40; las dos pares).
 - Página 40 (venta): textos, orden, tamaños, colores, espacio entre párrafos y que no figure la web.
 - Página 41 (venta): el QR mide 28 mm (nunca menos de 25), está centrado, tiene 4 mm de blanco alrededor, es negro sin
-  colores y se lee como `https://menteviva.daninavarro.com.ar`; el logo se ve y está centrado (si faltara el archivo, lo
+  colores y se lee como `https://menteviva.daninavarro.com.ar`; el isotipo mide 25 mm, está centrado, con aire alrededor, sin fondo ni recuadro y con los tres colores de la marca (si faltara el archivo, lo
   avisa como PENDIENTE). Página 42: completamente en blanco, sin nota.
 
 ## Tipografías

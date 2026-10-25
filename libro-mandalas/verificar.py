@@ -658,27 +658,44 @@ def verificar_pdf(ruta_pdf, paginas_info, g, edicion="venta", completo=True):
                         notas.append(f"p.{k + 1}: el QR se lee bien y lleva a {leidos[0]}")
                 except ImportError:
                     notas.append(f"p.{k + 1}: no se pudo leer el QR (falta zxing-cpp); instalalo con pip para probarlo")
-            # el logo: entre «MenteViva» y el usuario
+            # el isotipo: entre «MenteViva» y el usuario, con aire alrededor, sin fondo y con sus colores
             hueco = lu["y0"] - lm["y1"]
             logo_alto = info.get("logo_ancho", g.LOGO_ANCHO) * g.LOGO_PROPORCION
-            if hueco < logo_alto + 4:
-                fallos.append(f"p.{k + 1} {n}: no queda lugar para el logo entre «MenteViva» y el usuario ({hueco:.0f} mm, hacen falta {logo_alto + 4:.0f})")
+            if hueco < logo_alto + 2 * 4:
+                fallos.append(f"p.{k + 1} {n}: no queda aire para el isotipo entre «MenteViva» y el usuario ({hueco:.0f} mm, hacen falta {logo_alto + 8:.0f})")
             if info.get("logo"):
-                reg = img[int((S + lm["y1"] + 2) * pxmm):int((S + lu["y0"] - 2) * pxmm), x_ini:x_fin]
+                reg = img[int((S + lm["y1"] + 1) * pxmm):int((S + lu["y0"] - 1) * pxmm), x_ini:x_fin]
                 marca = np.abs(reg - fondo).sum(axis=2) > 30
                 if not marca.any():
-                    fallos.append(f"p.{k + 1} {n}: el logo no se ve en la página")
+                    fallos.append(f"p.{k + 1} {n}: el isotipo no se ve en la página")
                 else:
-                    xs = np.nonzero(marca.any(axis=0))[0]
-                    ancho_logo = (xs.max() - xs.min() + 1) / pxmm
-                    centro_logo = (xs.max() + xs.min()) / 2 / pxmm
-                    notas.append(f"p.{k + 1}: logo de {ancho_logo:.0f} mm de ancho (pedido: unos 40), centrado en {centro_logo:.1f} mm (eje {eje:.1f})")
-                    if abs(centro_logo - eje) > 2.0:
-                        fallos.append(f"p.{k + 1} {n}: el logo no está centrado")
-                    if abs(ancho_logo - info.get("logo_ancho", g.LOGO_ANCHO)) > 2.0:
-                        fallos.append(f"p.{k + 1} {n}: el logo mide {ancho_logo:.0f} mm y debería medir {info.get('logo_ancho', g.LOGO_ANCHO)}")
+                    ys_l, xs_l = np.nonzero(marca)
+                    ancho_logo = (xs_l.max() - xs_l.min() + 1) / pxmm
+                    centro_logo = (xs_l.max() + xs_l.min()) / 2 / pxmm
+                    arriba_l = (int((S + lm["y1"] + 1) * pxmm) + ys_l.min()) / pxmm - S
+                    abajo_l = (int((S + lm["y1"] + 1) * pxmm) + ys_l.max() + 1) / pxmm - S
+                    notas.append(f"p.{k + 1}: isotipo de {ancho_logo:.1f} mm de ancho (pedido: 25), centrado en {centro_logo:.1f} mm (eje {eje:.1f}); "
+                                 f"aire: {arriba_l - lm['y1']:.0f} mm arriba y {lu['y0'] - abajo_l:.0f} mm abajo")
+                    if abs(centro_logo - eje) > 1.0:
+                        fallos.append(f"p.{k + 1} {n}: el isotipo no está centrado")
+                    if abs(ancho_logo - info.get("logo_ancho", g.LOGO_ANCHO)) > 1.0:
+                        fallos.append(f"p.{k + 1} {n}: el isotipo mide {ancho_logo:.1f} mm y debería medir {info.get('logo_ancho', g.LOGO_ANCHO)}")
+                    if arriba_l - lm["y1"] < 4 or lu["y0"] - abajo_l < 4:
+                        fallos.append(f"p.{k + 1} {n}: el isotipo no tiene aire alrededor (menos de 4 mm)")
+                    # colores intactos: solo los tres de la marca, sin recuadro ni fondo
+                    pix = reg[marca]
+                    marca_cols = [HEX(h) for h in ("#8E4E52", "#C2A878", "#E4D3CD")]
+                    cerca = np.zeros(len(pix), bool)
+                    for c in marca_cols:
+                        cerca |= np.abs(pix - c).sum(axis=1) < 24
+                    notas.append(f"p.{k + 1}: el {100 * cerca.mean():.0f} % de los píxeles del isotipo son de sus tres colores (el resto son bordes suaves)")
+                    if cerca.mean() < 0.9:
+                        fallos.append(f"p.{k + 1} {n}: los colores del isotipo no son los de la marca (#8E4E52, #C2A878, #E4D3CD)")
+                    fondo_logo = reg[:3, :].reshape(-1, 3)
+                    if (np.abs(fondo_logo - fondo).sum(axis=1) > 6).any():
+                        fallos.append(f"p.{k + 1} {n}: el isotipo tiene un recuadro o fondo")
             else:
-                notas.append(f"PENDIENTE p.{k + 1} (venta): falta el logo (assets/logo.svg)")
+                notas.append(f"PENDIENTE p.{k + 1} (venta): falta el isotipo (assets/isotipo.svg)")
         if info.get("tamanos"):
             notas.append(f"p.{k + 1}: tamaños de la página de texto (título/cuerpo/preguntas) = {info['tamanos']} pt")
 

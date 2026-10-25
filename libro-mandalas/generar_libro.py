@@ -86,7 +86,7 @@ CIERRE_AYUDA = "Puede ser una palabra, un color o un dibujo."
 CIERRE_FECHA = "Fecha:"
 CIERRE_NOTA = "Podés volver a leer esta página cuando quieras recordar cómo te sentiste."
 
-# Página 40. Edición para vender: mensaje de la autora, firma, logo y usuario (sin la web). Edición para mamá: "Para:", "De:" y renglones.
+# Página 40. Edición para vender: mensaje de la autora y firma (sin la web). Edición para mamá: "Para:", "De:" y renglones.
 CONTRA_TITULO = "Antes de cerrar este libro…"
 CONTRA_LINEAS = [
     "Hola, soy Daniela.",
@@ -99,10 +99,10 @@ CONTRA_LINEAS = [
 CONTRA_CARINO = "Con cariño,"
 CONTRA_NOMBRE = "Daniela Navarro"
 CONTRA_MARCA = "Longevidad Emocional"
-CONTRA_USUARIO = "@daninavarrocoach"
+CONTRA_USUARIO = "@daninavarro.bienestar"
 CONTRA_PARA, CONTRA_DE = "Para:", "De:"
 CONTRA_MAMA_TITULO = "Para que te regales un ratito."
-# Página 41 (solo para vender): el QR, el logo y el usuario van en su propia página porque con la carta no entran
+# Página 41 (solo para vender): el QR, el isotipo y el usuario van en su propia página porque con la carta no entran
 QR_TEXTO = "Si querés seguir cuidando tu mente, escaneá este código con la cámara de tu celular."
 QR_URL = "https://menteviva.daninavarro.com.ar"      # va dentro del QR; la dirección no se escribe en el libro
 QR_NOMBRE = "MenteViva"
@@ -784,13 +784,14 @@ def pagina_cierre(n):
 
 
 def ruta_logo():
-    """El logo de la autora, si está en libro-mandalas/assets/ (logo.png, logo.svg, logo.jpg...)."""
+    """El isotipo de la autora (corazón de manos con brote), si está en libro-mandalas/assets/ (isotipo.svg, .png...)."""
     carpeta = AQUI / "assets"
-    return next(iter(sorted(carpeta.glob("logo.*"))), None) if carpeta.exists() else None
+    return next(iter(sorted(carpeta.glob("isotipo.*"))), None) if carpeta.exists() else None
 
 
-LOGO_ANCHO = 40                  # ancho del logo (mm)
-LOGO_PROPORCION = 1077 / 2112    # alto / ancho del logo (assets/logo.svg)
+LOGO_ANCHO = 25                  # ancho del isotipo (mm); va sin fondo ni recuadro y con sus colores originales
+LOGO_PROPORCION = 717 / 731      # alto / ancho del isotipo (assets/isotipo.svg)
+LOGO_AIRE = 8                    # mm de aire arriba y abajo del isotipo
 # (tamaño del título en pt, espacio entre párrafos en mm): de lo más cómodo a lo más ajustado. El texto nunca baja de 20 pt.
 OPCIONES_CONTRA = [(36, 6), (36, 5), (36, 4), (36, 3.5), (34, 3)]
 
@@ -849,11 +850,11 @@ def pagina_contratapa(edicion="venta"):
 
 
 QR_ARCHIVO = "svg/qr_menteviva.svg"
-QR_TOP = 62      # mm desde arriba del corte: el bloque (texto, QR, nombre, logo y usuario) queda al medio de la página
+QR_TOP = 68      # mm desde arriba del corte: el bloque (texto, QR, nombre, logo y usuario) queda al medio de la página
 
 
 def pagina_qr():
-    """Página 41 (solo para vender, a la derecha): texto, QR de 28 mm, "MenteViva", logo de 40 mm y usuario, todo centrado."""
+    """Página 41 (solo para vender, a la derecha): texto, QR de 28 mm, "MenteViva", isotipo de 25 mm y usuario, todo centrado."""
     logo = ruta_logo()
     if logo:
         img = f'<img src="{logo.as_uri()}" style="width:{LOGO_ANCHO}mm; margin:0 auto">'
@@ -865,8 +866,8 @@ def pagina_qr():
     <p>{partir(QR_TEXTO, "cuerpo", 20, ANCHO_UTIL)}</p>
     <div style="margin-top:6mm">{_svg_img(QR_ARCHIVO, mm).replace('style="', 'style="margin:0 auto; ')}</div>
     <p class="nombre" style="margin-top:3mm">{esc(QR_NOMBRE)}</p>
-    <div style="margin-top:12mm">{img}</div>
-    <p class="usuario" style="margin-top:4mm">{esc(CONTRA_USUARIO)}</p>
+    <div style="margin-top:{LOGO_AIRE + 4}mm">{img}</div>
+    <p class="usuario" style="margin-top:{LOGO_AIRE}mm">{esc(CONTRA_USUARIO)}</p>
   </div>
 """, "D")
 
@@ -978,7 +979,7 @@ def construir():
     for viejo in ("libro_mandalas_chakras.pdf", "libro_para_mama.pdf"):          # nombres anteriores
         (AQUI / viejo).unlink(missing_ok=True)
     if ruta_logo() is None:
-        print("AVISO: falta el logo de la página 40 (edición para vender): ponelo en libro-mandalas/assets/logo.png")
+        print("AVISO: falta el isotipo de la página 41 (edición para vender): ponelo en libro-mandalas/assets/isotipo.svg")
     from weasyprint import HTML
     from pypdf import PdfReader, PdfWriter
     from pypdf.generic import RectangleObject

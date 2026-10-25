@@ -14,14 +14,16 @@ referencia: la paleta sugerida y, enfrente de cada mandala, una página "Así po
 Salen dos PDF, iguales salvo tres páginas:
 
 - `libro-chakras-venta.pdf`: **edición para vender**. Dedicatoria con una línea "De: ______" para que escriba su nombre
-  quien regala; Garganta pregunta "¿Qué consejo le darías a alguien que querés mucho?"; la página 40 lleva el mensaje de
-  Daniela, el logo y `@daninavarrocoach`.
+  quien regala; Garganta pregunta "¿Qué consejo le darías a alguien que querés mucho?"; la página 40 lleva "Antes de
+  cerrar este libro…", el mensaje de Daniela, la firma ("Con cariño, Daniela Navarro, Longevidad Emocional"), el logo y
+  `@daninavarrocoach` (sin la web).
 - `libro-chakras-mama.pdf`: la edición de Dani. Dedicatoria firmada "Dani"; Garganta pregunta "¿Qué consejo le darías a tu
   nieto?"; la página 40 lleva "Para:" y "De:" y cinco renglones para una dedicatoria a mano (sin logo).
 
 **El logo** de la página 40 (edición para vender) es `assets/logo.svg`: la versión "logo cacao" (isotipo con "Daniela Navarro",
-marrón sobre crema), sin el fondo ni el recorte vacío del archivo original para que quede centrado. Se coloca solo, de 50 mm
-de ancho, entre el mensaje y el usuario. Los cinco archivos originales están en `assets/originales/` (isotipo cacao,
+marrón sobre crema), sin el fondo ni el recorte vacío del archivo original para que quede centrado. Se coloca solo, de 40 mm
+de ancho, entre la firma y el usuario. Si el mensaje no entra, `distribucion_contra()` achica primero los espacios y el logo
+(nunca el texto, que es de 20 pt y de 18 pt la firma y el usuario); hoy entra con el logo entero. Los cinco archivos originales están en `assets/originales/` (isotipo cacao,
 champán y color, logo cacao y logo reverso): para usar otro, copialo como `assets/logo.svg` (recortando el fondo igual) y
 volvé a correr `python3 generar_libro.py`. `ruta_logo()` busca cualquier `assets/logo.*` (svg, png, jpg).
 
@@ -49,7 +51,7 @@ número de página, así el marcador no traspasa.
 | 34 · 35 | Todos juntos: pintado · para pintar (leyenda de 8 colores en las dos) |
 | 36 · 37 | Hoja en blanco · Un momento para compartir |
 | 38 · 39 | Hoja en blanco · Gracias por regalarte este rato |
-| 40 | Mensaje de Daniela + logo (venta) / Para–De y dedicatoria a mano (mamá) |
+| 40 | Mensaje de Daniela, firma, logo y usuario (venta) / Para–De y dedicatoria a mano (mamá) |
 
 Cada chakra tiene su propia forma (en `mandalas.py`): Raíz 4 pétalos, cuadrado con círculo central y 4 rombos grandes;
 Sacro 6 pétalos, 6 gotas grandes y luna; Plexo solar 8 pétalos anchos con 8 zonas grandes entre ellos y triángulo central;

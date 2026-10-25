@@ -233,7 +233,8 @@ def _esperado_en_pagina(info, g, edicion):
         return ([g.CIERRE_TITULO] + [l.rstrip(",") for l in g.FRASE_FINAL]
                 + [g.CIERRE_SENTI, g.CIERRE_AYUDA, g.CIERRE_FECHA, g.CIERRE_NOTA])
     if nombre == "contratapa":
-        return ([g.CONTRA_PARA, g.CONTRA_DE] if edicion == "mama" else list(g.CONTRA_LINEAS) + [g.CONTRA_USUARIO])
+        return ([g.CONTRA_PARA, g.CONTRA_DE] if edicion == "mama" else
+                [g.CONTRA_TITULO] + list(g.CONTRA_LINEAS) + [g.CONTRA_CARINO, g.CONTRA_NOMBRE, g.CONTRA_MARCA, g.CONTRA_USUARIO])
     return []
 
 
@@ -543,14 +544,48 @@ def verificar_pdf(ruta_pdf, paginas_info, g, edicion="venta", completo=True):
             debajo(g.CIERRE_FECHA, g.CIERRE_NOTA, "la nota final va debajo de la fecha")
         if n == "contratapa" and edicion == "venta":
             lin = list(g.CONTRA_LINEAS)
-            for a, b in zip(lin, lin[1:]):
-                debajo(a, b, "una idea por línea, en orden")
-            debajo(lin[-1], g.CONTRA_USUARIO, "el usuario va debajo del mensaje y del logo")
-            la, lb = pos(lin[-1]), pos(g.CONTRA_USUARIO)
+            debajo(g.CONTRA_TITULO, lin[0], "el título va arriba de todo")
+            for a, b in zip(lin, lin[1:] + [g.CONTRA_CARINO]):
+                debajo(a, b, "los párrafos van en orden, cada uno debajo del anterior")
+            debajo(g.CONTRA_CARINO, g.CONTRA_NOMBRE, "la firma va en orden: «Con cariño,», nombre y marca")
+            debajo(g.CONTRA_NOMBRE, g.CONTRA_MARCA, "«Longevidad Emocional» va debajo del nombre")
+            debajo(g.CONTRA_MARCA, g.CONTRA_USUARIO, "el usuario va debajo de la firma y del logo")
+            titulo = pos(g.CONTRA_TITULO)
+            if titulo and ("Fraunces" not in titulo["fuente"] or "Bold" not in titulo["fuente"] or titulo["pt"] < 30):
+                fallos.append(f"p.{k + 1} {n}: el título debe ir en serif negrita, grande ({titulo['fuente']} {titulo['pt']:.0f} pt)")
+            for t, pt_esp, color, serif in ((g.CONTRA_CARINO, 20, "#222222", False), (g.CONTRA_NOMBRE, None, "#222222", True),
+                                            (g.CONTRA_MARCA, 18, "#333333", False), (g.CONTRA_USUARIO, 18, "#333333", False)):
+                l = pos(t)
+                if l is None:
+                    continue
+                if pt_esp and abs(l["pt"] - pt_esp) > 0.3:
+                    fallos.append(f"p.{k + 1} {n}: «{t}» debe medir {pt_esp} pt (mide {l['pt']:.1f})")
+                if l["color"] != color:
+                    fallos.append(f"p.{k + 1} {n}: «{t}» debe ir en {color} (va en {l['color']})")
+                if serif and ("Fraunces" not in l["fuente"] or "Bold" not in l["fuente"]):
+                    fallos.append(f"p.{k + 1} {n}: «{t}» debe ir en serif negrita")
+            for t in lin:
+                l = pos(t)
+                if l and (abs(l["pt"] - 20) > 0.3 or l["color"] != "#222222"):
+                    fallos.append(f"p.{k + 1} {n}: el párrafo «{t[:25]}…» debe ir en 20 pt #222")
+            # espacio entre párrafos: más que el que hay entre las líneas de un mismo párrafo
+            largo = max(lin, key=len)
+            ls = sorted((l for l in lineas if l["y0"] > pos(lin[0])["y0"] - 1 and l["y1"] < (pos(g.CONTRA_CARINO) or {"y0": 1e9})["y0"]),
+                        key=lambda l: l["y0"])
+            interno = [b["y0"] - a["y1"] for a, b in zip(ls, ls[1:]) if b["y0"] - a["y1"] < 6]
+            entre = [b["y0"] - a["y1"] for a, b in zip(ls, ls[1:]) if b["y0"] - a["y1"] >= 6]
+            if len(entre) < len(lin) - 1:
+                fallos.append(f"p.{k + 1} {n}: no hay espacio visible entre todos los párrafos")
+            elif interno and min(entre) < max(interno) + 2.0:
+                fallos.append(f"p.{k + 1} {n}: el espacio entre párrafos ({min(entre):.1f} mm) apenas se nota frente al de las líneas ({max(interno):.1f} mm)")
+            if re.search(r"www|http|\.com|\.ar\b", todo, re.IGNORECASE):
+                fallos.append(f"p.{k + 1} {n}: la página 40 no lleva la web")
+            la, lb = pos(g.CONTRA_MARCA), pos(g.CONTRA_USUARIO)
             if la and lb:
                 hueco = lb["y0"] - la["y1"]
-                if hueco < g.LOGO_ANCHO * 0.35 + 6:
-                    fallos.append(f"p.{k + 1} {n}: no queda lugar para el logo entre el mensaje y el usuario ({hueco:.0f} mm)")
+                logo_alto = info.get("logo_ancho", g.LOGO_ANCHO) * g.LOGO_PROPORCION
+                if hueco < logo_alto + 4:
+                    fallos.append(f"p.{k + 1} {n}: no queda lugar para el logo entre la firma y el usuario ({hueco:.0f} mm, hacen falta {logo_alto + 4:.0f})")
                 if info.get("logo"):
                     img = _raster(ruta_pdf, k + 1, 100).astype(int)
                     pxmm = 100 / 25.4
@@ -562,9 +597,12 @@ def verificar_pdf(ruta_pdf, paginas_info, g, edicion="venta", completo=True):
                         xs = np.nonzero(marca.any(axis=0))[0]
                         ancho_logo = (xs.max() - xs.min() + 1) / pxmm
                         centro_logo = (xs.max() + xs.min()) / 2 / pxmm - ox
-                        notas.append(f"p.{k + 1}: logo de {ancho_logo:.0f} mm de ancho, centrado en {centro_logo:.1f} mm (eje {eje:.1f})")
+                        notas.append(f"p.{k + 1}: logo de {ancho_logo:.0f} mm de ancho (pedido: unos 40), centrado en {centro_logo:.1f} mm (eje {eje:.1f})")
                         if abs(centro_logo - eje) > 2.0:
                             fallos.append(f"p.{k + 1} {n}: el logo no está centrado")
+                        if abs(ancho_logo - info.get("logo_ancho", g.LOGO_ANCHO)) > 2.0 or ancho_logo > g.LOGO_ANCHO + 1:
+                            fallos.append(f"p.{k + 1} {n}: el logo mide {ancho_logo:.0f} mm y debería medir {info.get('logo_ancho', g.LOGO_ANCHO)}")
+            notas.append(f"p.{k + 1}: página 40 (venta): título {info.get('titulo_pt')} pt, logo de {info.get('logo_ancho')} mm")
         if info.get("tamanos"):
             notas.append(f"p.{k + 1}: tamaños de la página de texto (título/cuerpo/preguntas) = {info['tamanos']} pt")
 

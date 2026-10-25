@@ -86,13 +86,19 @@ CIERRE_AYUDA = "Puede ser una palabra, un color o un dibujo."
 CIERRE_FECHA = "Fecha:"
 CIERRE_NOTA = "Podés volver a leer esta página cuando quieras recordar cómo te sentiste."
 
-# Página 40. Edición para vender: mensaje de la autora y logo. Edición para mamá: "Para:", "De:" y renglones.
+# Página 40. Edición para vender: mensaje de la autora, firma, logo y usuario (sin la web). Edición para mamá: "Para:", "De:" y renglones.
+CONTRA_TITULO = "Antes de cerrar este libro…"
 CONTRA_LINEAS = [
     "Hola, soy Daniela.",
-    "Hace más de diez años acompaño a personas a cuidar su bienestar emocional.",
-    "Hice este libro para que tengas un momento tranquilo, solo para vos.",
-    "Si te hizo bien, compartilo con alguien que quieras.",
+    "Desde 2012 acompaño a personas a cuidar su bienestar emocional.",
+    "Hice este libro para que tengas un momento de calma, un espacio solo tuyo para respirar y tratarte con un poquito más de amor.",
+    "No tenés que tener todas las respuestas ni poder con todo. A veces, el primer paso es darte permiso para parar y escucharte.",
+    "Vos también merecés el cuidado y el cariño que tantas veces das a los demás.",
+    "Si este libro te hizo bien, compartilo con alguien que quieras.",
 ]
+CONTRA_CARINO = "Con cariño,"
+CONTRA_NOMBRE = "Daniela Navarro"
+CONTRA_MARCA = "Longevidad Emocional"
 CONTRA_USUARIO = "@daninavarrocoach"
 CONTRA_PARA, CONTRA_DE = "Para:", "De:"
 
@@ -394,8 +400,10 @@ img {{ display: block; }}
 
 /* página 40 */
 .contra {{ text-align: center; }}
+.contra h1 {{ line-height: 1.15; }}
 .contra p {{ font-size: 20pt; line-height: 1.5; color: {TINTA}; }}
-.contra .sep {{ height: 5mm; }}
+.contra .nombre {{ font-family: 'Fraunces', serif; font-weight: 700; font-size: 26pt; line-height: 1.25; }}
+.contra .marca {{ font-size: 18pt; color: {TINTA_CHICA}; }}
 .contra .usuario {{ font-size: 18pt; color: {TINTA_CHICA}; }}
 .para-de {{ display: flex; align-items: flex-end; font-family: 'Fraunces', serif; font-weight: 700; font-size: 26pt; line-height: 1.2; margin-bottom: 8mm; }}
 .para-de .linea {{ flex: 1; height: 11mm; margin-left: 5mm; border-bottom: 1.5px solid {COLOR_RENGLON}; }}
@@ -774,11 +782,34 @@ def ruta_logo():
     return next(iter(sorted(carpeta.glob("logo.*"))), None) if carpeta.exists() else None
 
 
-LOGO_ANCHO = 50
+LOGO_ANCHO = 40                  # ancho máximo del logo (mm); si la página no alcanza se achica el logo y los espacios, nunca el texto
+LOGO_PROPORCION = 1077 / 2112    # alto / ancho del logo (assets/logo.svg)
+# (tamaño del título en pt, espacio entre párrafos, ancho del logo): de lo más cómodo a lo más ajustado
+OPCIONES_CONTRA = [(36, 6, 40), (36, 5, 40), (36, 4, 40), (36, 3.5, 40), (36, 3.5, 36), (34, 3, 32), (32, 3, 28)]
+
+
+def _alto_contra(pt_t, gap, logo):
+    """Alto aproximado (mm) de la página 40 de la edición para vender, con los mismos tamaños que el CSS."""
+    h = pt_t * _MM * 1.15 + 6
+    h += sum(_n_lineas(t, "cuerpo", 20) * 20 * _MM * 1.5 for t in CONTRA_LINEAS) + gap * (len(CONTRA_LINEAS) - 1)
+    h += gap + 2 + 20 * _MM * 1.5 + 26 * _MM * 1.25 + 18 * _MM * 1.5          # firma
+    h += 7 + logo * LOGO_PROPORCION + 4 + 18 * _MM * 1.5                      # logo y usuario
+    return h - 2.4                                                            # medido en el PDF: el estimador sobrestima unos 2,4 mm
+
+
+def distribucion_contra():
+    """Elige la primera opción que entra en la página: devuelve (pt del título, espacio entre párrafos, ancho del logo, top)."""
+    libre = ALTO - MARGEN_INF - MARGEN_SUP
+    for pt_t, gap, logo in OPCIONES_CONTRA:
+        h = _alto_contra(pt_t, gap, logo)
+        if h <= libre - 1.5:                                                    # 1,5 mm de aire contra el margen de abajo
+            return pt_t, gap, logo, MARGEN_SUP + min((libre - h) / 2, 8)
+    pt_t, gap, logo = OPCIONES_CONTRA[-1]
+    return pt_t, gap, logo, MARGEN_SUP
 
 
 def pagina_contratapa(edicion="venta"):
-    """Página 40. Para vender: mensaje de la autora, logo y usuario. Para mamá: "Para:", "De:" y renglones para la dedicatoria."""
+    """Página 40. Para vender: mensaje de la autora, firma, logo y usuario. Para mamá: "Para:", "De:" y renglones para la dedicatoria."""
     if edicion == "mama":
         renglones = '<div class="renglon"></div>' * 5
         return pagina(f"""
@@ -788,17 +819,22 @@ def pagina_contratapa(edicion="venta"):
     <div style="margin-top:12mm">{renglones}</div>
   </div>
 """, "I")
+    pt_t, gap, logo_mm, top = distribucion_contra()
     logo = ruta_logo()
     if logo:
-        img = f'<img src="{logo.as_uri()}" style="width:{LOGO_ANCHO}mm; margin:0 auto">'
+        img = f'<img src="{logo.as_uri()}" style="width:{logo_mm}mm; margin:0 auto">'
     else:
-        img = f'<div style="height:{LOGO_ANCHO * 0.6}mm"></div>'          # hueco reservado: falta el archivo del logo
-    parrafos = '<div class="sep"></div>'.join(f"<p>{partir(t, 'cuerpo', 20, ANCHO_UTIL)}</p>" for t in CONTRA_LINEAS)
+        img = f'<div style="height:{logo_mm * LOGO_PROPORCION}mm"></div>'          # hueco reservado: falta el archivo del logo
+    parrafos = "".join(f'<p style="margin-bottom:{gap}mm">{partir(t, "cuerpo", 20, ANCHO_UTIL)}</p>' for t in CONTRA_LINEAS)
     return pagina(f"""
-  <div class="caja contra" style="top:52mm">
+  <div class="caja contra" style="top:{top}mm">
+    <h1 style="font-size:{pt_t}pt; margin-bottom:6mm">{esc(CONTRA_TITULO)}</h1>
     {parrafos}
-    <div style="margin-top:12mm">{img}</div>
-    <p class="usuario" style="margin-top:5mm">{esc(CONTRA_USUARIO)}</p>
+    <p style="margin-top:2mm">{esc(CONTRA_CARINO)}</p>
+    <p class="nombre">{esc(CONTRA_NOMBRE)}</p>
+    <p class="marca">{esc(CONTRA_MARCA)}</p>
+    <div style="margin-top:7mm">{img}</div>
+    <p class="usuario" style="margin-top:4mm">{esc(CONTRA_USUARIO)}</p>
   </div>
 """, "I")
 
@@ -856,7 +892,7 @@ def armar_secuencia(edicion="venta"):
     add("cierre", "D", pagina_cierre(n()), numero=n(), afirmacion=FRASE_FINAL, renglones=3, lineas_cortas=1)
     if edicion == "venta":
         add("contratapa", "I", pagina_contratapa(edicion), numero=None, edicion=edicion, centrado=True,
-            logo=ruta_logo() is not None)
+            logo=ruta_logo() is not None, logo_ancho=distribucion_contra()[2], titulo_pt=distribucion_contra()[0])
     else:
         add("contratapa", "I", pagina_contratapa(edicion), numero=None, edicion=edicion, renglones=5, lineas_cortas=2)
     for k, p in enumerate(seq):                              # impar = derecha, par = izquierda

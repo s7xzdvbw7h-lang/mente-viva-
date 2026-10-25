@@ -31,7 +31,7 @@ No hubo acceso a datos reales de Amazon (búsquedas, ranking, competidores): la 
 | **Todos juntos** (p.34–35): mismo título que los capítulos, leyenda de 8 colores en las dos páginas (con dorado), "Siete flores, una para cada chakra.", "Antes de empezar…", "Podés usar estos colores o elegir los que vos quieras."; las 6 flores de afuera 30 % más grandes; ejemplo vivo con centros dorados | hecho |
 | **Un momento para compartir** (p.37): una idea por línea, frase en negrita, "Estas dos flores son para colorear de a dos." y flores 30 % más grandes, con aire entre ellas | hecho |
 | **Gracias** (p.39): "Puede ser una palabra, un color o un dibujo." y nota "Podés volver a leer esta página cuando quieras recordar cómo te sentiste." | hecho |
-| **Página 40**: mensaje de Daniela + logo + @daninavarrocoach (venta); "Para:", "De:" y 5 renglones (mamá, sin logo) | hecho (logo cacao de 50 mm) |
+| **Página 40** (versión final): título "Antes de cerrar este libro…", seis párrafos de 20 pt con espacio entre ellos, firma ("Con cariño," / **Daniela Navarro** / Longevidad Emocional), logo cacao de 40 mm y @daninavarrocoach, sin la web (venta); "Para:", "De:" y 5 renglones (mamá, sin logo) | hecho |
 | Armado por pliegos: ejemplo a la izquierda, mandala a la derecha, reverso en blanco detrás de todo lo que se pinta con marcador | hecho |
 
 ## Cómo se interpretó lo que se pidió (decisiones a confirmar)
@@ -83,9 +83,9 @@ del ejemplo** (18 pt, bajo la paleta), porque ahí evita que el ejemplo se lea c
 
 ## Pendiente (decisiones de Dani o trabajo aparte)
 
-- **Logo de la página 40:** se usó el "logo cacao" (isotipo + Daniela Navarro). A 50 mm de ancho el nombre queda chico
-  (letras de unos 3 mm); si preferís que se lea mejor, se puede agrandar o usar solo el isotipo (hay versión cacao, champán
-  y color en `assets/originales/`).
+- **Logo de la página 40:** se usó el "logo cacao" (isotipo + Daniela Navarro). A 40 mm de ancho el nombre queda chico
+  (letras de unos 2,5 mm) y además repite el nombre de la firma que está justo arriba; si preferís, se puede usar solo el
+  isotipo (hay versión cacao, champán y color en `assets/originales/`), que se puede poner más grande.
 - **Contacto en la página legal:** figura hola@daninavarro.com.ar (el de la landing); confirmá que querés publicarlo.
 - **Portada:** es el diseño de Dani y conserva los colores anteriores; ya no hace juego exacto con los colores vivos del interior.
   Si querés que sí, hay que actualizar la portada (los textos y la tarjeta se pueden dejar).

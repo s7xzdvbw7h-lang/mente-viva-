@@ -5,7 +5,8 @@ lleva cada parte (así las líneas y las zonas coinciden exactamente con el mand
 
 Reglas del ejemplo (las controla verificar.py):
   - solo los 5 colores de la paleta del chakra, planos (sin degradé ni sombra);
-  - el color protagonista (el primero de la paleta) ocupa entre el 60 % y el 70 % de lo pintado;
+  - el color principal (el primero de la paleta) ocupa entre el 60 % y el 70 % de lo pintado (en Raíz, entre el 35 % y el 55 %,
+    para que el rojo no domine todo el dibujo);
   - se usan los 5 colores;
   - es simétrico: cada parte repetida lleva el mismo color o alterna siempre igual.
 """
@@ -18,17 +19,23 @@ from PIL import Image
 import mandalas as M
 
 PROTAGONISTA_MIN, PROTAGONISTA_MAX = 0.60, 0.70
+RANGO_PROTAGONISTA = {"raiz": (0.35, 0.55)}      # en Raíz el rojo no tiene que ocupar casi todo el ejemplo
+
+
+def rango_protagonista(clave):
+    return RANGO_PROTAGONISTA.get(clave, (PROTAGONISTA_MIN, PROTAGONISTA_MAX))
+
 
 # Qué color de la paleta (0 = protagonista) lleva cada parte. Una lista alterna los colores
 # entre pétalos (o entre cuñas) en orden alrededor del centro.
 ESQUEMAS = {
-    "raiz":       dict(borde=0, fondo=0, piedra=3, petalos=[1, 2], cuadrado=4, punto=0),
-    "sacro":      dict(borde=0, fondo=3, cunas=2, gotas=4, petalos=0, disco=2, luna=1),
-    "plexo":      dict(borde=0, fondo=1, cunas=3, petalos=0, disco=2, triangulo=4),
+    "raiz":       dict(borde=0, fondo=2, piedra=3, petalos=[1], cuadrado=4, punto=0),
+    "sacro":      dict(borde=0, fondo=3, cunas=[2], gotas=4, petalos=0, disco=0, luna=1),
+    "plexo":      dict(borde=0, fondo=1, cunas=[0, 3], petalos=0, disco=2, triangulo=4),
     "corazon":    dict(borde=0, fondo=0, petalos=[1, 2, 1, 3], estrella=4),
-    "garganta":   dict(banda=0, fondo=0, petalos=[1, 2, 1, 3], disco=0, centro=4),
+    "garganta":   dict(banda=0, fondo=0, petalos=[1, 2, 1, 3], disco=1, centro=4),
     "tercer_ojo": dict(borde=0, fondo=0, interior=2, alas=3, disco=1, pupila=4),
-    "corona":     dict(borde=0, fondo=0, grandes=[3, 2], medios=1, internos=4, disco=1),
+    "corona":     dict(borde=0, fondo=0, grandes=[3, 2, 1, 2], disco=4),
 }
 
 
@@ -49,7 +56,7 @@ def ejemplo(clave):
     return M.MANDALAS[clave](esquema(clave))
 
 
-CREMA = "#F7F0E3"       # fondo del ejemplo de "Todos juntos" (la tarjeta crema de la portada)
+CREMA = "#FFF1D6"       # fondo del ejemplo de "Todos juntos": un crema luminoso, más cálido que el papel
 
 
 def esquema_integracion():

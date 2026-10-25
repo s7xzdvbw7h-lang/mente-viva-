@@ -5,7 +5,7 @@ Creado por Dani Navarro (Daniela Navarro · Longevidad Emocional).
 Genera el libro para colorear (8,5 × 11 pulgadas, vertical, listo para KDP):
   - svg/      cada mandala como SVG vectorial (geometría calculada en mandalas.py)
   - preview/  un PNG por página impresa (recortado al tamaño final)
-  - libro_mandalas_chakras.pdf  con sangrado de 0,125" y una hoja en blanco detrás de cada página
+  - libro-chakras-venta.pdf y libro-chakras-mama.pdf  con sangrado de 0,125" (40 páginas)
 
 Uso:
     python3 generar_libro.py              # el libro completo (27 páginas impresas)
@@ -30,7 +30,7 @@ DEDIC_TITULO = "Para vos, mamá"
 DEDIC_ESTROFAS = [
     ["Que siempre estuviste a mi lado", "y me diste fuerza para salir adelante."],
     ["Hoy te devuelvo un poco de todo eso:", "**un rato de calma,", "**un color a la vez."],
-    ["Pintá despacio, respirá tranquila", "y disfrutá cada página."],
+    ["Pintá despacio, respirá profundo", "y disfrutá cada página."],
     ["Te amo con todo mi corazón,"],
 ]
 DEDIC_FIRMA = "Dani"
@@ -55,31 +55,46 @@ COMO_USAR_NOTA = ("Usá lápices de colores o marcadores de punta suave. "
 
 TITULO_EJEMPLO = "Así podría quedar"
 NOTA_EJEMPLO = "Este es solo un ejemplo. Podés copiarlo o elegir tus propios colores."
-LEER_FRASE = "Al terminar, leé en voz alta:"
-TEXTO_ESCRIBIR = "Podés escribirlo o contárselo a alguien."
-TITULO_RESPIRAR = "Una respiración para volver al presente"
-TITULO_RECORDAR = "Para recordar"
+COLOR_PRINCIPAL = "Color principal:"
+ANTES_DE_EMPEZAR = "Antes de empezar, buscá una posición cómoda. Elegí los colores que más te gusten."
+LEER_FRASE = "Al terminar, mirá tu mandala y, si lo sentís, decilo en voz alta:"
+TITULO_RESPIRAR = "Una respiración para volver a vos"
+TITULO_RECORDAR = "Un momento para vos"
+NOTA_BLANCA = "Esta hoja queda en blanco a propósito, para que los marcadores no traspasen. Pintá con tranquilidad."
 
-INTEGRACION_TITULO = "TODOS JUNTOS"
-INTEGRACION_ARRIBA = "Las siete flores representan los siete chakras."
-INTEGRACION_COLORES = "Rojo · naranja · amarillo · verde · azul · índigo · violeta"
-INTEGRACION_ABAJO = "Podés colorearlas siguiendo la paleta sugerida o crear tu propia combinación."
+INTEGRACION_TITULO = "Todos juntos"
+INTEGRACION_ARRIBA = "Siete flores, una para cada chakra."
+INTEGRACION_COLORES = ("rojo", "naranja", "amarillo", "verde", "azul", "indigo", "violeta", "dorado")
+INTEGRACION_ABAJO = "Podés usar estos colores o elegir los que vos quieras."
 INTEGRACION_FRASE = ["Cada color, una historia.", "Cada página, un momento para vos."]
 
 COMPARTIR_TITULO = "Un momento para compartir"
-COMPARTIR_PARRAFOS = [
-    ["Este libro también puede disfrutarse acompañado."],
-    ["Podés colorear junto a tu hija, tu hijo, una nieta, un nieto, una amiga o alguien especial."],
-    ["Elegí una página.", "Elegí los colores."],
-    ["Y mientras colorean, dejá que aparezca una historia."],
+COMPARTIR_LINEAS = [
+    "Este libro también se puede disfrutar en compañía.",
+    "Podés colorear con alguien que quieras: tu familia, una amistad o alguien especial.",
+    "Elegí una página.",
+    "Elegí los colores.",
+    "Mientras colorean, dejen que aparezca una historia.",
 ]
-COMPARTIR_FRASE = "A veces, una conversación comienza con un color."
+COMPARTIR_FRASE = "A veces, una conversación empieza con un color."
+COMPARTIR_NOTA = "Estas dos flores son para colorear de a dos."
 
 CIERRE_TITULO = "Gracias por regalarte este rato."
 FRASE_FINAL = ["Un color a la vez,", "un momento a la vez."]
 CIERRE_SENTI = "Hoy me sentí…"
+CIERRE_AYUDA = "Puede ser una palabra, un color o un dibujo."
 CIERRE_FECHA = "Fecha:"
-CIERRE_NOTA = "Podés volver a esta página cada vez que quieras recordar cómo te sentiste."
+CIERRE_NOTA = "Podés volver a leer esta página cuando quieras recordar cómo te sentiste."
+
+# Página 40. Edición para vender: mensaje de la autora y logo. Edición para mamá: "Para:", "De:" y renglones.
+CONTRA_LINEAS = [
+    "Hola, soy Daniela.",
+    "Hace más de diez años acompaño a personas a cuidar su bienestar emocional.",
+    "Hice este libro para que tengas un momento tranquilo, solo para vos.",
+    "Si te hizo bien, compartilo con alguien que quieras.",
+]
+CONTRA_USUARIO = "@daninavarrocoach"
+CONTRA_PARA, CONTRA_DE = "Para:", "De:"
 
 LEGAL_TITULO = ["MANDALAS DE LOS 7 CHAKRAS", "Un color a la vez"]
 LEGAL_AUTORA = ["Creado por Dani Navarro", "Longevidad Emocional"]
@@ -89,54 +104,68 @@ LEGAL_AVISO = "Este libro propone un momento de calma y disfrute. No reemplaza l
 LEGAL_CONTACTO = "¿Querés contarnos cómo te fue? Escribinos a hola@daninavarro.com.ar"
 LEGAL_EDICION = "Primera edición · 2026"
 
-QUE_ES_TITULO = "Qué es un chakra, en simple"
+QUE_ES_TITULO = "Siete lugares de tu cuerpo para volver a vos"
 QUE_ES_PARRAFOS = [
-    "«Chakra» significa «rueda». Es una idea muy antigua que imagina siete lugares del cuerpo, cada uno con su color y su tema.",
-    "No hace falta creer en nada. Cada chakra es una excusa para frenar, respirar y pensar en algo lindo.",
+    "«Chakra» significa «rueda». Desde hace miles de años se habla de siete lugares del cuerpo, cada uno con su color y lo que necesita para estar bien.",
+    "Podés sentirlos a tu manera: frená un momento, respirá y preguntate cómo estás ahí.",
 ]
-QUE_ES_CIERRE = "Siete chakras, siete colores, siete momentos para vos."
-QUE_ES_TEMAS = {"raiz": "seguridad", "sacro": "disfrute", "plexo": "confianza", "corazon": "amor",
-                "garganta": "voz", "tercer_ojo": "intuición", "corona": "paz"}
+QUE_ES_CIERRE = "Siete colores, siete momentos para volver a vos."
+QUE_ES_TEMAS = {"raiz": "sentirte a salvo", "sacro": "disfrutar", "plexo": "confiar en vos",
+                "corazon": "querer y dejarte querer", "garganta": "decir lo que sentís",
+                "tercer_ojo": "escuchar tu intuición", "corona": "estar en paz"}
 
 DEDIC_DE = "De:"           # edición para vender: la persona que regala escribe su nombre
 
-# clave, nombre, "relación" (qué cuida), afirmación (líneas), respiración (líneas), pregunta
+# Cada chakra: nombre, párrafo de presentación, respiración, preguntas, texto de ayuda (una idea por línea)
+# y la frase que se lee al terminar el mandala. `mama` reemplaza campos en la edición para mamá.
 CHAKRAS = [
     dict(clave="raiz", nombre="Raíz",
-         relacion="Está relacionado con la sensación de seguridad, pertenencia y sostén.",
-         afirmacion=["Estoy a salvo.", "La vida me sostiene."],
-         respiracion=["Sentí tus pies apoyados.", "Inhalá suavemente y soltá el aire despacio."],
-         pregunta="¿Qué cosa buena aprendiste de tu familia que todavía llevás con vos?"),
+         parrafo="Raíz es el primer chakra. Está en la base de tu columna, donde tu cuerpo se apoya. Tiene que ver con sentir que estás a salvo, que tenés un lugar y que algo te sostiene.",
+         respiracion="Quedate en la posición que te resulte más cómoda. Sentí cómo tu cuerpo se apoya. Tomá aire despacio por la nariz y soltalo despacio por la boca. Repetilo tres veces.",
+         preguntas=["¿Qué te hace sentir a salvo?", "¿Quién te hace sentir a salvo?"],
+         nota=["Puede ser una persona, un lugar, una mascota o una canción. Si te cuesta escribir, podés contárselo a alguien. Si hoy no aparece nada, también está bien."],
+         afirmacion=["Estoy a salvo.", "La vida me sostiene."]),
     dict(clave="sacro", nombre="Sacro",
-         relacion="Está relacionado con el disfrute, la creatividad y el placer de vivir.",
-         afirmacion=["Me permito disfrutar."],
-         respiracion=["Aflojá la panza y los hombros.", "Inhalá suavemente y soltá el aire despacio."],
-         pregunta="¿Qué te encantaba hacer cuando eras joven?"),
+         parrafo="Sacro es el segundo chakra. Está en el bajo vientre, un poco más abajo del ombligo. Tiene que ver con disfrutar, con crear y con regalarte momentos lindos.",
+         respiracion="Quedate en la posición que te resulte más cómoda. Aflojá los hombros y la panza. Tomá aire despacio por la nariz y soltalo despacio por la boca. Repetilo tres veces.",
+         preguntas=["¿Qué te encantaba hacer cuando eras joven o en tu infancia?"],
+         nota=["Puede ser algo chiquito: jugar, cantar, bailar, dibujar, cocinar. Si te cuesta escribir, podés contárselo a alguien. Si hoy no aparece nada, también está bien."],
+         afirmacion=["Me permito disfrutar."]),
     dict(clave="plexo", nombre="Plexo solar",
-         relacion="Está relacionado con la confianza, la fuerza interior y la claridad.",
-         afirmacion=["Confío en mí", "y en mis decisiones."],
-         respiracion=["Sentí el centro de tu cuerpo.", "Inhalá suavemente y soltá despacio,", "como apagando una vela."],
-         pregunta="¿Qué decisión tuya te da orgullo?"),
+         parrafo="Plexo solar es el tercer chakra. Está en la boca del estómago, un poco más arriba del ombligo. Tiene que ver con confiar en vos, con tu fuerza interior y con elegir con tranquilidad.",
+         respiracion="Quedate en la posición que te resulte más cómoda. Si querés, apoyá una mano en la boca del estómago. Tomá aire despacio por la nariz y soltalo muy despacio por la boca, como si soplaras una vela sin apagarla. Repetilo tres veces.",
+         preguntas=["Si mirás tu vida hacia atrás, ¿qué te da orgullo?"],
+         nota=["Antes de escribir, poné una mano en el corazón.",
+               "Sentí cómo late y dejá que aparezca ese orgullo.",
+               "Puede ser algo grande o chiquito: un trabajo, una decisión difícil, haber cuidado a alguien, haber dicho que no.",
+               "Si te cuesta escribir, podés contárselo a alguien. Si hoy no aparece nada, también está bien."],
+         afirmacion=["Confío en mí", "y en mis decisiones."]),
     dict(clave="corazon", nombre="Corazón",
-         relacion="Está relacionado con el amor, la gratitud y la apertura hacia los demás.",
-         afirmacion=["Doy y recibo amor", "con facilidad."],
-         respiracion=["Poné una mano sobre tu pecho.", "Inhalá suavemente y soltá el aire despacio."],
-         pregunta="¿A quién querés agradecerle hoy?"),
+         parrafo="Corazón es el cuarto chakra. Está en el centro del pecho. Tiene que ver con querer, con agradecer y con dejarte querer.",
+         respiracion="Quedate en la posición que te resulte más cómoda. Apoyá las manos abiertas sobre tus piernas, con las palmas hacia arriba, como para recibir. Tomá aire despacio por la nariz y soltalo despacio por la boca. Imaginá que tu pecho se abre un poquito con cada respiración. Repetilo tres veces.",
+         preguntas=["¿A quién querés agradecerle hoy?"],
+         nota=["Puede ser alguien que está o alguien que ya no está. Una persona, una mascota o la vida misma. Si te cuesta escribir, podés contárselo a alguien. Si hoy no aparece nadie, también está bien."],
+         afirmacion=["Puedo dar y recibir amor."]),
     dict(clave="garganta", nombre="Garganta",
-         relacion="Está relacionado con la voz, la expresión y la comunicación sincera.",
+         parrafo="Garganta es el quinto chakra. Está en el cuello, donde nace tu voz. Tiene que ver con decir lo que sentís y con que te escuchen.",
+         respiracion="Quedate en la posición que te resulte más cómoda. Aflojá el cuello y los hombros. Tomá aire despacio por la nariz y soltalo por la boca con un suspiro suave, como diciendo «ahhh». Repetilo tres veces.",
+         preguntas=["¿Qué consejo le darías a alguien que querés mucho?"],
+         nota=["Puede ser alguien de tu familia, una amistad o vos cuando eras joven. Escribilo como si se lo dijeras en voz alta. Si te cuesta escribir, podés contárselo a alguien. Si hoy no aparece nada, también está bien."],
          afirmacion=["Mi voz y mis palabras", "importan."],
-         respiracion=["Sentí el cuello y los hombros sueltos.", "Inhalá y soltá con un suspiro suave."],
-         pregunta="¿Qué consejo le darías a tu nieto?"),
+         mama=dict(preguntas=["¿Qué consejo le darías a tu nieto?"],
+                   nota=["Escribilo como si se lo dijeras en voz alta. Si te cuesta escribir, podés contárselo a alguien. Si hoy no aparece nada, también está bien."])),
     dict(clave="tercer_ojo", nombre="Tercer ojo",
-         relacion="Está relacionado con la intuición, la percepción y la mirada interior.",
-         afirmacion=["Confío en mi intuición", "y en mi propia mirada."],
-         respiracion=["Cerrá los ojos, si te resulta cómodo.", "Inhalá suavemente y soltá el aire despacio."],
-         pregunta="¿Cuándo tu intuición te guió bien?"),
+         parrafo="Tercer ojo es el sexto chakra. Está en el centro de la frente, entre las cejas. Tiene que ver con tu intuición, esa voz interior que a veces te avisa algo.",
+         respiracion="Quedate en la posición que te resulte más cómoda. Cerrá los ojos si te resulta cómodo, o dejá la mirada suave en un punto. Tomá aire despacio por la nariz y soltalo despacio por la boca. Con cada respiración, llevá tu atención al centro de la frente, entre las cejas. Repetilo tres veces.",
+         preguntas=["¿Tuviste alguna vez una corazonada que se cumplió?", "¿Cuándo te dejaste guiar por tu intuición?"],
+         nota=["Una corazonada es eso que sentís por dentro antes de que algo pase. Puede ser algo chiquito. Si te cuesta escribir, podés contárselo a alguien. Si hoy no aparece nada, también está bien."],
+         afirmacion=["Escucho lo que siento", "por dentro."]),
     dict(clave="corona", nombre="Corona",
-         relacion="Está relacionado con la paz, el sentido y la contemplación.",
-         afirmacion=["Estoy en paz", "en este momento."],
-         respiracion=["Inhalá suavemente.", "Al soltar el aire, imaginá una luz suave."],
-         pregunta="¿Qué te da paz en este momento de tu vida?"),
+         parrafo="Corona es el séptimo chakra. Está en lo alto de tu cabeza, como una corona. Tiene que ver con la paz y con sentirte en calma.",
+         respiracion="Quedate en la posición que te resulte más cómoda. Tomá aire despacio por la nariz. Al soltarlo por la boca, imaginá una luz suave sobre tu cabeza. Repetilo tres veces.",
+         preguntas=["¿Qué te da paz hoy?"],
+         nota=["Puede ser un lugar, una persona, una música o un silencio. Si te cuesta escribir, podés contárselo a alguien. Si hoy no aparece nada, también está bien."],
+         afirmacion=["Estoy en paz", "en este momento."]),
 ]
 
 # Colores de texto de la portada (tomados de la portada original de Dani)
@@ -162,9 +191,18 @@ PESTANA_ANCHO = 8
 PESTANA_ALTO = 32
 PESTANA_PASO = 35         # cada capítulo baja un escalón, para encontrarlo al hojear
 RADIO = M.RADIO_MANDALA
-CENTRO_MANDALA_Y = 128.5  # centro del mandala, desde arriba del corte
-CENTRO_INTEGRACION_Y = 128.5
-TINTA = "#000000"
+# Encabezado de las páginas de mandala (mm desde arriba del corte): título, "Color principal", leyenda de colores y,
+# en la página para pintar, el texto "Antes de empezar". El mandala ocupa el resto, y debajo va la frase.
+Y_PRINCIPAL = MARGEN_SUP + 15.3
+Y_LEYENDA = MARGEN_SUP + 28.3
+Y_ANTES = Y_LEYENDA + 12.5
+Y_LEYENDA_INT = MARGEN_SUP + 26.5     # leyenda de 8 colores (dos filas) de Todos juntos
+CENTRO_MANDALA_Y = 139.5  # centro del mandala, desde arriba del corte
+CENTRO_INTEGRACION_Y = 152.0
+FONDO = "#FFFBF5"         # fondo de todas las páginas
+TINTA = "#222222"         # texto de cuerpo
+TINTA_CHICA = "#333333"   # textos chicos
+COLOR_RENGLON = "#8A8178"  # líneas para escribir
 
 # ======================================================================= FUENTES
 def preparar_fuentes():
@@ -178,6 +216,7 @@ def preparar_fuentes():
         # portada (diseño de Dani): título, subtítulo, "Creado por" y "Para mamá"
         (fr, "Fraunces-Portada.ttf", {"wght": 600, "opsz": 36, "SOFT": 0, "WONK": 0}),
         (fri, "Fraunces-Italica.ttf", {"wght": 400, "opsz": 72, "SOFT": 30, "WONK": 0}),
+        (fri, "Fraunces-ItalicaTexto.ttf", {"wght": 500, "opsz": 14, "SOFT": 0, "WONK": 0}),   # cursiva de texto (18 pt)
         (fr, "Fraunces-Creado.ttf", {"wght": 600, "opsz": 72, "SOFT": 50, "WONK": 0}),
         (fri, "Fraunces-Mama.ttf", {"wght": 500, "opsz": 48, "SOFT": 50, "WONK": 0}),
         ("Manrope[wght].ttf", "Manrope-Medium.ttf", {"wght": 500}),
@@ -198,7 +237,8 @@ def preparar_fuentes():
 
 
 _PIL = {}
-_FAMILIAS = {"cuerpo": "Manrope-Medium.ttf", "negrita": "Manrope-Bold.ttf", "titulo": "Fraunces-Titulo.ttf"}
+_FAMILIAS = {"cuerpo": "Manrope-Medium.ttf", "negrita": "Manrope-Bold.ttf", "titulo": "Fraunces-Titulo.ttf",
+             "cursiva": "Fraunces-ItalicaTexto.ttf"}
 
 
 def ancho_mm(texto, familia, pt):
@@ -235,6 +275,7 @@ def css():
 @font-face {{ font-family: 'Fraunces'; font-weight: 700; src: url('{f}/Fraunces-Titulo.ttf'); }}
 @font-face {{ font-family: 'FrauncesPortada'; font-weight: 600; font-style: normal; src: url('{f}/Fraunces-Portada.ttf'); }}
 @font-face {{ font-family: 'FrauncesItalica'; font-weight: 400; font-style: italic; src: url('{f}/Fraunces-Italica.ttf'); }}
+@font-face {{ font-family: 'FrauncesTexto'; font-weight: 500; font-style: italic; src: url('{f}/Fraunces-ItalicaTexto.ttf'); }}
 @font-face {{ font-family: 'FrauncesCreado'; font-weight: 600; font-style: normal; src: url('{f}/Fraunces-Creado.ttf'); }}
 @font-face {{ font-family: 'FrauncesMama'; font-weight: 500; font-style: italic; src: url('{f}/Fraunces-Mama.ttf'); }}
 @font-face {{ font-family: 'Manrope'; font-weight: 500; src: url('{f}/Manrope-Medium.ttf'); }}
@@ -242,11 +283,11 @@ def css():
 @font-face {{ font-family: 'Manrope'; font-weight: 800; src: url('{f}/Manrope-ExtraBold.ttf'); }}
 @page {{ size: {PAG_W}mm {PAG_H}mm; margin: 0; }}
 * {{ box-sizing: border-box; }}
-html, body {{ margin: 0; padding: 0; background: #fff; }}
-body {{ font-family: 'Manrope', sans-serif; font-weight: 500; font-size: 18pt; line-height: 1.4; color: {TINTA}; }}
+html, body {{ margin: 0; padding: 0; background: {FONDO}; }}
+body {{ font-family: 'Manrope', sans-serif; font-weight: 500; font-size: 18pt; line-height: 1.5; color: {TINTA}; }}
 /* la página lleva sangrado; todo se ubica dentro de .recorte, que es el tamaño final (desde el corte) */
 .pagina {{ position: relative; width: {PAG_W}mm; height: {PAG_H}mm; overflow: hidden;
-          page-break-after: always; background: #fff; }}
+          page-break-after: always; background: {FONDO}; }}
 .pagina:last-child {{ page-break-after: auto; }}
 .recorte {{ position: absolute; left: 0; top: {SANGRE}mm; width: {ANCHO}mm; height: {ALTO}mm; }}
 .contenido {{ position: absolute; top: 0; width: {ANCHO}mm; height: {ALTO}mm; }}
@@ -261,85 +302,103 @@ p {{ margin: 0; }}
 b {{ font-weight: 800; }}
 img {{ display: block; }}
 .centrado {{ text-align: center; }}
+.chica {{ color: {TINTA_CHICA}; }}
+.cursiva {{ font-family: 'FrauncesTexto', serif; font-style: italic; font-weight: 500; color: {TINTA_CHICA}; }}
 
 /* portada: el diseño de Dani. El arte (tarjeta, banda, flores) es un SVG; los textos se ubican por línea base */
 .arte {{ position: absolute; left: 0; top: 0; width: {ANCHO}mm; height: {ALTO}mm; }}
 .tb {{ position: absolute; left: 0; width: {ANCHO}mm; text-align: center; line-height: 1; white-space: nowrap; }}
 
 /* dedicatoria */
-.dedic {{ text-align: center; font-size: 20pt; line-height: 1.65; }}
-.dedic h2 {{ font-size: 32pt; line-height: 1.2; margin-bottom: 9mm; }}
-.dedic .estrofa {{ margin-bottom: 7mm; }}
+.dedic {{ text-align: center; font-size: 20pt; line-height: 1.5; }}
+.dedic h2 {{ font-size: 32pt; line-height: 1.2; margin-bottom: 8mm; }}
+.dedic .estrofa {{ margin-bottom: 6mm; }}
 .dedic .dest {{ font-family: 'Fraunces', serif; font-weight: 700; font-size: 22pt; }}
-.dedic .firma {{ font-family: 'Fraunces', serif; font-weight: 700; font-size: 28pt; line-height: 1.5; }}
-
-.dedic .de {{ display: flex; align-items: flex-end; justify-content: center; margin-top: 4mm; font-family: 'Fraunces', serif; font-weight: 700; font-size: 26pt; line-height: 1.2; }}
-.dedic .de .linea {{ width: 95mm; height: 10mm; margin-left: 5mm; border-bottom: 0.75mm solid {TINTA}; }}
+.dedic .firma {{ font-family: 'Fraunces', serif; font-weight: 700; font-size: 28pt; line-height: 1.4; }}
+.dedic .de {{ display: flex; align-items: flex-end; justify-content: center; margin-top: 3mm; font-family: 'Fraunces', serif; font-weight: 700; font-size: 26pt; line-height: 1.2; }}
+.dedic .de .linea {{ width: 95mm; height: 10mm; margin-left: 5mm; border-bottom: 1.5px solid {COLOR_RENGLON}; }}
 
 /* legal y autora */
 .legal {{ text-align: center; }}
 .legal .t1 {{ font-family: 'Fraunces', serif; font-weight: 700; font-size: 26pt; line-height: 1.2; }}
 .legal .t2 {{ font-family: 'Fraunces', serif; font-weight: 700; font-size: 22pt; line-height: 1.3; margin-top: 2mm; }}
-.legal p {{ font-size: 18pt; line-height: 1.45; margin-top: 8mm; }}
-.legal .autora {{ font-weight: 700; margin-top: 12mm; }}
+.legal p {{ font-size: 18pt; line-height: 1.5; margin-top: 7mm; color: {TINTA_CHICA}; }}
+.legal .autora {{ font-weight: 700; margin-top: 11mm; color: {TINTA}; }}
 
 /* qué es un chakra */
-.que-es-t {{ font-size: 40pt; line-height: 1.1; margin-bottom: 9mm; }}
-.que-es-p {{ font-size: 21pt; line-height: 1.4; margin-bottom: 6mm; }}
-.que-es-lista {{ margin: 8mm 0 8mm 0; }}
+.que-es-t {{ font-size: 36pt; line-height: 1.15; margin-bottom: 8mm; }}
+.que-es-p {{ font-size: 20pt; line-height: 1.5; margin-bottom: 5mm; }}
+.que-es-lista {{ margin: 6mm 0 6mm 0; }}
 .que-es-lista .f {{ display: flex; align-items: center; height: 12.5mm; font-size: 20pt; line-height: 1; white-space: nowrap; }}
-.que-es-lista .f svg {{ flex: 0 0 8mm; margin-right: 4mm; }}
+.que-es-lista .f svg {{ flex: 0 0 10mm; margin-right: 4mm; }}
 .que-es-lista b {{ font-weight: 800; }}
-.que-es-cierre {{ font-family: 'Fraunces', serif; font-weight: 700; font-size: 26pt; line-height: 1.25; margin-top: 4mm; }}
+.que-es-cierre {{ font-family: 'Fraunces', serif; font-weight: 700; font-size: 24pt; line-height: 1.3; margin-top: 4mm; }}
 
 /* cómo usar */
 .titulo-uso {{ font-size: 44pt; line-height: 1.1; }}
-.paso {{ display: flex; align-items: center; margin-bottom: 8.5mm; }}
+.paso {{ display: flex; align-items: center; margin-bottom: 7mm; }}
 .paso .n {{ flex: 0 0 15mm; width: 15mm; height: 15mm; border: 0.75mm solid {TINTA}; border-radius: 50%;
            text-align: center; font-family: 'Fraunces', serif; font-weight: 700; font-size: 24pt; line-height: 13.5mm; }}
-.paso .t {{ margin-left: 8mm; font-size: 24pt; line-height: 1.3; }}
-.nota-uso {{ border: 0.75mm solid {TINTA}; border-radius: 6mm; padding: 8mm 9mm; font-size: 22pt; line-height: 1.45; }}
+.paso .t {{ margin-left: 8mm; font-size: 24pt; line-height: 1.5; }}
+.nota-uso {{ border: 0.75mm solid {TINTA}; border-radius: 6mm; padding: 7mm 9mm; font-size: 22pt; line-height: 1.5; }}
 
-/* página del mandala: nombre y color protagonista arriba, paleta en una fila, frase abajo */
-.cab {{ position: absolute; left: {X0}mm; width: {ANCHO_UTIL}mm; display: flex; justify-content: space-between; align-items: flex-end; }}
+/* página del mandala: nombre, color principal y leyenda arriba; frase abajo */
+.cab {{ position: absolute; left: {X0}mm; width: {ANCHO_UTIL}mm; }}
 .titulo-mandala {{ font-size: 40pt; line-height: 1.05; }}
-.protag {{ display: flex; align-items: center; margin: 0 0 1mm 0; font-weight: 700; font-size: 18pt; line-height: 1; height: 9mm; white-space: nowrap; }}
-.protag svg {{ flex: 0 0 8mm; margin: 0 2.5mm 0 3mm; }}
-.fila-paleta {{ position: absolute; left: {X0}mm; width: {ANCHO_UTIL}mm; height: 9mm; display: flex; justify-content: space-between; align-items: center; }}
+.principal {{ display: flex; align-items: center; margin: 0.5mm 0 0 0; font-weight: 700; font-size: 18pt; line-height: 1; height: 10.5mm; white-space: nowrap; }}
+.principal svg {{ flex: 0 0 10mm; margin: 0 2.5mm 0 3mm; }}
+.fila-paleta {{ position: absolute; left: {X0}mm; width: {ANCHO_UTIL}mm; height: 10.5mm; display: flex; justify-content: space-between; align-items: center; }}
+.fila-paleta.dos {{ justify-content: center; gap: 9mm; }}
 .fila-paleta .sw {{ display: flex; align-items: center; font-size: 18pt; line-height: 1; white-space: nowrap; }}
-.fila-paleta .sw svg {{ flex: 0 0 8mm; margin-right: 2.5mm; }}
+.fila-paleta .sw svg {{ flex: 0 0 10mm; margin-right: 2.5mm; }}
 .sub-ejemplo {{ position: absolute; left: {X0}mm; width: {ANCHO_UTIL}mm; font-family: 'Fraunces', serif; font-weight: 700; font-size: 26pt; line-height: 1.2; }}
-.nota-ejemplo {{ position: absolute; left: {X0}mm; width: {ANCHO_UTIL}mm; text-align: center; font-size: 18pt; line-height: 1.4; }}
-.etiqueta-frase {{ position: absolute; left: {X0}mm; width: {ANCHO_UTIL}mm; text-align: center; font-weight: 700; font-size: 18pt; }}
+.nota-ejemplo {{ position: absolute; left: {X0}mm; width: {ANCHO_UTIL}mm; text-align: center; font-size: 18pt; line-height: 1.5; color: {TINTA_CHICA}; }}
+.antes {{ position: absolute; left: {X0}mm; width: {ANCHO_UTIL}mm; font-size: 18pt; line-height: 1.5; }}
+.etiqueta-frase {{ position: absolute; left: {X0}mm; width: {ANCHO_UTIL}mm; text-align: center; font-weight: 700; font-size: 18pt; line-height: 1.5; }}
 .pie-afirmacion {{ position: absolute; left: {X0}mm; width: {ANCHO_UTIL}mm; text-align: center;
                    font-family: 'Fraunces', serif; font-weight: 700; font-size: 32pt; line-height: 1.22; }}
 
-/* página de reflexión: la tarea, después de decir la frase */
-.titulo-cap {{ font-size: 58pt; line-height: 1.05; margin-bottom: 9mm; }}
-.relacion {{ font-size: 20pt; line-height: 1.4; margin-bottom: 12mm; }}
-.sub {{ font-size: 24pt; line-height: 1.2; margin-bottom: 3mm; }}
-.respiracion {{ font-size: 20pt; line-height: 1.4; margin-bottom: 12mm; }}
-.pregunta {{ font-weight: 700; font-size: 22pt; line-height: 1.35; margin-bottom: 3mm; }}
-.renglon {{ height: 24mm; border-bottom: 0.75mm solid {TINTA}; }}
-.nota-escribir {{ font-size: 18pt; margin-bottom: 3mm; }}
+/* página de texto: la tarea, después de decir la frase */
+.titulo-cap {{ line-height: 1.1; margin-bottom: 4mm; }}
+.parrafo {{ line-height: 1.5; margin-bottom: 5mm; }}
+.sub {{ font-size: 22pt; line-height: 1.2; margin-bottom: 2mm; }}
+.respiracion {{ line-height: 1.5; margin-bottom: 5mm; }}
+.pregunta {{ font-weight: 700; font-size: 22pt; line-height: 1.5; margin-bottom: 1mm; }}
+.nota-escribir {{ font-size: 18pt; line-height: 1.5; color: {TINTA_CHICA}; }}
+.nota-escribir + .nota-escribir {{ margin-top: 0; }}
+.renglon {{ height: 14mm; border-bottom: 1.5px solid {COLOR_RENGLON}; }}
+.renglones {{ margin-top: 1mm; }}
+
+/* hojas en blanco: solo una nota y el número */
+.nota-blanca {{ position: absolute; left: {X0}mm; width: {ANCHO_UTIL}mm; bottom: {MARGEN_INF + 10}mm; text-align: center;
+                font-size: 18pt; line-height: 1.5; color: {TINTA_CHICA}; }}
 
 /* todos juntos */
-.int-texto {{ font-size: 18pt; line-height: 1.35; }}
-.int-colores {{ font-weight: 700; font-size: 18pt; line-height: 1.35; margin-top: 0; }}
-.int-frase {{ font-family: 'Fraunces', serif; font-weight: 700; font-size: 24pt; line-height: 1.2; text-align: center; margin-top: 4mm; }}
+.int-texto {{ font-size: 18pt; line-height: 1.5; }}
+.int-frase {{ font-family: 'Fraunces', serif; font-weight: 700; font-size: 24pt; line-height: 1.2; text-align: center; margin-top: 2mm; }}
 
 /* un momento para compartir */
-.comp-titulo {{ font-size: 38pt; line-height: 1.1; margin-bottom: 7mm; }}
-.comp-p {{ font-size: 20pt; line-height: 1.4; margin-bottom: 5mm; }}
-.comp-frase {{ font-family: 'Fraunces', serif; font-weight: 700; font-size: 28pt; line-height: 1.25; margin-top: 4mm; }}
+.comp-titulo {{ font-size: 34pt; line-height: 1.1; margin-bottom: 5mm; }}
+.comp-p {{ font-size: 18pt; line-height: 1.5; margin-bottom: 2mm; }}
+.comp-frase {{ font-family: 'Fraunces', serif; font-weight: 700; font-size: 24pt; line-height: 1.25; margin-top: 4mm; }}
+.comp-nota {{ font-size: 18pt; line-height: 1.5; color: {TINTA_CHICA}; text-align: center; }}
 
 /* cierre */
-.cierre-titulo {{ text-align: center; font-size: 30pt; line-height: 1.2; }}
-.cierre-frase {{ text-align: center; font-family: 'Fraunces', serif; font-weight: 700; font-size: 34pt; line-height: 1.2; }}
+.cierre-titulo {{ text-align: center; font-size: 28pt; line-height: 1.2; }}
+.cierre-frase {{ text-align: center; font-family: 'Fraunces', serif; font-weight: 700; font-size: 32pt; line-height: 1.2; margin-top: 3mm; }}
 .cierre-senti {{ font-weight: 700; font-size: 24pt; line-height: 1.2; }}
+.cierre-ayuda {{ font-size: 18pt; line-height: 1.5; color: {TINTA_CHICA}; }}
 .cierre-fecha {{ display: flex; align-items: flex-end; font-weight: 700; font-size: 22pt; line-height: 1.2; }}
-.cierre-fecha .linea {{ flex: 1; height: 11mm; margin-left: 5mm; border-bottom: 0.75mm solid {TINTA}; }}
-.cierre-nota {{ text-align: center; font-weight: 700; font-size: 20pt; line-height: 1.4; }}
+.cierre-fecha .linea {{ flex: 1; height: 11mm; margin-left: 5mm; border-bottom: 1.5px solid {COLOR_RENGLON}; }}
+.cierre-nota {{ text-align: center; font-weight: 700; font-size: 18pt; line-height: 1.5; }}
+
+/* página 40 */
+.contra {{ text-align: center; }}
+.contra p {{ font-size: 20pt; line-height: 1.5; color: {TINTA}; }}
+.contra .sep {{ height: 5mm; }}
+.contra .usuario {{ font-size: 18pt; color: {TINTA_CHICA}; }}
+.para-de {{ display: flex; align-items: flex-end; font-family: 'Fraunces', serif; font-weight: 700; font-size: 26pt; line-height: 1.2; margin-bottom: 8mm; }}
+.para-de .linea {{ flex: 1; height: 11mm; margin-left: 5mm; border-bottom: 1.5px solid {COLOR_RENGLON}; }}
 """
 
 
@@ -357,8 +416,9 @@ def pagina(contenido, lado="D", tab=""):
             f'<div class="contenido" style="left:{desp}mm">{contenido}</div></div></section>')
 
 
-def pagina_blanca():
-    return '<section class="pagina"></section>'
+def pagina_blanca(n):
+    """Reverso en blanco de una página que se pinta con marcador: solo una nota y el número de página."""
+    return pagina(f'<p class="nota-blanca">{partir(NOTA_BLANCA, "cuerpo", 18, ANCHO_UTIL * 0.9)}</p>{numero(n)}', "I")
 
 
 def pestana(indice, clave, lado="D"):
@@ -375,10 +435,16 @@ def _svg_img(ruta_svg, ancho_mm):
     return f'<img src="{(AQUI / ruta_svg).as_uri()}" style="width:{ancho_mm}mm">'
 
 
-def _punto(color, mm):
+_HEX_A_NOMBRE = {v.upper(): k for k, v in M.PALETA.items()}
+
+
+def _punto(color, mm=10):
+    """Círculo de color de las leyendas: relleno sólido y borde fino (2 px) de un tono más oscuro del mismo color."""
+    borde = M.BORDE_COLOR.get(_HEX_A_NOMBRE.get(color.upper()), M.NEGRO)
+    g = 2 * 25.4 / 96                                     # 2 px
     r = mm / 2
     return (f'<svg width="{mm}mm" height="{mm}mm" viewBox="0 0 {mm} {mm}" xmlns="http://www.w3.org/2000/svg">'
-            f'<circle cx="{r}" cy="{r}" r="{r - 0.4}" fill="{color}" stroke="{M.NEGRO}" stroke-width="{M.LINEA_FINA}"/></svg>')
+            f'<circle cx="{r}" cy="{r}" r="{r - g / 2:.3f}" fill="{color}" stroke="{borde}" stroke-width="{g:.3f}"/></svg>')
 
 
 _METRICAS = {}
@@ -452,10 +518,9 @@ def pagina_dedicatoria(edicion="venta"):
 
 def pagina_legal():
     """Página 2 (reverso de la portada): autora, derechos y aviso de bienestar."""
-    corazon = M.corazon_linea()
     ancho = 36
     return pagina(f"""
-  <div style="position:absolute; left:{CX_I + DESPLAZ_I - ancho / 2}mm; top:38mm; width:{ancho}mm">{_svg_img("svg/dedicatoria_corazon.svg", ancho)}</div>
+  <div style="position:absolute; left:{CX - ancho / 2}mm; top:38mm; width:{ancho}mm">{_svg_img("svg/dedicatoria_corazon.svg", ancho)}</div>
   <div class="caja legal" style="top:84mm">
     <div class="t1">{esc(LEGAL_TITULO[0])}</div>
     <div class="t2">{esc(LEGAL_TITULO[1])}</div>
@@ -469,16 +534,16 @@ def pagina_legal():
 
 
 def pagina_que_es(n):
-    """Qué es un chakra, en simple: dos párrafos y los siete chakras con su color y su tema."""
-    parrafos = "".join(f'<p class="que-es-p">{partir(t, "cuerpo", 21, ANCHO_UTIL)}</p>' for t in QUE_ES_PARRAFOS)
-    filas = "".join(f'<div class="f">{_punto(M.COLORES[c["clave"]], 8)}<b>{esc(c["nombre"])}</b>&nbsp;·&nbsp;{esc(QUE_ES_TEMAS[c["clave"]])}</div>'
+    """Siete lugares de tu cuerpo para volver a vos: dos párrafos y los siete chakras con su color y lo que necesitan."""
+    parrafos = "".join(f'<p class="que-es-p">{partir(t, "cuerpo", 20, ANCHO_UTIL)}</p>' for t in QUE_ES_PARRAFOS)
+    filas = "".join(f'<div class="f">{_punto(M.COLORES[c["clave"]])}<b>{esc(c["nombre"])}</b>&nbsp;·&nbsp;{esc(QUE_ES_TEMAS[c["clave"]])}</div>'
                     for c in CHAKRAS)
     return pagina(f"""
-  <div class="caja" style="top:{MARGEN_SUP + 8}mm">
-    <h1 class="que-es-t">{partir(QUE_ES_TITULO, "titulo", 40, ANCHO_UTIL)}</h1>
+  <div class="caja" style="top:{MARGEN_SUP + 2}mm">
+    <h1 class="que-es-t">{partir(QUE_ES_TITULO, "titulo", 36, ANCHO_UTIL)}</h1>
     {parrafos}
     <div class="que-es-lista">{filas}</div>
-    <p class="que-es-cierre">{partir(QUE_ES_CIERRE, "titulo", 26, ANCHO_UTIL)}</p>
+    <p class="que-es-cierre">{partir(QUE_ES_CIERRE, "titulo", 24, ANCHO_UTIL)}</p>
   </div>
   {numero(n)}
 """, "I")
@@ -489,162 +554,260 @@ def pagina_como_usar(n):
         f'<div class="paso"><div class="n">{i}</div><div class="t">{"<br>".join(esc(l) for l in t.split(chr(10)))}</div></div>'
         for i, t in enumerate(COMO_USAR_PASOS, 1))
     return pagina(f"""
-  <div class="caja" style="top:{MARGEN_SUP + 8}mm">
-    <h1 class="titulo-uso" style="margin-bottom:15mm">{esc(COMO_USAR_TITULO)}</h1>
+  <div class="caja" style="top:{MARGEN_SUP + 4}mm">
+    <h1 class="titulo-uso" style="margin-bottom:11mm">{esc(COMO_USAR_TITULO)}</h1>
     {pasos}
-    <div class="nota-uso" style="margin-top:11mm">{partir(COMO_USAR_NOTA, "cuerpo", 22, ANCHO_UTIL - 2 * 9 - 4)}</div>
+    <div class="nota-uso" style="margin-top:9mm">{partir(COMO_USAR_NOTA, "cuerpo", 22, ANCHO_UTIL - 2 * 9 - 4)}</div>
   </div>
   {numero(n)}
-""")
+""", "D")
 
 
 def paleta_de(clave):
-    """Nombres de los colores de la paleta sugerida del chakra (el primero es el protagonista)."""
+    """Nombres de los colores de la paleta sugerida del chakra (el primero es el principal)."""
     return M.PALETAS[clave]
 
 
-def _cabecera(ch):
-    """Nombre del chakra a la izquierda y su color protagonista a la derecha."""
-    protagonista = paleta_de(ch["clave"])[0]
-    return (f'<div class="cab" style="top:{MARGEN_SUP}mm"><h1 class="titulo-mandala">{esc(ch["nombre"])}</h1>'
-            f'<p class="protag">Color protagonista:{_punto(M.PALETA[protagonista], 8)}{M.NOMBRE_COLOR[protagonista]}</p></div>')
+def _cabecera(titulo, color_principal=None):
+    """Título y, si hay, "Color principal" en una línea propia debajo."""
+    linea = ""
+    if color_principal:
+        linea = (f'<p class="principal">{esc(COLOR_PRINCIPAL)}{_punto(M.PALETA[color_principal])}'
+                 f'{M.NOMBRE_COLOR[color_principal]}</p>')
+    return f'<div class="cab" style="top:{MARGEN_SUP}mm"><h1 class="titulo-mandala">{esc(titulo)}</h1>{linea}</div>'
 
 
-def _fila_paleta(clave, top):
-    """Los 5 colores de la paleta sugerida, en una fila: punto de color y nombre."""
-    items = "".join(f'<div class="sw">{_punto(M.PALETA[c], 8)}{M.NOMBRE_COLOR[c]}</div>' for c in paleta_de(clave))
-    return f'<div class="fila-paleta" style="top:{top}mm">{items}</div>'
+def _fila_paleta(nombres, top, dos=False):
+    """Colores de la leyenda, en una fila: círculo de color y nombre."""
+    items = "".join(f'<div class="sw">{_punto(M.PALETA[c])}{M.NOMBRE_COLOR[c]}</div>' for c in nombres)
+    return f'<div class="fila-paleta{" dos" if dos else ""}" style="top:{top}mm">{items}</div>'
+
+
+def _filas_leyenda(nombres, top):
+    """Leyenda de 8 colores en dos filas de 4."""
+    mitad = (len(nombres) + 1) // 2
+    return _fila_paleta(nombres[:mitad], top, True) + _fila_paleta(nombres[mitad:], top + 10.5, True)
+
+
+def _mandala_img(ruta_svg, centro_y, radio):
+    ancho = 2 * (radio + 2)
+    return (f'<div style="position:absolute; left:{CX - ancho / 2}mm; top:{centro_y - ancho / 2}mm; width:{ancho}mm">'
+            f'{_svg_img(ruta_svg, ancho)}</div>')
 
 
 def pagina_ejemplo(ch, indice, n, ruta_svg):
-    """Primera página del capítulo: el mandala pintado ("Así podría quedar"), con su paleta."""
+    """Página izquierda del capítulo: el mandala pintado ("Así podría quedar"), con su paleta."""
     clave = ch["clave"]
-    ancho = 2 * (RADIO + 2)
-    top = CENTRO_MANDALA_Y - ancho / 2
+    base = CENTRO_MANDALA_Y + RADIO + 2
     return pagina(f"""
-  {_cabecera(ch)}
-  <p class="sub-ejemplo" style="top:{MARGEN_SUP + 17.3}mm">{esc(TITULO_EJEMPLO)}</p>
-  <div style="position:absolute; left:{CX - ancho / 2}mm; top:{top}mm; width:{ancho}mm">{_svg_img(ruta_svg, ancho)}</div>
-  {_fila_paleta(clave, CENTRO_MANDALA_Y + ancho / 2 + 2.5)}
-  <p class="nota-ejemplo" style="top:{CENTRO_MANDALA_Y + ancho / 2 + 15.5}mm">{partir(NOTA_EJEMPLO, "cuerpo", 18, ANCHO_UTIL * 0.8)}</p>
+  {_cabecera(ch["nombre"], paleta_de(clave)[0])}
+  <p class="sub-ejemplo" style="top:{MARGEN_SUP + 27.5}mm">{esc(TITULO_EJEMPLO)}</p>
+  {_mandala_img(ruta_svg, CENTRO_MANDALA_Y, RADIO)}
+  {_fila_paleta(paleta_de(clave), base + 2.5)}
+  <p class="nota-ejemplo" style="top:{base + 15}mm">{partir(NOTA_EJEMPLO, "cuerpo", 18, ANCHO_UTIL * 0.8)}</p>
   {numero(n)}
 """, "I", pestana(indice, clave, "I"))
 
 
 def pagina_mandala(ch, indice, n, ruta_svg):
-    """Segunda página del capítulo: se pinta. Nombre y paleta arriba, mandala en blanco y negro, y abajo la frase."""
+    """Página derecha del capítulo: se pinta. Nombre, color principal y leyenda arriba, y abajo la frase."""
     clave = ch["clave"]
-    ancho = 2 * (RADIO + 2)
-    top = CENTRO_MANDALA_Y - ancho / 2
+    base = CENTRO_MANDALA_Y + RADIO + 2
     afirmacion = "<br>".join(esc(l) for l in ch["afirmacion"])
     return pagina(f"""
-  {_cabecera(ch)}
-  {_fila_paleta(clave, MARGEN_SUP + 18.3)}
-  <div style="position:absolute; left:{CX - ancho / 2}mm; top:{top}mm; width:{ancho}mm">{_svg_img(ruta_svg, ancho)}</div>
-  <div class="etiqueta-frase" style="top:{CENTRO_MANDALA_Y + ancho / 2 + 3}mm">{esc(LEER_FRASE)}</div>
-  <div class="pie-afirmacion" style="top:{CENTRO_MANDALA_Y + ancho / 2 + 12.5}mm">{afirmacion}</div>
+  {_cabecera(ch["nombre"], paleta_de(clave)[0])}
+  {_fila_paleta(paleta_de(clave), Y_LEYENDA)}
+  <p class="antes cursiva" style="top:{Y_ANTES}mm">{partir(ANTES_DE_EMPEZAR, "cursiva", 18, ANCHO_UTIL)}</p>
+  {_mandala_img(ruta_svg, CENTRO_MANDALA_Y, RADIO)}
+  <div class="etiqueta-frase" style="top:{base}mm">{partir(LEER_FRASE, "negrita", 18, ANCHO_UTIL * 0.97)}</div>
+  <div class="pie-afirmacion" style="top:{base + 21}mm">{afirmacion}</div>
   {numero(n)}
 """, "D", pestana(indice, clave))
 
 
-def pagina_reflexion(ch, indice, n):
-    """Después de leer la frase: la tarea (pregunta de recuerdo). La frase no se repite acá."""
-    resp = "<br>".join(esc(l) for l in ch["respiracion"])
+# Página de texto de cada chakra: el cuerpo nunca baja de 18 pt; si no entra, se achica el título y luego el cuerpo
+# (hasta 18 pt) y, si aun así no entra, queda marcado en verificar.py.
+LIMITE_Y_TEXTO = 257.0
+OPCIONES_TEXTO = [(48, 20, 22), (44, 20, 22), (44, 19, 22), (40, 19, 22), (40, 18, 22), (40, 18, 20), (40, 18, 18),
+                  (36, 18, 18), (32, 18, 18)]
+_MM = 25.4 / 72
+
+
+def _n_lineas(texto, familia, pt, ancho=None):
+    ancho = (ancho or ANCHO_UTIL) * 0.97          # margen: la letra real se corta un poco antes que la medida
+    n, actual = 1, ""
+    for palabra in texto.split():
+        prueba = (actual + " " + palabra).strip()
+        if ancho_mm(prueba, familia, pt) <= ancho:
+            actual = prueba
+        else:
+            n, actual = n + 1, palabra
+    return n
+
+
+def _datos_reflexion(ch, edicion):
+    d = dict(ch)
+    if edicion == "mama" and "mama" in ch:
+        d.update(ch["mama"])
+    return d
+
+
+def _alto_reflexion(d, pt_t, pt_c, pt_q=22):
+    """Alto aproximado (mm) de la página de texto, con los mismos márgenes que el CSS."""
+    h = pt_t * _MM * 1.1 + 4
+    h += _n_lineas(d["parrafo"], "cuerpo", pt_c) * pt_c * _MM * 1.5 + 5
+    h += pt_q * _MM * 1.2 + 2
+    h += _n_lineas(d["respiracion"], "cuerpo", pt_c) * pt_c * _MM * 1.5 + 5
+    h += pt_q * _MM * 1.2 + 2
+    for q in d["preguntas"]:
+        h += _n_lineas(q, "negrita", pt_q) * pt_q * _MM * 1.5 + 1
+    for linea in d["nota"]:
+        h += _n_lineas(linea, "cuerpo", 18) * 18 * _MM * 1.5
+    return h + 1 + 14 * 2 * len(d["preguntas"])
+
+
+def _tamanos_propios(ch, edicion):
+    d = _datos_reflexion(ch, edicion)
+    for pt_t, pt_c, pt_q in OPCIONES_TEXTO:
+        if MARGEN_SUP + _alto_reflexion(d, pt_t, pt_c, pt_q) <= LIMITE_Y_TEXTO:
+            return pt_t, pt_c, pt_q
+    return OPCIONES_TEXTO[-1]
+
+
+def tamanos_texto(ch, edicion="venta"):
+    """(título, cuerpo, preguntas) en pt. El cuerpo y las preguntas son los más grandes con los que entra la página;
+    el título es el mismo en los siete chakras (el menor de los que entran), para que el libro sea parejo."""
+    pt_t = min(_tamanos_propios(c, e)[0] for c in CHAKRAS for e in EDICIONES)
+    _, pt_c, pt_q = _tamanos_propios(ch, edicion)
+    return pt_t, pt_c, pt_q
+
+
+def pagina_reflexion(ch, indice, n, edicion="venta"):
+    """Después de leer la frase: respirar y la pregunta (o las preguntas), con dos renglones por pregunta."""
+    d = _datos_reflexion(ch, edicion)
+    pt_t, pt_c, pt_q = tamanos_texto(ch, edicion)
+    preguntas = "".join(f'<p class="pregunta" style="font-size:{pt_q}pt">{esc(q)}</p>' for q in d["preguntas"])
+    nota = "".join(f'<p class="nota-escribir">{esc(t)}</p>' for t in d["nota"])
+    renglones = '<div class="renglon"></div>' * (2 * len(d["preguntas"]))
     return pagina(f"""
   <div class="caja" style="top:{MARGEN_SUP}mm">
-    <h1 class="titulo-cap">{esc(ch["nombre"])}</h1>
-    <p class="relacion">{partir(ch["relacion"], "cuerpo", 20, ANCHO_UTIL * 0.9)}</p>
-    <h2 class="sub">{esc(TITULO_RESPIRAR)}</h2>
-    <p class="respiracion">{resp}</p>
-    <h2 class="sub">{esc(TITULO_RECORDAR)}</h2>
-    <p class="pregunta">{partir(ch["pregunta"], "negrita", 22, ANCHO_UTIL * 0.92)}</p>
-    <p class="nota-escribir">{esc(TEXTO_ESCRIBIR)}</p>
-    <div class="renglon"></div><div class="renglon"></div><div class="renglon"></div>
+    <h1 class="titulo-cap" style="font-size:{pt_t}pt">{esc(d["nombre"])}</h1>
+    <p class="parrafo" style="font-size:{pt_c}pt">{esc(d["parrafo"])}</p>
+    <h2 class="sub" style="font-size:{pt_q}pt">{esc(TITULO_RESPIRAR)}</h2>
+    <p class="respiracion" style="font-size:{pt_c}pt">{esc(d["respiracion"])}</p>
+    <h2 class="sub" style="font-size:{pt_q}pt">{esc(TITULO_RECORDAR)}</h2>
+    {preguntas}
+    {nota}
+    <div class="renglones">{renglones}</div>
   </div>
   {numero(n)}
 """, "D", pestana(indice, ch["clave"]))
 
 
 def pagina_ejemplo_integracion(n, ruta_svg):
-    """Todos juntos, pintado: cada flor con el color de su chakra, y los siete colores en dos filas."""
-    import ejemplos
-    ancho = 2 * (M.RADIO_INTEGRACION + 2)
-    top = CENTRO_INTEGRACION_Y - ancho / 2
-    base = CENTRO_INTEGRACION_Y + ancho / 2
-    nombres = ("rojo", "naranja", "amarillo", "verde", "azul", "indigo", "violeta")
-    def fila(nom):
-        return '<div class="fila-paleta" style="top:{t}mm; justify-content:center; gap:9mm">' + "".join(
-            f'<div class="sw">{_punto(M.PALETA[c], 8)}{M.NOMBRE_COLOR[c]}</div>' for c in nom) + "</div>"
+    """Todos juntos, pintado: cada flor con el color de su chakra; leyenda de 8 colores en dos filas."""
     return pagina(f"""
-  <div class="caja" style="top:{MARGEN_SUP}mm"><h1 class="titulo-mandala" style="font-size:34pt">{esc(INTEGRACION_TITULO)}</h1></div>
-  <p class="sub-ejemplo" style="top:{MARGEN_SUP + 17.3}mm">{esc(TITULO_EJEMPLO)}</p>
-  <div style="position:absolute; left:{CX - ancho / 2}mm; top:{top}mm; width:{ancho}mm">{_svg_img(ruta_svg, ancho)}</div>
-  {fila(nombres[:4]).format(t=base + 2.5)}
-  {fila(nombres[4:]).format(t=base + 13)}
-  <p class="nota-ejemplo" style="top:{base + 26}mm">{partir(NOTA_EJEMPLO, "cuerpo", 18, ANCHO_UTIL * 0.8)}</p>
+  {_cabecera(INTEGRACION_TITULO)}
+  <p class="sub-ejemplo" style="top:{MARGEN_SUP + 15.5}mm">{esc(TITULO_EJEMPLO)}</p>
+  {_filas_leyenda(INTEGRACION_COLORES, Y_LEYENDA_INT)}
+  {_mandala_img(ruta_svg, CENTRO_INTEGRACION_Y, M.RADIO_INTEGRACION)}
+  <p class="nota-ejemplo" style="top:{CENTRO_INTEGRACION_Y + M.RADIO_INTEGRACION + 4}mm">{partir(NOTA_EJEMPLO, "cuerpo", 18, ANCHO_UTIL * 0.8)}</p>
   {numero(n)}
 """, "I")
 
 
 def pagina_integracion(n, ruta_svg):
-    """Los siete chakras juntos: un mandala para pintar y el texto de la paleta."""
-    ancho = 2 * (M.RADIO_INTEGRACION + 2)
-    top = CENTRO_INTEGRACION_Y - ancho / 2
-    base = CENTRO_INTEGRACION_Y + ancho / 2
+    """Los siete chakras juntos: un mandala para pintar, con la leyenda de colores arriba."""
+    base = CENTRO_INTEGRACION_Y + M.RADIO_INTEGRACION + 2
     return pagina(f"""
-  <div class="caja" style="top:{MARGEN_SUP}mm">
-    <h1 class="titulo-mandala" style="font-size:34pt">{esc(INTEGRACION_TITULO)}</h1>
-    <p class="int-texto" style="margin-top:0">{esc(INTEGRACION_ARRIBA)}</p>
-    <p class="int-colores">{esc(INTEGRACION_COLORES)}</p>
-  </div>
-  <div style="position:absolute; left:{CX - ancho / 2}mm; top:{top}mm; width:{ancho}mm">{_svg_img(ruta_svg, ancho)}</div>
-  <div class="caja" style="top:{base + 3}mm">
-    <p class="int-texto centrado">{partir(INTEGRACION_ABAJO, "cuerpo", 18, ANCHO_UTIL * 0.8)}</p>
+  {_cabecera(INTEGRACION_TITULO)}
+  <p class="int-texto" style="position:absolute; left:{X0}mm; top:{MARGEN_SUP + 15.5}mm; width:{ANCHO_UTIL}mm">{esc(INTEGRACION_ARRIBA)}</p>
+  {_filas_leyenda(INTEGRACION_COLORES, Y_LEYENDA_INT)}
+  <p class="antes cursiva" style="top:{Y_LEYENDA_INT + 22}mm">{partir(ANTES_DE_EMPEZAR, "cursiva", 18, ANCHO_UTIL)}</p>
+  {_mandala_img(ruta_svg, CENTRO_INTEGRACION_Y, M.RADIO_INTEGRACION)}
+  <div class="caja" style="top:{base}mm">
+    <p class="int-texto centrado">{partir(INTEGRACION_ABAJO, "cuerpo", 18, ANCHO_UTIL)}</p>
     <p class="int-frase">{"<br>".join(esc(l) for l in INTEGRACION_FRASE)}</p>
   </div>
   {numero(n)}
-""")
+""", "D")
 
 
 def pagina_compartir(n, ruta_svg):
-    """Un momento para compartir: invitación a colorear acompañada, con dos flores para pintar de a dos."""
+    """Un momento para compartir: invitación a colorear acompañado, con dos flores grandes para pintar de a dos."""
     ancho = 2 * (M.RADIO_PAR + 1)
-    parrafos = "".join('<p class="comp-p">' + "<br>".join(partir(l, "cuerpo", 20, ANCHO_UTIL * 0.95) for l in p) + "</p>"
-                       for p in COMPARTIR_PARRAFOS)
+    lineas = "".join(f'<p class="comp-p" style="font-size:20pt">{partir(t, "cuerpo", 20, ANCHO_UTIL)}</p>' for t in COMPARTIR_LINEAS)
     return pagina(f"""
-  <div class="caja" style="top:{MARGEN_SUP + 4}mm">
-    <h1 class="comp-titulo">{esc(COMPARTIR_TITULO)}</h1>
-    {parrafos}
-    <p class="comp-frase">{partir(COMPARTIR_FRASE, "titulo", 28, ANCHO_UTIL * 0.85)}</p>
+  <div class="caja" style="top:{MARGEN_SUP + 2}mm">
+    <h1 class="comp-titulo">{partir(COMPARTIR_TITULO, "titulo", 34, ANCHO_UTIL)}</h1>
+    {lineas}
+    <p class="comp-frase">{partir(COMPARTIR_FRASE, "titulo", 24, ANCHO_UTIL * 0.9)}</p>
+    <p class="comp-nota" style="margin-top:8mm">{esc(COMPARTIR_NOTA)}</p>
+    <div style="margin-top:6mm">{_svg_img(ruta_svg, ancho).replace('style="', 'style="margin:0 auto; ')}</div>
   </div>
-  <div style="position:absolute; left:{CX - ancho / 2}mm; top:{ALTO - MARGEN_INF - 22 - ancho * M.RAZON_PAR}mm; width:{ancho}mm">{_svg_img(ruta_svg, ancho)}</div>
   {numero(n)}
-""")
+""", "D")
 
 
 def pagina_cierre(n):
-    """Cierre emocional: un corazón, la frase final y renglones grandes para escribir cómo se sintió."""
+    """Cierre emocional: un corazón, la frase final y renglones para escribir cómo se sintió."""
     frase = "<br>".join(esc(l) for l in FRASE_FINAL)
-    renglones = '<div class="renglon" style="height:21mm"></div>' * 3
+    renglones = '<div class="renglon"></div>' * 3
     return pagina(f"""
-  <div style="position:absolute; left:{CX - 25}mm; top:{MARGEN_SUP + 4}mm; width:50mm">{_svg_img("svg/dedicatoria_corazon.svg", 50)}</div>
-  <div class="caja cierre-titulo" style="top:73mm">{esc(CIERRE_TITULO)}</div>
-  <div class="caja cierre-frase" style="top:87mm">{frase}</div>
-  <div class="caja" style="top:127mm">
-    <p class="cierre-senti" style="margin-bottom:2mm">{esc(CIERRE_SENTI)}</p>
-    {renglones}
+  <div class="caja" style="top:{MARGEN_SUP + 2}mm">
+    <div style="width:46mm; margin:0 auto 5mm auto">{_svg_img("svg/dedicatoria_corazon.svg", 46)}</div>
+    <div class="cierre-titulo">{esc(CIERRE_TITULO)}</div>
+    <div class="cierre-frase">{frase}</div>
+    <p class="cierre-senti" style="margin-top:9mm">{esc(CIERRE_SENTI)}</p>
+    <p class="cierre-ayuda">{esc(CIERRE_AYUDA)}</p>
+    <div class="renglones">{renglones}</div>
+    <div class="cierre-fecha" style="margin-top:2mm">{esc(CIERRE_FECHA)}<div class="linea"></div></div>
+    <p class="cierre-nota" style="margin-top:8mm">{partir(CIERRE_NOTA, "negrita", 18, ANCHO_UTIL * 0.9)}</p>
   </div>
-  <div class="caja cierre-fecha" style="top:206mm">{esc(CIERRE_FECHA)}<div class="linea"></div></div>
-  <div class="caja cierre-nota" style="top:224mm">{partir(CIERRE_NOTA, "negrita", 20, ANCHO_UTIL * 0.9)}</div>
   {numero(n)}
-""")
+""", "D")
+
+
+def ruta_logo():
+    """El logo de la autora, si está en libro-mandalas/assets/ (logo.png, logo.svg, logo.jpg...)."""
+    carpeta = AQUI / "assets"
+    return next(iter(sorted(carpeta.glob("logo.*"))), None) if carpeta.exists() else None
+
+
+LOGO_ANCHO = 50
+
+
+def pagina_contratapa(edicion="venta"):
+    """Página 40. Para vender: mensaje de la autora, logo y usuario. Para mamá: "Para:", "De:" y renglones para la dedicatoria."""
+    if edicion == "mama":
+        renglones = '<div class="renglon"></div>' * 5
+        return pagina(f"""
+  <div class="caja" style="top:46mm">
+    <div class="para-de">{esc(CONTRA_PARA)}<div class="linea"></div></div>
+    <div class="para-de">{esc(CONTRA_DE)}<div class="linea"></div></div>
+    <div style="margin-top:12mm">{renglones}</div>
+  </div>
+""", "I")
+    logo = ruta_logo()
+    if logo:
+        img = f'<img src="{logo.as_uri()}" style="width:{LOGO_ANCHO}mm; margin:0 auto">'
+    else:
+        img = f'<div style="height:{LOGO_ANCHO * 0.6}mm"></div>'          # hueco reservado: falta el archivo del logo
+    parrafos = '<div class="sep"></div>'.join(f"<p>{partir(t, 'cuerpo', 20, ANCHO_UTIL)}</p>" for t in CONTRA_LINEAS)
+    return pagina(f"""
+  <div class="caja contra" style="top:52mm">
+    {parrafos}
+    <div style="margin-top:12mm">{img}</div>
+    <p class="usuario" style="margin-top:5mm">{esc(CONTRA_USUARIO)}</p>
+  </div>
+""", "I")
 
 
 # ===================================================================== ARMADO
 # El libro se arma por pliegos (página izquierda + derecha). La portada es la página 1 (derecha); cada
 # mandala y cada página para pintar va en una página derecha, con su reverso (izquierda) en blanco, así el
 # marcador no traspasa. El ejemplo pintado va en la izquierda, enfrente del mandala, para mirarlo a la vez.
-EDICIONES = {"venta": "libro_mandalas_chakras.pdf", "mama": "libro_para_mama.pdf"}
+EDICIONES = {"venta": "libro-chakras-venta.pdf", "mama": "libro-chakras-mama.pdf"}
 
 
 def armar_secuencia(edicion="venta"):
@@ -664,33 +827,38 @@ def armar_secuencia(edicion="venta"):
     add("legal", "I", pagina_legal(), numero=None,
         imagenes=[(CX - ancho_l / 2, 38, CX - ancho_l / 2 + ancho_l, 38 + ancho_l)], x_dibujos="I")
     add("dedicatoria", "D", pagina_dedicatoria(edicion), numero=None, edicion=edicion,
-        imagenes=[(CX - ancho_c / 2, 24, CX + ancho_c / 2, 24 + ancho_c)])
+        imagenes=[(CX - ancho_c / 2, 24, CX + ancho_c / 2, 24 + ancho_c)], lineas_cortas=1 if edicion == "venta" else 0)
     add("que_es_un_chakra", "I", pagina_que_es(n()), numero=n())
     add("como_usar", "D", pagina_como_usar(n()), numero=n())
+    base = CENTRO_MANDALA_Y + RADIO + 2
     for i, ch in enumerate(CHAKRAS):
         clave = ch["clave"]
         paleta = [M.PALETA[c] for c in paleta_de(clave)]
         comun = dict(clave=clave, paleta=paleta, protagonista=paleta[0])
         add(f"{clave}_ejemplo", "I", pagina_ejemplo(ch, i, n(), f"ejemplos/{clave}.svg"), numero=n(), a_color=True,
-            mandala=(CX_I, CENTRO_MANDALA_Y, RADIO), fila_paleta=CENTRO_MANDALA_Y + RADIO + 4.5, **comun)
+            mandala=(CX_I, CENTRO_MANDALA_Y, RADIO), fila_paleta=base + 2.5, **comun)
         add(f"{clave}_mandala", "D", pagina_mandala(ch, i, n(), f"svg/{clave}.svg"), numero=n(), marcador=True,
-            afirmacion=ch["afirmacion"], mandala=(CX, CENTRO_MANDALA_Y, RADIO), fila_paleta=MARGEN_SUP + 18.3, **comun)
-        add(f"{clave}_en_blanco", "I", pagina_blanca(), en_blanco=True)
-        add(f"{clave}_reflexion", "D", pagina_reflexion(ch, i, n()), numero=n(), clave=clave,
-            sin_texto=ch["afirmacion"])                      # la frase aparece una sola vez por capítulo
+            afirmacion=ch["afirmacion"], mandala=(CX, CENTRO_MANDALA_Y, RADIO), fila_paleta=Y_LEYENDA, **comun)
+        add(f"{clave}_en_blanco", "I", pagina_blanca(n()), en_blanco=True, numero=n(), centrado=True)
+        add(f"{clave}_reflexion", "D", pagina_reflexion(ch, i, n(), edicion), numero=n(), clave=clave,
+            sin_texto=ch["afirmacion"], tamanos=tamanos_texto(ch, edicion),
+            renglones=2 * len(_datos_reflexion(ch, edicion)["preguntas"]))     # la frase aparece una sola vez por capítulo
+    colores_int = [M.PALETA[c] for c in INTEGRACION_COLORES]
     add("integracion_ejemplo", "I", pagina_ejemplo_integracion(n(), "ejemplos/integracion.svg"), numero=n(),
         a_color=True, sin_proporcion=True, mandala=(CX_I, CENTRO_INTEGRACION_Y, M.RADIO_INTEGRACION),
-        paleta=ejemplos_colores_integracion(), fila_paleta=CENTRO_INTEGRACION_Y + M.RADIO_INTEGRACION + 4.5)
+        paleta=colores_int, fila_paleta=Y_LEYENDA_INT)
     add("integracion", "D", pagina_integracion(n(), "svg/integracion.svg"), numero=n(), marcador=True,
-        mandala=(CX, CENTRO_INTEGRACION_Y, M.RADIO_INTEGRACION))
-    add("integracion_en_blanco", "I", pagina_blanca(), en_blanco=True)
-    ancho_par = 2 * (M.RADIO_PAR + 1)
-    alto_par = ancho_par * M.RAZON_PAR
-    add("compartir", "D", pagina_compartir(n(), "svg/par_de_flores.svg"), numero=n(), marcador=True,
-        imagenes=[(CX - ancho_par / 2, ALTO - MARGEN_INF - 22 - alto_par, CX + ancho_par / 2, ALTO - MARGEN_INF - 22)])
-    add("compartir_en_blanco", "I", pagina_blanca(), en_blanco=True)
-    add("cierre", "D", pagina_cierre(n()), numero=n(), afirmacion=FRASE_FINAL)
-    add("cierre_en_blanco", "I", pagina_blanca(), en_blanco=True)
+        mandala=(CX, CENTRO_INTEGRACION_Y, M.RADIO_INTEGRACION), sin_proporcion=True, paleta=colores_int,
+        fila_paleta=Y_LEYENDA_INT)
+    add("integracion_en_blanco", "I", pagina_blanca(n()), en_blanco=True, numero=n(), centrado=True)
+    add("compartir", "D", pagina_compartir(n(), "svg/par_de_flores.svg"), numero=n(), marcador=True, imagenes=True)
+    add("compartir_en_blanco", "I", pagina_blanca(n()), en_blanco=True, numero=n(), centrado=True)
+    add("cierre", "D", pagina_cierre(n()), numero=n(), afirmacion=FRASE_FINAL, renglones=3, lineas_cortas=1)
+    if edicion == "venta":
+        add("contratapa", "I", pagina_contratapa(edicion), numero=None, edicion=edicion, centrado=True,
+            logo=ruta_logo() is not None)
+    else:
+        add("contratapa", "I", pagina_contratapa(edicion), numero=None, edicion=edicion, renglones=5, lineas_cortas=2)
     for k, p in enumerate(seq):                              # impar = derecha, par = izquierda
         assert p["lado"] == ("D" if k % 2 == 0 else "I"), (k + 1, p["nombre"], p["lado"])
     return seq
@@ -726,6 +894,10 @@ def construir():
     (AQUI / "svg" / "portada_arte.svg").write_text(M.portada_arte(), encoding="utf-8")
     (AQUI / "svg" / "dedicatoria_corazon.svg").write_text(M.corazon_linea(), encoding="utf-8")
 
+    for viejo in ("libro_mandalas_chakras.pdf", "libro_para_mama.pdf"):          # nombres anteriores
+        (AQUI / viejo).unlink(missing_ok=True)
+    if ruta_logo() is None:
+        print("AVISO: falta el logo de la página 40 (edición para vender): ponelo en libro-mandalas/assets/logo.png")
     from weasyprint import HTML
     from pypdf import PdfReader, PdfWriter
     from pypdf.generic import RectangleObject

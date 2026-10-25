@@ -9,12 +9,12 @@ sueltas que fabriquen zonas diminutas.
 """
 import math
 
-# Grosor de línea: contorno principal de 3,5 pt (1,235 mm) y divisiones internas de 3 pt (1,058 mm).
-# Nada más fino que 2,5 pt.
-LINEA = 1.235          # contorno principal (3,5 pt)
-LINEA_FINA = 1.058     # divisiones internas (3 pt)
-NEGRO = "#000000"
-BLANCO = "#ffffff"
+# Grosor de línea: 25 % más fino que la versión anterior (3,5 y 3 pt): contorno principal de 2,6 pt
+# (0,926 mm) y divisiones internas de 2,25 pt (0,794 mm). Color gris muy oscuro, no negro puro.
+LINEA = 0.926          # contorno principal (2,6 pt)
+LINEA_FINA = 0.794     # divisiones internas (2,25 pt)
+NEGRO = "#3A3A3A"
+BLANCO = "#FFFBF5"     # el color del papel: las zonas para pintar son del mismo color que el fondo de la página
 
 # ---------------------------------------------------------------- utilidades
 def _n(x):
@@ -266,7 +266,7 @@ def documento(cuerpo, radio, margen=2.0, fondo=None):
 # Líneas de 3,5 pt (contornos) y 3 pt (divisiones). Nada de microdetalles: las zonas para pintar
 # miden 10 mm o más y no hay puntos ni pétalos diminutos.
 ANCHO_PAGINA, ALTO_PAGINA = 215.9, 279.4        # 8,5 × 11 pulgadas
-RADIO_MANDALA = 82                  # radio con el que se imprime
+RADIO_MANDALA = 63                  # radio con el que se imprime (mm)
 _R, _RV, _RB = 76, 69, 57          # unidades de diseño: borde, valle del borde y aro de los pétalos
 ESCALA_MANDALA = RADIO_MANDALA / _R
 _FB = (0.30, 0.62, 0.70, 0.62)
@@ -299,12 +299,16 @@ def _lobulos(n, fase, p, valle=_RV):
     return [borde_festoneado(valle, _R, n, fase=fase, fill=_c(p, "borde"))] + sectores(_RB, valle, n, fase)
 
 
-def _estrella6(r, esquina, valle, fill=BLANCO):
+def _estrella6(r, esquina, valle, fill=BLANCO, razon=1 / math.sqrt(3)):
+    """Estrella de 6 puntas; `razon` es el radio de los huecos sobre el de las puntas (más alto = puntas más cortas y gruesas)."""
     pts, rad = [], []
     for k in range(6):
         pts.append(polar(r, 60 * k)); rad.append(esquina)
-        pts.append(polar(r / math.sqrt(3), 60 * k + 30)); rad.append(valle)
+        pts.append(polar(r * razon, 60 * k + 30)); rad.append(valle)
     return poligono_redondeado(pts, rad, fill)
+
+
+RAIZ_R_ROMBO, RAIZ_D_ROMBO, RAIZ_R_PUNTO, RAIZ_ANCHO, RAIZ_LADO = 46, 17, 12, 26, 24
 
 
 @escalado
@@ -312,11 +316,14 @@ def raiz(p=None):
     """Muladhara · 4 pétalos · cuadrado (tierra): ladrillos de tierra y cuatro piedras."""
     e = _lobulos(8, 22.5, p) + [circulo(_RB, fill=_c(p, "fondo"))]
     for i in range(4):
-        x, y = polar(40, 45 + 90 * i)
-        e.append(rombo_suave(x, y, 14, 0.30, fill=_c(p, "piedra")))
-    e += [petalo(90 * i, 14, _RB, 34, forma=FORMA_PETALO, fill=_c(p, "petalos", i)) for i in range(4)]
-    e += [cuadrado_suave(0, 0, 17, 4, fill=_c(p, "cuadrado")), circulo(8, fill=_c(p, "punto"))]
+        x, y = polar(RAIZ_R_ROMBO, 45 + 90 * i)
+        e.append(rombo_suave(x, y, RAIZ_D_ROMBO, 0.30, fill=_c(p, "piedra")))
+    e += [petalo(90 * i, 14, _RB, RAIZ_ANCHO, forma=FORMA_PETALO, fill=_c(p, "petalos", i)) for i in range(4)]
+    e += [cuadrado_suave(0, 0, RAIZ_LADO, 4, fill=_c(p, "cuadrado")), circulo(RAIZ_R_PUNTO, fill=_c(p, "punto"))]
     return documento(e, _R)
+
+
+SACRO_R_GOTA, SACRO_D_GOTA, SACRO_ANCHO = 10.5, 33, 22     # gotas: 7,5 → 10,5 (+40 %)
 
 
 @escalado
@@ -324,69 +331,76 @@ def sacro(p=None):
     """Svadhisthana · 6 pétalos · luna (agua): seis gotas entre los pétalos."""
     e = _lobulos(6, 30, p) + [circulo(_RB, fill=_c(p, "fondo"))]
     if p and "cunas" in p:                                   # entre pétalos, de a dos colores
-        e += [_cuna(_RB, 60 + 120 * j, 120 + 120 * j, _c(p, "cunas")) for j in range(3)]
+        e += [_cuna(_RB, 60 + 120 * j, 120 + 120 * j, _c(p, "cunas", j)) for j in range(3)]
     e.append(_aro())                                         # las cuñas tapan la mitad del aro: se vuelve a dibujar
     for i in range(6):
-        e.append(circulo(7.5, *polar(42, 30 + 60 * i), fill=_c(p, "gotas")))
-    e += [petalo(60 * i, 15, _RB, 28, forma=FORMA_PETALO, fill=_c(p, "petalos")) for i in range(6)]
+        e.append(circulo(SACRO_R_GOTA, *polar(SACRO_D_GOTA, 30 + 60 * i), fill=_c(p, "gotas")))
+    e += [petalo(60 * i, 15, _RB, SACRO_ANCHO, forma=FORMA_PETALO, fill=_c(p, "petalos")) for i in range(6)]
     e += [circulo(24, fill=_c(p, "disco")), media_luna(0, 0, 24, 17, 9, 0, fill=_c(p, "luna"))]
     return documento(e, _R)
 
 
+PLEXO_N, PLEXO_ANCHO, PLEXO_R0, PLEXO_DISCO, PLEXO_TRI = 8, 24, 12, 28, 20
+CORAZON_N, CORAZON_ANCHO, CORAZON_R0, CORAZON_ESTRELLA, CORAZON_RAZON = 8, 24, 16, 20, 0.70
+GARGANTA_N, GARGANTA_ANCHO, GARGANTA_DISCO, GARGANTA_CENTRO = 8, 26, 32, 14
+OJO_LOBULOS, OJO_INTERIOR, OJO_DISCO, OJO_PUPILA, OJO_ALAS, OJO_R0 = 8, 43, 28, 14, 46, 14
+CORONA_LOBULOS, CORONA_ANCHO, CORONA_R0, CORONA_CENTRO = 8, 24, 22, 26
+
+
 @escalado
 def plexo(p=None):
-    """Manipura · 10 pétalos · triángulo hacia abajo (fuego): borde de rayos redondeados."""
-    n, paso, pts, rad = 10, 36, [], []
+    """Manipura · 8 pétalos anchos · triángulo hacia abajo (fuego): borde de rayos redondeados."""
+    n, pts, rad = PLEXO_N, [], []
+    paso = 360 / n
     for k in range(n):
         pts.append(polar(63, paso * (k - 0.5))); rad.append(3)
         pts.append(polar(_R, paso * k)); rad.append(7)
     e = [poligono_redondeado(pts, rad, _c(p, "borde"))] + sectores(_RB, 63, n, paso / 2)
     e += [circulo(_RB, fill=_c(p, "fondo"))]
     if p and "cunas" in p:                                   # entre pétalos, de a dos colores
-        e += [_cuna(_RB, 36 + 72 * j, 72 + 72 * j, _c(p, "cunas")) for j in range(5)]
-    e += capa_petalos(n, 12, _RB + 0.3, 18, forma=_FD, orden=list(range(n)), rellenos=[_c(p, "petalos")])
-    e += [_aro(), circulo(24, fill=_c(p, "disco")),
-          poligono_redondeado([polar(24, 180), polar(24, 300), polar(24, 60)], 5, _c(p, "triangulo"))]
+        e += [_cuna(_RB, paso + 2 * paso * j, 2 * paso + 2 * paso * j, _c(p, "cunas", j)) for j in range(n // 2)]
+    e += capa_petalos(n, PLEXO_R0, _RB + 0.3, PLEXO_ANCHO, forma=_FD, orden=list(range(n)), rellenos=[_c(p, "petalos")])
+    e += [_aro(), circulo(PLEXO_DISCO, fill=_c(p, "disco")),
+          poligono_redondeado([polar(PLEXO_TRI, 180), polar(PLEXO_TRI, 300), polar(PLEXO_TRI, 60)], 5, _c(p, "triangulo"))]
     return documento(e, _R)
 
 
 @escalado
 def corazon(p=None):
-    """Anahata · 12 pétalos · estrella de seis puntas (aire)."""
-    e = _lobulos(12, 15, p) + [circulo(_RB, fill=_c(p, "fondo"))]
+    """Anahata · 8 pétalos anchos · estrella de seis puntas (aire)."""
+    e = _lobulos(8, 22.5, p) + [circulo(_RB, fill=_c(p, "fondo"))]
     pet = p["petalos"] if p else None
-    e += capa_petalos(12, 20, _RB + 0.3, 18, forma=FORMA_PETALO, orden=list(range(12)), rellenos=pet)
-    e += [_aro(), _estrella6(22, 5, 2.5, _c(p, "estrella"))]
+    e += capa_petalos(CORAZON_N, CORAZON_R0, _RB + 0.3, CORAZON_ANCHO, forma=FORMA_PETALO, orden=list(range(CORAZON_N)), rellenos=pet)
+    e += [_aro(), _estrella6(CORAZON_ESTRELLA, 5, 4, _c(p, "estrella"), CORAZON_RAZON)]
     return documento(e, _R)
 
 
 @escalado
 def garganta(p=None):
-    """Vishuddha · 16 pétalos · círculo (éter): un anillo ancho dividido en 8."""
+    """Vishuddha · 8 pétalos anchos · círculo (éter): un anillo ancho dividido en 8."""
     e = [circulo(_R, fill=_c(p, "banda"))] + sectores(_RB, _R, 8, 0) + [circulo(_RB, fill=_c(p, "fondo"))]
     pet = p["petalos"] if p else None
-    e += capa_petalos(16, 16, _RB + 0.3, 18, forma=FORMA_PETALO, orden=list(range(16)), rellenos=pet)
-    e += [_aro(), circulo(24, fill=_c(p, "disco")), circulo(12, fill=_c(p, "centro"))]
+    e += capa_petalos(GARGANTA_N, 16, _RB + 0.3, GARGANTA_ANCHO, forma=FORMA_PETALO, orden=list(range(GARGANTA_N)), rellenos=pet)
+    e += [_aro(), circulo(GARGANTA_DISCO, fill=_c(p, "disco")), circulo(GARGANTA_CENTRO, fill=_c(p, "centro"))]
     return documento(e, _R)
 
 
 @escalado
 def tercer_ojo(p=None):
     """Ajna · 2 pétalos grandes (las alas) · círculo central, con un anillo que divide lo de arriba y lo de abajo."""
-    e = _lobulos(16, 0, p) + [circulo(_RB, fill=_c(p, "fondo")), circulo(40, fill=_c(p, "interior"))]
-    e += [petalo(a, 14, _RB + 0.3, 46, forma=FORMA_PETALO, fill=_c(p, "alas")) for a in (90, 270)]
-    e += [_aro(), circulo(24, fill=_c(p, "disco")), circulo(11, fill=_c(p, "pupila"))]
+    e = _lobulos(OJO_LOBULOS, 0, p) + [circulo(_RB, fill=_c(p, "fondo")), circulo(OJO_INTERIOR, fill=_c(p, "interior"))]
+    e += [petalo(a, OJO_R0, _RB + 0.3, OJO_ALAS, forma=FORMA_PETALO, fill=_c(p, "alas")) for a in (90, 270)]
+    e += [_aro(), circulo(OJO_DISCO, fill=_c(p, "disco")), circulo(OJO_PUPILA, fill=_c(p, "pupila"))]
     return documento(e, _R)
 
 
 @escalado
 def corona(p=None):
-    """Sahasrara · loto de 3 capas (8 + 8 + 4 pétalos), borde de 18 lóbulos."""
-    e = _lobulos(18, 0, p) + [circulo(_RB, fill=_c(p, "fondo"))]
-    e += capa_petalos(8, 31, _RB + 0.3, 26, orden=list(range(8)), rellenos=[_c(p, "grandes", 0), _c(p, "grandes", 1)])   # capa de atrás
-    e += capa_petalos(8, 26, 44, 18, fase=22.5, orden=list(range(8)), rellenos=[_c(p, "medios")])                          # entre los grandes
-    e += capa_petalos(4, 20, 34, 24, orden=list(range(4)), rellenos=[_c(p, "internos")])                                   # capa del frente
-    e += [_aro(), circulo(18, fill=_c(p, "disco"))]
+    """Sahasrara · loto de 8 pétalos grandes alrededor de un círculo central, borde de 8 lóbulos."""
+    e = _lobulos(CORONA_LOBULOS, 0, p) + [circulo(_RB, fill=_c(p, "fondo"))]
+    pet = p["grandes"] if p else None
+    e += capa_petalos(8, CORONA_R0, _RB + 0.3, CORONA_ANCHO, orden=list(range(8)), rellenos=pet)
+    e += [_aro(), circulo(CORONA_CENTRO, fill=_c(p, "disco"))]
     return documento(e, _R)
 
 
@@ -394,7 +408,13 @@ def corona(p=None):
 # Los siete chakras juntos, como en la portada: la flor del centro (Corona) y seis flores alrededor
 # (Raíz arriba y, en sentido horario, Sacro, Plexo solar, Corazón, Garganta y Tercer ojo), unidas por
 # un aro y por radios. Para colorear: las flores son simples (zonas grandes), no la versión de la portada.
-RADIO_INTEGRACION = RADIO_MANDALA
+# Las seis flores de afuera son un 30 % más grandes que antes (radio 20 → 26, pétalos y círculo central);
+# la flor del medio, el anillo exterior y la disposición se mantienen.
+INT_RC, INT_RS, INT_HUECO = 26, 26, 6
+INT_NC, INT_ANCHO_C, INT_CTR_C = 6, 17.3, 9         # flor del medio (6 pétalos: con 8 las zonas quedaban de menos de 10 mm; con 17,3 cada pétalo supera 1 cm²)
+INT_D = INT_RC + INT_RS + INT_HUECO               # distancia del centro a cada flor de alrededor
+INT_AFUERA = INT_D + INT_RS + 3                   # círculo exterior (unidades de diseño)
+RADIO_INTEGRACION = 68                            # radio con el que se imprime (mm)
 ORDEN_SATELITES = ("raiz", "sacro", "plexo", "corazon", "garganta", "tercer_ojo")   # horario desde arriba
 
 
@@ -406,32 +426,37 @@ def _flor_colorear(x, y, R, n, base, ancho, centro, forma, giro=0, fp=None, fc=B
 
 
 @escalado
-def integracion(p=None):
-    """Siete flores (una por chakra) dentro de un aro: las de alrededor de 4 pétalos y la del centro de 8."""
-    Rc, Rs, hueco = 26, 20, 7
-    D = Rc + Rs + hueco                      # distancia del centro a cada flor de alrededor
-    afuera = D + Rs + 3                      # círculo exterior
+def _integracion(p=None):
+    D, afuera = INT_D, INT_AFUERA
     e = [circulo(afuera, fill=_c(p, "fondo")), circulo(D, fill="none")]
     for i in range(6):                       # divisiones entre las flores, en el anillo de afuera
         e.append(linea(polar(D, 30 + 60 * i), polar(afuera, 30 + 60 * i)))
         e.append(linea((0, 0), polar(D, 60 * i)))                       # radios hacia cada flor
-    e += _flor_colorear(0, 0, Rc, 8, 8, 16, 11, _FB, fp=_c(p, "corona"), fc=_c(p, "centros"))
+    e += _flor_colorear(0, 0, INT_RC, INT_NC, 8, INT_ANCHO_C, INT_CTR_C, _FB, fp=_c(p, "corona"), fc=_c(p, "centros"))
+    k = INT_RS / 20                          # las flores de afuera: las de antes (radio 20) por 1,3
     for i in range(6):
         x, y = polar(D, 60 * i)
-        e += _flor_colorear(x, y, Rs, 4, 5, 20, 7, _FB, giro=60 * i, fp=_c(p, "satelites", i), fc=_c(p, "centros"))
+        e += _flor_colorear(x, y, INT_RS, 4, 5 * k, 20 * k, 7 * k, _FB, giro=60 * i, fp=_c(p, "satelites", i), fc=_c(p, "centros"))
     return documento(e, afuera)
 
 
-# Dos flores para pintar de a dos ("Un momento para compartir")
-RADIO_PAR = 62
-RAZON_PAR = 60 / 126          # alto / ancho del dibujo
+def integracion(p=None):
+    """Siete flores (una por chakra) dentro de un aro: las de alrededor de 4 pétalos y la del centro de 8."""
+    return _integracion(p, escala=RADIO_INTEGRACION / INT_AFUERA)
+
+
+# Dos flores para pintar de a dos ("Un momento para compartir"): 30 % más grandes que antes, con aire entre ellas
+PAR_R, PAR_SEP = 29 * 1.3, 88
+RADIO_PAR = PAR_SEP / 2 + PAR_R + 2
+RAZON_PAR = (2 * (PAR_R + 1)) / (2 * (RADIO_PAR + 1))          # alto / ancho del dibujo
 
 
 def par_de_flores():
     """Dos flores iguales, una al lado de la otra, para colorear acompañada."""
-    R, sep = 29, 62
-    e = _flor_colorear(-sep / 2, 0, R, 8, 8, 20, 11, _FB) + _flor_colorear(sep / 2, 0, R, 8, 8, 20, 11, _FB)
-    ancho, alto = 2 * (RADIO_PAR + 1), 2 * (R + 1)
+    k = 1.3
+    e = (_flor_colorear(-PAR_SEP / 2, 0, PAR_R, 8, 8 * k, 20 * k, 11 * k, _FB)
+         + _flor_colorear(PAR_SEP / 2, 0, PAR_R, 8, 8 * k, 20 * k, 11 * k, _FB))
+    ancho, alto = 2 * (RADIO_PAR + 1), 2 * (PAR_R + 1)
     return (f'<svg xmlns="http://www.w3.org/2000/svg" width="{_n(ancho)}mm" height="{_n(alto)}mm" '
             f'viewBox="{_n(-ancho / 2)} {_n(-alto / 2)} {_n(ancho)} {_n(alto)}">{"".join(e)}</svg>')
 
@@ -439,16 +464,22 @@ def par_de_flores():
 # Cuántos pétalos cuenta cada chakra (los "petalo-flor" de la integración no cuentan)
 MANDALAS = {"raiz": raiz, "sacro": sacro, "plexo": plexo, "corazon": corazon,
             "garganta": garganta, "tercer_ojo": tercer_ojo, "corona": corona}
-PETALOS = {"raiz": 4, "sacro": 6, "plexo": 10, "corazon": 12, "garganta": 16, "tercer_ojo": 2, "corona": 20}
+PETALOS = {"raiz": 4, "sacro": 6, "plexo": 8, "corazon": 8, "garganta": 8, "tercer_ojo": 2, "corona": 8}
 
 
 # ----------------------------------------------------------------- PALETAS
 # Cada chakra tiene un color protagonista y una paleta sugerida de 5 colores (el protagonista primero).
 # El interior del libro es blanco y negro: los colores son solo una referencia.
-PALETA = {      # colores suaves, vivos y terrosos, de la misma familia que las flores de la portada
-    "rojo": "#B8483F", "naranja": "#DA7A3C", "amarillo": "#E2BF4C", "verde": "#6DB076",
-    "azul": "#6AA3D6", "indigo": "#40418F", "violeta": "#9560B5",
-    "rosa": "#D4718C", "turquesa": "#3DB9B5", "lila": "#CDBBE4", "dorado": "#C99A32",
+PALETA = {      # colores vivos y luminosos
+    "rojo": "#E63946", "naranja": "#FF8A2B", "amarillo": "#FFC93C", "verde": "#34C27A",
+    "azul": "#3FA9F5", "indigo": "#5B5BD6", "violeta": "#A855F7",
+    "rosa": "#FF7EB6", "turquesa": "#2EC4B6", "lila": "#D9B8FF", "dorado": "#F2B705",
+}
+# borde fino de los círculos de las leyendas: un tono más oscuro del mismo color
+BORDE_COLOR = {
+    "rojo": "#B8222F", "naranja": "#D96A10", "amarillo": "#D9A400", "verde": "#1F9A5C",
+    "azul": "#1F86D1", "indigo": "#3D3DB0", "violeta": "#8334D1",
+    "rosa": "#D95A97", "turquesa": "#1A9B8F", "lila": "#9B7BD1", "dorado": "#B88A00",
 }
 NOMBRE_COLOR = {"indigo": "índigo"}
 NOMBRE_COLOR = {k: NOMBRE_COLOR.get(k, k) for k in PALETA}
